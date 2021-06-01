@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper
 // @namespace    https://github.com/thecre8r/
-// @version      2021.05.31.01
+// @version      2021.06.01.01
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -25,8 +25,8 @@
     const STORE_NAME = "WMERSH_Settings";
     const SCRIPT_NAME = GM_info.script.name;
     const SCRIPT_VERSION = GM_info.script.version.toString();
-    const SCRIPT_CHANGES = `Added Wisconsin and other miscellaneous fixes`
-    const GH = {link: 'https://github.com/TheCre8r/WME-Road-Shields-Filter/', issue: 'https://github.com/TheCre8r/WME-Road-Shields-Filter/issues/new', wiki: 'https://github.com/TheCre8r/WME-Road-Shields-Filter/wiki'};
+    const SCRIPT_CHANGES = `Fixed GitHub URL`
+    const GH = {link: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/', issue: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/issues/new', wiki: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/wiki'};
     const UPDATE_ALERT = true;
 
     let _settings = {};
