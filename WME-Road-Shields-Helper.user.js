@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper
 // @namespace    https://github.com/thecre8r/
-// @version      2021.06.01.01
+// @version      2021.06.01.02
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -25,7 +25,8 @@
     const STORE_NAME = "WMERSH_Settings";
     const SCRIPT_NAME = GM_info.script.name;
     const SCRIPT_VERSION = GM_info.script.version.toString();
-    const SCRIPT_CHANGES = `Fixed GitHub URL`
+    //{"version": "2021.06.01.02","changes": ""},
+    const SCRIPT_HISTORY = `{"versions": [{"version": "2021.06.01.02","changes": "Added County Shields for Wisconsin<br>Updated Changelog Format"},{"version": "2021.06.01.01","changes": "Fixed GitHub URL"},{"version": "2021.05.31.01","changes": "Added Wisconsin and other miscellaneous fixes"},{"version": "2021.05.23.01","changes": "Initial Version"}]}`;
     const GH = {link: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/', issue: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/issues/new', wiki: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/wiki'};
     const UPDATE_ALERT = true;
 
@@ -170,6 +171,18 @@
 
     function initializeSettings() {
         loadSettings();
+        let SCRIPT_CHANGES = ``;
+        let JSON = $.parseJSON(SCRIPT_HISTORY);
+        if (JSON.versions[0].version != SCRIPT_VERSION) {
+            SCRIPT_CHANGES+=`No Changelog Reported<br><br>`
+        }
+        JSON.versions.forEach(function(item){
+            if (item.version == SCRIPT_VERSION) {
+                    SCRIPT_CHANGES+=`${item.changes}<br><br>`
+            } else {
+                SCRIPT_CHANGES+=`<h6 style="line-height: 0px;">${item.version}</h6>${item.changes}<br><br>`
+            }
+        });
         if (UPDATE_ALERT == true){
             WazeWrap.Interface.ShowScriptUpdate(SCRIPT_NAME, SCRIPT_VERSION, SCRIPT_CHANGES,`"</a><a target="_blank" href='${GH.link}'>GitHub</a><a style="display:none;" href="`, "#");
         }
@@ -226,7 +239,7 @@
 
         let streetname = document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-header > div.street-name").innerText
         console.log(streetname)
-        let regex = /(?:(H|I|M|CH|WIS|(?:[A-Z]\w)(?=\-))-(\d+(?:[A-Z])?(?:-\d+)?))?(?: (BUS|ALT|BYP|CONN|SPUR|TRUCK))?(?: (N|E|S|W))?/;
+        let regex = /(?:(CH|H|I|M|CH|WIS|(?:[A-Z]\w)(?=\-))-((?:[A-Z]\w)|(?:\d+(?:[A-Z])?(?:-\d+)?)))?(?: (BUS|ALT|BYP|CONN|SPUR|TRUCK))?(?: (N|E|S|W))?/;
         let SRStates = ['Arizona','Pennsylvania', 'Illinois', 'Alabama', 'Washington'];
         let match = streetname.match(regex);
 
@@ -260,26 +273,33 @@
 
         if (streetname.match(/(?=to)\w+|(?=Rd)\w+|(?=St)\w+|(?=Ave)\w+|(?=Dr)\w+|(?=Old)\w+/)) {
             document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-controls > wz-button.remove-road-shield.hydrated").click()
-            CreateError("Error: Road does not need a shield");
+            CreateError("Error: Road does not need a shield.");
             return;
         } else if (streetname != match[0]) {
             CreateError("Potential Error: Please Review");
         }
-        function MakeStateShield(match,stateoverride){
+
+        function MakeShield(match,stateoverride,shieldoverride){
             let State;
+            let Shield;
+            if (shieldoverride) {
+                Shield = shieldoverride;
+            } else {
+                Shield = "State"
+            }
             if (stateoverride) {
                 State = stateoverride;
             } else {
                 State = abbrState(match[1], 'name')
             }
             log("Make State Shield for "+State);
-            if (document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="` + State + ` - State Main"]`) && match[3] == undefined) {
+            if (document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="${State} - ${Shield} Main"]`) && match[3] == undefined) {
                 console.log(match[1]);
-                document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="` + State + ` - State Main"]`).click()
-            } else if (document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="` + State + ` - State ` + match[3] + `"]`)) {
-                document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="` + State + ` - State ` + match[3] + `"]`).click()
-            } else if (document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="` + State + ` - State Main"]`) && match[3] !== undefined) {
-                CreateError("Error: " + State +" - State " + match[3] + " Road Shield is not available" );
+                document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="${State} - ${Shield} Main"]`).click()
+            } else if (document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="${State} - ${Shield}  ${match[3]}"]`)) {
+                document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="${State} - ${Shield} ${match[3]}"]`).click()
+            } else if (document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="${State} - ${Shield}  Main"]`) && match[3] !== undefined) {
+                CreateError("Error: ${State} - ${Shield} ${match[3]} Road Shield is not available." );
                 console.log(match[1]);
                 console.log(match[3]);
                 return;
@@ -288,11 +308,14 @@
                 return;
             }
         }
+
         let State = getState()
         let DoneStates = ["North Carolina"].concat(SRStates);
         switch (match[1] ) {
             case "CH":
-                CreateError("Cpming Soon...")
+                if (State == "Wisconsin") {
+                    MakeShield(match,State,"County");
+                }
                 break;
             case "H":
             case "I":
@@ -310,12 +333,12 @@
                 break;
             case "M":
                 if (State == "Michigan") {
-                    MakeStateShield(match,State);
+                    MakeShield(match,State);
                 }
                 break;
             case "SH":
                 if (State == "Texas") {
-                    MakeStateShield(match,State);
+                    MakeShield(match,State);
                 }
                 break;
             case "SR":
@@ -323,19 +346,19 @@
                     CreateAlert(`Warning: State Shield Not Verified.<br>Consult local guidance and <a target="_blank" href="${GH.issue}" id="WMERSH-report-an-issue">${I18n.t(`wmersh.report_an_issue`)}</a>`)
                 }
                 if (SRStates.indexOf(State)>= 0) {
-                    MakeStateShield(match,State);
+                    MakeShield(match,State);
                 } else if (State == "North Carolina") {
-                    CreateError("Error: " + State + " does not use road shields for Secondary Routes")
+                    CreateError("Error: ${State} does not use road shields for Secondary Routes")
                 } else if (match[3] == undefined) {
                     console.log(match[1]);
                     document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="SR generic Main"]`).click()
                 } else if (match[3] !== undefined) {
-                    CreateError("Error: SR " + match[3] + " Road Shield is not available" );
+                    CreateError("Error: SR ${match[3]} Road Shield is not available" );
                     console.log(match[1]);
                     console.log(match[3]);
                     return;
                 } else {
-                    CreateError("Error: SR " + match[3] + " Road Shield is not available" );
+                    CreateError("Error: SR ${match[3]} Road Shield is not available" );
                     console.log(match[1]);
                     console.log(match[3]);
                     return;
@@ -349,17 +372,17 @@
                     console.log(match[3]);
                     document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="US-# ` + match[3] + `"]`).click()
                 } else {
-                    CreateError("Error: US-# " + match[3] + " Road Shield is not available or does not parse" );
+                    CreateError("Error: US-# ${match[3]} Road Shield is not available or does not parse" );
                     return;
                 }
                 break;
             case "WIS":
                 if (State == "Wisconsin") {
-                    MakeStateShield(match,State);
+                    MakeShield(match,State);
                 }
                 break;
             default:
-                MakeStateShield(match)
+                MakeShield(match)
                 break;
         }
         if (!document.querySelector(`#WMERSH-Error`)){
@@ -461,7 +484,7 @@
             document.querySelector("#WMERSH-TIO-Autofill").onclick = function(){
                 let exittext = document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span > span > input[type=text]").value
                 let regex = /(Exit) (\d+(?:[A-Z])?): (.*)/
-                let regex2 = /(?:(H|I|(?:[A-Z]\w)(?=\-))-(\d+(?:[A-Z])?(?:-\d+)?))?(?: (BUS|ALT|BYP|CONN|SPUR|TRUCK))?(?: (N|E|S|W))?/;
+                let regex2 = /(?:(CH|H|I|M|CH|WIS|(?:[A-Z]\w)(?=\-))-((?:[A-Z]\w)|(?:\d+(?:[A-Z])?(?:-\d+)?)))?(?: (BUS|ALT|BYP|CONN|SPUR|TRUCK))?(?: (N|E|S|W))?/;
                 let match = exittext.match(regex);
                 console.log(match)
                 let match2
