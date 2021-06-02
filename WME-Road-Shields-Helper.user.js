@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         WME Road Shield Helper
+// @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2021.06.01.02
+// @version      2021.06.02.0101
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -482,8 +482,9 @@
             let htmlstring = `<div style="position:absolute;top: 6px;right: 20px;font-size:20px;transform: scale(0.65);" id="WMERSH-TIO-Autofill"><wz-button class="hydrated">Autofill</wz-button></div>`
             document.querySelector("#panel-container > div > div > div.panel-header").insertAdjacentHTML('afterend',htmlstring)
             document.querySelector("#WMERSH-TIO-Autofill").onclick = function(){
-                let exittext = document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span > span > input[type=text]").value
-                let regex = /(Exit) (\d+(?:[A-Z])?): (.*)/
+                //let exittext = document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span > span > input[type=text]").value
+                let exittext = document.querySelector("#tts").shadowRoot.querySelector("#id").placeholder
+                let regex = /(Exits?) (\d+(?:.*)?): (.*)/
                 let regex2 = /(?:(CH|H|I|M|CH|WIS|(?:[A-Z]\w)(?=\-))-((?:[A-Z]\w)|(?:\d+(?:[A-Z])?(?:-\d+)?)))?(?: (BUS|ALT|BYP|CONN|SPUR|TRUCK))?(?: (N|E|S|W))?/;
                 let match = exittext.match(regex);
                 console.log(match)
@@ -492,7 +493,7 @@
                     match2 = match[3].match(regex2);
                     console.log(match2)
                 }
-                if (match[1] == "Exit") {
+                if (match[1].includes("Exit")) {
                     if ($('.exit-sign-item').length == 0) {
                         document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(3) > div > wz-button").shadowRoot.querySelector("button").click()
                     }
@@ -502,6 +503,16 @@
                         document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(3) > div > div > div > span > span > wz-menu > wz-menu-item:nth-child(1) > img").click()
                     }
                     document.querySelector("#text").value = match[2]
+                    let Strings = match[3].split(" / ");
+                    document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(1) > span > i").click()
+                    Strings.forEach(function(item, index){
+                        document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > wz-menu > wz-menu-item:nth-child(2)").click()
+                        document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).value = item;
+                        $(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).trigger('input');
+                        console.log(index);
+                        console.log(item);
+
+                    });
                     $('input#text').trigger('input');
 
                 }
