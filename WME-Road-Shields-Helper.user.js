@@ -341,7 +341,7 @@
                 }
                 break;
             case "K":
-                if (State = "Kansas") {
+                if (State == "Kansas") {
                     MakeShield(match,State);
                 }
                 break;
