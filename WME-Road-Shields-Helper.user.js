@@ -241,6 +241,7 @@
         console.log(streetname)
         let regex = /(?:(CH|H|I|M|CH|WIS|(?:[A-Z]\w)(?=\-))-((?:[A-Z]\w)|(?:\d+(?:[A-Z])?(?:-\d+)?)))?(?: (BUS|ALT|BYP|CONN|SPUR|TRUCK))?(?: (N|E|S|W))?/;
         let SRStates = ['Alabama', 'Arizona', 'Illinois', 'New Hampshire', 'Pennsylvania', 'Washington'];
+        let CRHex = ['Alabama', 'Arkansas', 'Louisiana', 'Florida', 'New Jersey', 'New York'];
         let match = streetname.match(regex);
 
         console.log(match)
@@ -315,6 +316,14 @@
             case "CH":
                 if (State == "Wisconsin") {
                     MakeShield(match,State,"County");
+                }
+                break;
+            case "CR":
+                if (CRHex.indexOf(State)>=0) {
+                    console.log(match[1]);
+                    document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="CR generic Main"]`).click()
+                } else {
+                    CreateAlert(`Warning: CR design for this state has not been defined. <br>Consult local guidance and <a target="_blank" href="https://github.com/TheCre8r/WME-Road-Shields-Filter/issues/new" id="WMERSH-report-an-issue">${I18n.t(`wmersh.report_an_issue`)}</a>`);
                 }
                 break;
             case "H":
