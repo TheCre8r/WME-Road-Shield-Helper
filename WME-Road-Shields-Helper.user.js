@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         WME Road Shield Helper
+// @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2021.06.03.0201
+// @version      2021.06.03.0202
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
