@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2021.06.03.0203
+// @version      2021.06.05.0101
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -25,8 +25,8 @@
     const STORE_NAME = "WMERSH_Settings";
     const SCRIPT_NAME = GM_info.script.name;
     const SCRIPT_VERSION = GM_info.script.version.toString();
-    //{"version": "2021.06.01.02","changes": ""},
-    const SCRIPT_HISTORY = `{"versions": [{"version": "2021.06.03.02","changes": "Support for Kansas K-xxx format"},{"version": "2021.06.03.01","changes": "Added CR support for states using hexagon type shields"},{"version": "2021.06.02.01","changes": "Added SR Shield for New Hampshire"},{"version": "2021.06.01.02","changes": "Added County Shields for Wisconsin<br>Updated Changelog Format"},{"version": "2021.06.01.01","changes": "Fixed GitHub URL"},{"version": "2021.05.31.01","changes": "Added Wisconsin and other miscellaneous fixes"},{"version": "2021.05.23.01","changes": "Initial Version"}]}`;
+                                        //{"version": "2021.06.01.02","changes": ""},
+    const SCRIPT_HISTORY = `{"versions": [{"version": "2021.06.05.01","changes": "Support for Missouri Supplmental Road Shields"},{"version": "2021.06.03.02","changes": "Support for Kansas K-xxx format"},{"version": "2021.06.03.01","changes": "Added CR support for states using hexagon type shields"},{"version": "2021.06.02.01","changes": "Added SR Shield for New Hampshire"},{"version": "2021.06.01.02","changes": "Added County Shields for Wisconsin<br>Updated Changelog Format"},{"version": "2021.06.01.01","changes": "Fixed GitHub URL"},{"version": "2021.05.31.01","changes": "Added Wisconsin and other miscellaneous fixes"},{"version": "2021.05.23.01","changes": "Initial Version"}]}`;
     const GH = {link: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/', issue: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/issues/new', wiki: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/wiki'};
     const UPDATE_ALERT = true;
 
@@ -137,7 +137,7 @@
         log("Tab Initialized");
     }
 
-    let TESTERS = ["The_Cre8r","jm6087","s18slider","locojd1","SethSpeedy28","nzahn1","doctorkb","turnertr"];
+    let TESTERS = ["The_Cre8r","jm6087","s18slider","locojd1","SethSpeedy28","nzahn1","doctorkb","turnertr","sketch"];
 
     function setChecked(checkboxId, checked) {
         $('#WMERSH-' + checkboxId).prop('checked', checked);
@@ -491,12 +491,42 @@
     /*-- END Road Shields --*/
 
     /*-- START Turn Instruction Overrides --*/
+
+    /*
+    $(document).ready(function(){
+        let lastran
+        $( 'input[type=button]' ).on('click', function(){
+            var cursorPos1 = $('#text1').prop('selectionStart');
+            var cursorPos2 = $('#text2').prop('selectionStart');
+            console.log(cursorPos1+","+cursorPos2)
+            var v = $(lastran).val();
+            if (lastran == "#text1") {
+                cursorPos = cursorPos1
+            } else {
+                cursorPos = cursorPos2
+            }
+            var textBefore = v.substring(0,  cursorPos );
+            var textAfter  = v.substring( cursorPos, v.length );
+            $(lastran).val( textBefore+ "»" +textAfter );
+            $(lastran).focus();
+            $(lastran)[0].setSelectionRange(cursorPos+1,cursorPos+1);
+
+        });
+        $("#text1").focus(function(){
+            lastran = "#text1"
+        });
+        $("#text2").focus(function(){
+            lastran = "#text2"
+        });
+    });
+
+    */
     function RegexMatch2() {
         if (TESTERS.indexOf(W.loginManager.user.userName) > -1) {
             let htmlstring = `<div style="position:absolute;top: 6px;right: 20px;font-size:20px;transform: scale(0.65);" id="WMERSH-TIO-Autofill"><wz-button class="hydrated">Autofill</wz-button></div>`
             document.querySelector("#panel-container > div > div > div.panel-header").insertAdjacentHTML('afterend',htmlstring)
-            let buttonstring = ` <wz-button class="hydrated" style="height: 10px;">»</wz-button> <wz-button class="hydrated" style="height: 10px;">•</wz-button>`
-            $("#towards").shadowRoot("#div > wz-label").children().children()[0].append(buttonstring)
+            let buttonstring = `<div style="position: absolute;z-index: 10;display: block;margin-left: 15%;margin-top: -1px;"><wz-button class="hydrated" style="height: 10px;">•</wz-button> <wz-button class="hydrated" style="height: 10px;width: 10px;">»</wz-button></div>`
+            $("#towards").before(buttonstring)
             //$("#towards").shadowRoot.querySelector("div > wz-label").append(buttonstring)
             document.querySelector("#WMERSH-TIO-Autofill").onclick = function(){
                 //let exittext = document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span > span > input[type=text]").value
@@ -506,10 +536,8 @@
                 let match = exittext.match(regex);
                 console.log(match)
                 let match2
-                if (match[3]) {
-                    match2 = match[3].match(regex2);
-                    console.log(match2)
-                }
+
+                /** Start Add Exit Arrow **/
                 if (match[1].includes("Exit")) {
                     if ($('.exit-sign-item').length == 0) {
                         document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(3) > div > wz-button").shadowRoot.querySelector("button").click()
@@ -519,30 +547,38 @@
                     } else {
                         document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(3) > div > div > div > span > span > wz-menu > wz-menu-item:nth-child(1) > img").click()
                     }
-                    document.querySelector("#text").value = match[2]
-                    let Strings = match[3].split(" / ");
-                    document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(1) > span > i").click()
-                    Strings.forEach(function(item, index){
-                        let match2 = item.match(regex2);
-                        if (match2[1] && match2[2]) {
-                            console.log(match2)
-                            document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > wz-menu > wz-menu-item:nth-child(1)").click()
-                            //document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).value = item;
-                            document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > wz-menu > wz-menu-item:nth-child(1)`).click()
-                            //document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span > span > wz-menu > wz-menu-item:nth-child(1)").click()
-                            $("input#direction").trigger('input');
-                        } else {
-                            document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > wz-menu > wz-menu-item:nth-child(2)").click()
-                            document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).value = item;
-                            $(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).trigger('input');
-                        }
-                        console.log(index);
-                        console.log(item);
-
-                    });
-                    $('input#text').trigger('input');
-
                 }
+                /** End Add Exit Arrow **/
+
+                /** Start Visual Instructions **/
+                document.querySelector("#text").value = match[2]
+                let Strings = match[3].split(" / ");
+                if (match[3]) {
+                    match2 = match[3].match(regex2);
+                    console.log(match2)
+                }
+                document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(1) > span > i").click()
+                Strings.forEach(function(item, index){
+                    let match2 = item.match(regex2);
+                    if (match2[1] && match2[2]) {
+                        console.log(match2)
+                        document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > wz-menu > wz-menu-item:nth-child(1)").click()
+                        //document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).value = item;
+                        document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > wz-menu > wz-menu-item:nth-child(1)`).click()
+                        //document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span > span > wz-menu > wz-menu-item:nth-child(1)").click()
+                        $("input#direction").trigger('input');
+                    } else {
+                        document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > wz-menu > wz-menu-item:nth-child(2)").click()
+                        document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).value = item;
+                        $(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).trigger('input');
+                    }
+                    console.log(index);
+                    console.log(item);
+
+                });
+                $('input#text').trigger('input');
+                /** End Visual Instructions **/
+
             };
         }
     }
