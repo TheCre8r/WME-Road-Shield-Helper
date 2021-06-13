@@ -551,33 +551,27 @@
         if (TESTERS.indexOf(W.loginManager.user.userName) > -1) {
             let htmlstring = `<div style="position:absolute;top: 6px;right: 30px;font-size:20px;transform: scale(0.65);" id="WMERSH-TIO-Autofill"><wz-button class="hydrated">Autofill</wz-button></div>`
             document.querySelector("#panel-container > div > div > div.panel-header").insertAdjacentHTML('afterend',htmlstring)
-            let buttonstring = `<div style="height: 100px;width: 160px;background: white;border-radius: 5px;position: absolute;z-index: 4;left: 340px;" class="show rsh-panel"><div class="panel-header" style="
+            let buttonstring = `<div style="width: 80px;background: white;border-radius: 5px;position: absolute;z-index: 4;left: 340px;margin-top: 155px;" class="show rsh-panel"><div id="RSH-panel-header" class="panel-header" style="
     font-family: &quot;Boing-medium&quot;, sans-serif;
-    font-size: 18px;
+    font-size: 16px;
     line-height: 24px;
     font-weight: 400;
-    height: 50px;
+    height: 31px;
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
     border-bottom: 1px solid #e8eaed;
-    padding: 16px;
+    padding: 6px;
+    text-align: center;
 "><span style="
     -webkit-box-flex: 1;
     -ms-flex-positive: 1;
     flex-grow: 1;
-">Buttons<i class="w-icon w-icon-info" data-original-title="" title="" style="
-    font-size: 20px;
-    padding: 0 6px;
-    vertical-align: text-bottom;
-"></i></span><i class="w-icon w-icon-x" style="
-    cursor: pointer;
-    font-size: 24px;
-"></i>
+">Buttons</span>
 </div><div class="" style="
     background: black;
     color: white;
-    height: 50px;
+    height: 122px;
     border-bottom-right-radius: 5px;
     border-bottom-left-radius: 5px;
 "><div style="position: absolute;z-index: 10;/* display: block; */margin: 10px;"><wz-button class="hydrated" style="height: 10px;">•</wz-button> <wz-button class="hydrated" style="height: 10px;width: 10px;">»</wz-button></div></div></div>`
