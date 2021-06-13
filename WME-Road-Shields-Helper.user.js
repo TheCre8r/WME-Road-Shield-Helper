@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2021.06.12.0105
+// @version      2021.06.12.0106
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -571,10 +571,10 @@
 </div><div class="" style="
     background: black;
     color: white;
-    height: 122px;
+    height: 170px;
     border-bottom-right-radius: 5px;
     border-bottom-left-radius: 5px;
-"><div style="position: absolute;z-index: 10;/* display: block; */margin: 10px;"><wz-button class="hydrated" style="height: 10px;">•</wz-button> <wz-button class="hydrated" style="height: 10px;width: 10px;">»</wz-button></div></div></div>`
+"><div style="position: absolute;z-index: 10;/* display: block; */margin: 10px;"><wz-button class="hydrated" style="height: 10px;">•</wz-button><br><wz-button class="hydrated" style="height: 10px;width: 10px;">»</wz-button><br><wz-button class="hydrated" style="height: 10px;width: 10px;">Nᴏʀᴛʜ</wz-button><br><wz-button class="hydrated" style="height: 10px;width: 10px;">Sᴏᴜᴛʜ</wz-button><br><wz-button class="hydrated" style="height: 10px;width: 10px;">Eᴀsᴛ</wz-button><br><wz-button class="hydrated" style="height: 10px;width: 10px;">Wᴇsᴛ</wz-button><br><wz-button class="hydrated" style="height: 10px;width: 10px;">ᴛᴏ</wz-button></div></div></div>`
             $("#panel-container > div > div.turn-instructions-panel").before(buttonstring)
 
             //$("#towards").shadowRoot.querySelector("div > wz-label").append(buttonstring)
