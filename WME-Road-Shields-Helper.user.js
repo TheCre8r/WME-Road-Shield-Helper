@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2021.06.12.0103
+// @version      2021.06.12.0104
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -549,10 +549,40 @@
     */
     function RegexMatch2() {
         if (TESTERS.indexOf(W.loginManager.user.userName) > -1) {
-            let htmlstring = `<div style="position:absolute;top: 6px;right: 20px;font-size:20px;transform: scale(0.65);" id="WMERSH-TIO-Autofill"><wz-button class="hydrated">Autofill</wz-button></div>`
+            let htmlstring = `<div style="position:absolute;top: 6px;right: 30px;font-size:20px;transform: scale(0.65);" id="WMERSH-TIO-Autofill"><wz-button class="hydrated">Autofill</wz-button></div>`
             document.querySelector("#panel-container > div > div > div.panel-header").insertAdjacentHTML('afterend',htmlstring)
-            let buttonstring = `<div style="position: absolute;z-index: 10;display: block;margin-left: 15%;margin-top: -1px;"><wz-button class="hydrated" style="height: 10px;">•</wz-button> <wz-button class="hydrated" style="height: 10px;width: 10px;">»</wz-button></div>`
-            $("#towards").before(buttonstring)
+            let buttonstring = `<div style="height: 100px;width: 160px;background: white;border-radius: 5px;position: absolute;z-index: 4;left: 340px;" class="show rsh-panel"><div class="panel-header" style="
+    font-family: &quot;Boing-medium&quot;, sans-serif;
+    font-size: 18px;
+    line-height: 24px;
+    font-weight: 400;
+    height: 50px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    border-bottom: 1px solid #e8eaed;
+    padding: 16px;
+"><span style="
+    -webkit-box-flex: 1;
+    -ms-flex-positive: 1;
+    flex-grow: 1;
+">Buttons<i class="w-icon w-icon-info" data-original-title="" title="" style="
+    font-size: 20px;
+    padding: 0 6px;
+    vertical-align: text-bottom;
+"></i></span><i class="w-icon w-icon-x" style="
+    cursor: pointer;
+    font-size: 24px;
+"></i>
+</div><div class="" style="
+    background: black;
+    color: white;
+    height: 50px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+"><div style="position: absolute;z-index: 10;/* display: block; */margin: 10px;"><wz-button class="hydrated" style="height: 10px;">•</wz-button> <wz-button class="hydrated" style="height: 10px;width: 10px;">»</wz-button></div></div></div>`
+            $("#panel-container > div > div.turn-instructions-panel").before(buttonstring)
+
             //$("#towards").shadowRoot.querySelector("div > wz-label").append(buttonstring)
             document.querySelector("#WMERSH-TIO-Autofill").onclick = function(){
                 //let exittext = document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span > span > input[type=text]").value
