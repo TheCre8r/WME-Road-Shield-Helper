@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2021.06.12.0106
+// @version      2021.06.12.0107
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -551,7 +551,7 @@
         if (TESTERS.indexOf(W.loginManager.user.userName) > -1) {
             let htmlstring = `<div style="position:absolute;top: 6px;right: 30px;font-size:20px;transform: scale(0.65);" id="WMERSH-TIO-Autofill"><wz-button class="hydrated">Autofill</wz-button></div>`
             document.querySelector("#panel-container > div > div > div.panel-header").insertAdjacentHTML('afterend',htmlstring)
-            let buttonstring = `<div style="width: 80px;background: white;border-radius: 5px;position: absolute;z-index: 4;left: 340px;margin-top: 155px;" class="show rsh-panel"><div id="RSH-panel-header" class="panel-header" style="
+            let buttonstring = `<div style="width: 80px;background: white;border-radius: 5px;position: absolute;z-index: 4;left: 340px;margin-top: 155px;-webkit-box-shadow: 0 2px 3px 0 rgb(60 64 67 / 30%), 0 6px 10px 4px rgb(60 64 67 / 15%);box-shadow: 0 2px 3px 0 rgb(60 64 67 / 30%), 0 6px 10px 4px rgb(60 64 67 / 15%);" class="show rsh-panel"><div id="RSH-panel-header" class="panel-header" style="
     font-family: &quot;Boing-medium&quot;, sans-serif;
     font-size: 16px;
     line-height: 24px;
