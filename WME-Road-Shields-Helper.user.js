@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2021.06.12.0107
+// @version      2021.06.12.0108
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -84,6 +84,9 @@
             '#WMERSH-version {font-size:11px;margin-left:10px;color:#aaa;}',
             '.WMERSH-report {text-align:center;padding-top:20px;}',
             '.WMERSH-Button {font-family:"Rubik","Boing-light",sans-serif,FontAwesome;padding-left:10px;padding-right:10px;margin-top:0px;z-index: 3;}',
+            '.rsh-button {padding: 2px; height: 10px; width: 10px;}',
+            '#RSH-panel {width: 80px;background: white;border-radius: 5px;position: absolute;z-index: 4;left: 340px;margin-top: 155px;-webkit-box-shadow: 0 2px 3px 0 rgb(60 64 67 / 30%), 0 6px 10px 4px rgb(60 64 67 / 15%);box-shadow: 0 2px 3px 0 rgb(60 64 67 / 30%), 0 6px 10px 4px rgb(60 64 67 / 15%);}',
+            '#RSH-panel-header {font-family: &quot;Boing-medium&quot;, sans-serif;font-size: 16px;line-height: 24px;font-weight: 400;height: 31px;display: -webkit-box;display: -ms-flexbox;display: flex;border-bottom: 1px solid #e8eaed;padding: 6px;text-align: center;}',
             '.fa, .fas{font-family:"FontAwesome"}',
             '.fab{font-family:"Font Awesome 5 Brands"}',
             '@font-face{font-family:"Font Awesome 5 Free";font-style:normal;font-weight:400;src:url(https://use.fontawesome.com/releases/v5.6.1/webfonts/fa-regular-400.eot);src:url(https://use.fontawesome.com/releases/v5.6.1/webfonts/fa-regular-400.eot?#iefix) format("embedded-opentype"),url(https://use.fontawesome.com/releases/v5.6.1/webfonts/fa-regular-400.woff2) format("woff2"),url(https://use.fontawesome.com/releases/v5.6.1/webfonts/fa-regular-400.woff) format("woff"),url(https://use.fontawesome.com/releases/v5.6.1/webfonts/fa-regular-400.ttf) format("truetype"),url(https://use.fontawesome.com/releases/v5.6.1/webfonts/fa-regular-400.svg#fontawesome) format("svg")}',
@@ -551,30 +554,22 @@
         if (TESTERS.indexOf(W.loginManager.user.userName) > -1) {
             let htmlstring = `<div style="position:absolute;top: 6px;right: 30px;font-size:20px;transform: scale(0.65);" id="WMERSH-TIO-Autofill"><wz-button class="hydrated">Autofill</wz-button></div>`
             document.querySelector("#panel-container > div > div > div.panel-header").insertAdjacentHTML('afterend',htmlstring)
-            let buttonstring = `<div style="width: 80px;background: white;border-radius: 5px;position: absolute;z-index: 4;left: 340px;margin-top: 155px;-webkit-box-shadow: 0 2px 3px 0 rgb(60 64 67 / 30%), 0 6px 10px 4px rgb(60 64 67 / 15%);box-shadow: 0 2px 3px 0 rgb(60 64 67 / 30%), 0 6px 10px 4px rgb(60 64 67 / 15%);" class="show rsh-panel"><div id="RSH-panel-header" class="panel-header" style="
-    font-family: &quot;Boing-medium&quot;, sans-serif;
-    font-size: 16px;
-    line-height: 24px;
-    font-weight: 400;
-    height: 31px;
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    border-bottom: 1px solid #e8eaed;
-    padding: 6px;
-    text-align: center;
-"><span style="
-    -webkit-box-flex: 1;
-    -ms-flex-positive: 1;
-    flex-grow: 1;
-">Buttons</span>
-</div><div class="" style="
-    background: black;
-    color: white;
-    height: 170px;
-    border-bottom-right-radius: 5px;
-    border-bottom-left-radius: 5px;
-"><div style="position: absolute;z-index: 10;/* display: block; */margin: 10px;"><wz-button class="hydrated" style="height: 10px;">•</wz-button><br><wz-button class="hydrated" style="height: 10px;width: 10px;">»</wz-button><br><wz-button class="hydrated" style="height: 10px;width: 10px;">Nᴏʀᴛʜ</wz-button><br><wz-button class="hydrated" style="height: 10px;width: 10px;">Sᴏᴜᴛʜ</wz-button><br><wz-button class="hydrated" style="height: 10px;width: 10px;">Eᴀsᴛ</wz-button><br><wz-button class="hydrated" style="height: 10px;width: 10px;">Wᴇsᴛ</wz-button><br><wz-button class="hydrated" style="height: 10px;width: 10px;">ᴛᴏ</wz-button></div></div></div>`
+            let buttonstring = `<div id="RSH-panel" class="show rsh-panel">
+                                    <div id="RSH-panel-header" class="panel-header">
+                                        <span style="-webkit-box-flex: 1;-ms-flex-positive: 1;flex-grow: 1;">Buttons</span>
+                                    </div>
+                                    <div class="" style="background: black;color: white;height: 170px;border-bottom-right-radius: 5px;border-bottom-left-radius: 5px;">
+                                        <div style="position: absolute;z-index: 10;margin: 10px;">
+                                            <wz-button class="hydrated rsh-button" id="rsh-txt-concurrent">•</wz-button><br>
+                                            <wz-button class="hydrated rsh-button" id="rsh-txt-towards">»</wz-button><br>
+                                            <wz-button class="hydrated rsh-button" id="rsh-txt-north">Nᴏʀᴛʜ</wz-button><br>
+                                            <wz-button class="hydrated rsh-button" id="rsh-txt-south">Sᴏᴜᴛʜ</wz-button><br>
+                                            <wz-button class="hydrated rsh-button" id="rsh-txt-east">Eᴀsᴛ</wz-button><br>
+                                            <wz-button class="hydrated rsh-button" id="rsh-txt-west">Wᴇsᴛ</wz-button><br>
+                                            <wz-button class="hydrated rsh-button" id="rsh-txt-to">ᴛᴏ</wz-button>
+                                        </div>
+                                    </div>
+                                </div>`
             $("#panel-container > div > div.turn-instructions-panel").before(buttonstring)
 
             //$("#towards").shadowRoot.querySelector("div > wz-label").append(buttonstring)
