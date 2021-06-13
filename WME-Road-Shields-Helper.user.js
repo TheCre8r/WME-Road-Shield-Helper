@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper
 // @namespace    https://github.com/thecre8r/
-// @version      2021.06.05.01
+// @version      2021.06.13.01
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -242,6 +242,13 @@
         let SRStates = ['Alabama', 'Arizona', 'Illinois', 'New Hampshire', 'Pennsylvania', 'Washington'];
         let match = streetname.match(regex);
 
+        // TODO? Check is state is Louisiana
+        if (match[1]===undefined)
+        {
+            let regexLAPR = /(?:(Parish Rd)(?=[\-|\ ])[\-|\ ]((?:[A-Z]+)|(?:\d+(?:[A-Z])?(?:-\d+)?)))?(?: (BUS|ALT|BYP|CONN|SPUR|TRUCK))?(?: (N|E|S|W))?/;
+            match = streetname.match(regexLAPR);
+        }
+
         if (document.querySelector("#WMERSH-Error")) {
             document.querySelector("#WMERSH-Error").remove()
         }
@@ -268,7 +275,7 @@
         }
         //END TODO
 
-        if (streetname.match(/(?=to)\w+|(?=Rd)\w+|(?=St)\w+|(?=Ave)\w+|(?=Dr)\w+|(?=Old)\w+/)) {
+        if (streetname.match(/(?=to)\w+|(?=Rd)\w+|(?=St)\w+|(?=Ave)\w+|(?=Dr)\w+|(?=Old)\w+/) && (streetname.indexOf('Parish Rd') !== 0)) {
             document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-controls > wz-button.remove-road-shield.hydrated").click()
             CreateError("Error: Road does not need a shield.");
             return;
@@ -394,6 +401,18 @@
             case "WIS":
                 if (State == "Wisconsin") {
                     MakeShield(match,State);
+                } else {
+                    CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`);
+                }
+                break;
+            case "Parish Rd":
+                if (State == "Louisiana") {
+                    if (match[3] == undefined) {
+                        document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="CR generic Main"]`).click();
+                    } else if (match[3] !== undefined) {
+                        CreateError(`Error: Parish Rd ${match[3]} Road Shield is not available`);
+                        return;
+                    }
                 } else {
                     CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`);
                 }
