@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2021.06.12.0108
+// @version      2021.06.14.0101
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -140,7 +140,7 @@
         log("Tab Initialized");
     }
 
-    let TESTERS = ["The_Cre8r","jm6087","s18slider","locojd1","SethSpeedy28","nzahn1","doctorkb","turnertr","sketch"];
+    let TESTERS = ["The_Cre8r","jm6087","s18slider","locojd1","SethSpeedy28","nzahn1","doctorkb","turnertr","sketch","phuz"];
 
     function setChecked(checkboxId, checked) {
         $('#WMERSH-' + checkboxId).prop('checked', checked);
