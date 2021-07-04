@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2021.06.14.0101
+// @version      2021.07.04.0101
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -26,19 +26,23 @@
     const SCRIPT_NAME = GM_info.script.name;
     const SCRIPT_VERSION = GM_info.script.version.toString();
                                         //{"version": "2021.06.01.02","changes": ""},
-    const SCRIPT_HISTORY = `{"versions": [{"version": "2021.06.12.01","changes": "Support for Illinois CH Road Shields, a few more SH- States, a few more SR- States, and Arkansas's Shield Name Suffixes"},{"version": "2021.06.05.01","changes": "Support for Missouri Supplemental Road Shields"},{"version": "2021.06.03.02","changes": "Support for Kansas K-xxx format"},{"version": "2021.06.03.01","changes": "Added CR support for states using hexagon type shields"},{"version": "2021.06.02.01","changes": "Added SR Shield for New Hampshire"},{"version": "2021.06.01.02","changes": "Added County Shields for Wisconsin<br>Updated Changelog Format"},{"version": "2021.06.01.01","changes": "Fixed GitHub URL"},{"version": "2021.05.31.01","changes": "Added Wisconsin and other miscellaneous fixes"},{"version": "2021.05.23.01","changes": "Initial Version"}]}`;
+    const SCRIPT_HISTORY = `{"versions": [{"version": "2021.07.04.01","changes": "Added Buttons to Turn Instructions"},{"version": "2021.06.12.01","changes": "Support for Illinois CH Road Shields, a few more SH- States, a few more SR- States, and Arkansas's Shield Name Suffixes"},{"version": "2021.06.05.01","changes": "Support for Missouri Supplemental Road Shields"},{"version": "2021.06.03.02","changes": "Support for Kansas K-xxx format"},{"version": "2021.06.03.01","changes": "Added CR support for states using hexagon type shields"},{"version": "2021.06.02.01","changes": "Added SR Shield for New Hampshire"},{"version": "2021.06.01.02","changes": "Added County Shields for Wisconsin<br>Updated Changelog Format"},{"version": "2021.06.01.01","changes": "Fixed GitHub URL"},{"version": "2021.05.31.01","changes": "Added Wisconsin and other miscellaneous fixes"},{"version": "2021.05.23.01","changes": "Initial Version"}]}`;
     const GH = {link: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/', issue: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/issues/new', wiki: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/wiki'};
     const UPDATE_ALERT = true;
 
     let _settings = {};
     let svglogo = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" width="13" height="13" viewBox="0 0 384 384" overflow="visible" enable-background="new 0 0 13384" xml:space="preserve" style="vertical-align: middle;"><path xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd" d="M303.8720703,28.0273438l50.3662109,52.1557617    C339.7480469,97.5253906,331,119.8857422,331,144.2758789c0,20.8432617,6.4052734,40.2626953,17.3476563,56.3041992    C357.5654297,214.0683594,363,230.4316406,363,248c0,46.2294922-37.3447266,83.7363281-83.5097656,83.9990234    C247.1210938,332.0214844,217.1582031,341.6162109,192,358.0605469c-25.1884766-16.4648438-55.1953125-26.0625-87.609375-26.0625    C58.2797852,331.6728516,21,294.1904297,21,248c0-17.5673828,5.4345703-33.9316406,14.6523438-47.4199219    C46.5942383,184.5385742,53,165.1191406,53,144.2758789c0-24.390625-8.7480469-46.7504883-23.2382813-64.0927734    l50.3662109-52.1557617C96.0566406,37.9365234,114.8740234,43.6699219,135,43.6699219c21.0283203,0,40.6298828-6.2587891,57-17    c16.3701172,10.7412109,35.9716797,17,57,17C269.1259766,43.6699219,287.9433594,37.9365234,303.8720703,28.0273438z     M249,31.6699219c21.2548828,0,40.8378906-7.2177734,56.4121094-19.3222656l65.4033203,67.7265625    C353.7060547,96.1201172,343,118.9477539,343,144.2758789c0,18.3544922,5.6318359,35.425293,15.2578125,49.5375977    C368.7890625,209.2226563,375,227.9277344,375,248c0,52.8339844-42.6796875,95.6992188-95.4414063,95.9980469    c-32.8427734,0.0117188-62.9824219,10.65625-87.5585938,28.6523438    c-24.5898438-18.0048828-54.7475586-28.6523438-87.609375-28.6523438C51.6513672,343.671875,9,300.8164063,9,248    c0-20.0722656,6.2109375-38.7773438,16.7421875-54.1865234C35.3681641,179.7011719,41,162.6303711,41,144.2758789    c0-25.328125-10.706543-48.1557617-27.8154297-64.2016602l65.4033203-67.7265625    C94.1621094,24.4521484,113.7451172,31.6699219,135,31.6699219c21.5219727,0,41.3310547-7.3989258,57-19.7802734    C207.6689453,24.2709961,227.4775391,31.6699219,249,31.6699219z"></path></svg>`
 
-    function log(msg) {
-        console.log('WME RSH: ', msg);
+    function log(msg,level) {
+        var css = `font-size: 12px; display: block;`;
+        if (level == 0) {css += ' color: red;'}
+        else if (level == 1) {css += ' color: green;'}
+        else {css += ' color: orange;'}
+        console.log("%c"+GM_info.script.name+": %s", css, msg);
     }
 
     function initializei18n() {
-        log("i18n Initialized")
+        log("i18n Initialized - " +I18n.currentLocale(),1)
         var translations = {
             en: {
                 tab_title: `${SCRIPT_NAME}`,
@@ -58,7 +62,6 @@
         translations['en-GB'] = translations['en-US'] = translations['en-AU'] = translations.en;
         translations['es-419'] = translations.es;
         I18n.translations[I18n.currentLocale()].wmersh = translations.en;
-        log(I18n.currentLocale())
         Object.keys(translations).forEach(function(locale) {
             if (I18n.currentLocale() == locale) {
                 addFallbacks(translations[locale], translations.en);
@@ -99,7 +102,7 @@
         $('<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/regular.css" integrity="sha384-APzfePYec2VC7jyJSpgbPrqGZ365g49SgeW+7abV1GaUnDwW7dQIYFc+EuAuIx0c" crossorigin="anonymous">').appendTo('head');
         $('<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/brands.css" integrity="sha384-/feuykTegPRR7MxelAQ+2VUMibQwKyO6okSsWiblZAJhUSTF9QAVR0QLk6YwNURa" crossorigin="anonymous">').appendTo('head');
         $('<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/fontawesome.css" integrity="sha384-ijEtygNrZDKunAWYDdV3wAZWvTHSrGhdUfImfngIba35nhQ03lSNgfTJAKaGFjk2" crossorigin="anonymous">').appendTo('head');
-        log("CSS Injected");
+        log("CSS Injected",1);
     }
 
     function initTab() {
@@ -134,17 +137,17 @@
             '</form>',
             '</div>'
         ].join(' '));
-        new WazeWrap.Interface.Tab('WMERSH', $section.html(), function(){log("Tab Loaded")});
+        new WazeWrap.Interface.Tab('WMERSH', $section.html(), function(){});
         $('a[href$="#sidepanel-wmersh"]').html(`<span>`+svglogo+`</span>`)
         $('a[href$="#sidepanel-wmersh"]').prop('title', 'WME RSF');
-        log("Tab Initialized");
+        log("Tab Initialized",1);
     }
 
-    let TESTERS = ["The_Cre8r","jm6087","s18slider","locojd1","SethSpeedy28","nzahn1","doctorkb","turnertr","sketch","phuz"];
+    let TESTERS = ["The_Cre8r","jm6087","s18slider","locojd1","SethSpeedy28","nzahn1","doctorkb","turnertr","sketch"];
 
     function setChecked(checkboxId, checked) {
         $('#WMERSH-' + checkboxId).prop('checked', checked);
-        log('#WMERSH-' + checkboxId + " is " + checked);
+        //log('#WMERSH-' + checkboxId + " is " + checked);
     }
 
     /*-- Start Settings --*/
@@ -161,14 +164,14 @@
                 _settings[prop] = defaultSettings[prop];
             }
         }
-        log("Settings Loaded");
+        log("Settings Loaded",1);
     }
 
     function saveSettings() {
         if (localStorage) {
             _settings.lastVersion = SCRIPT_VERSION;
             localStorage.setItem(STORE_NAME, JSON.stringify(_settings));
-            log('Settings Saved '+ JSON.stringify(_settings));
+            log('Settings Saved',1);
         }
     }
 
@@ -195,17 +198,17 @@
             let settingName = "Debug";
             _settings[settingName] = this.checked;
             saveSettings();
-            log(settingName + ' Checkbox');
-            log(_settings[settingName]);
+            //log(settingName + ' Checkbox');
+            //log(_settings[settingName]);
         });
         $('#WMERSH-FilterByState').change(function() {
             let settingName = "FilterByState";
             _settings[settingName] = this.checked;
             saveSettings();
-            log(settingName + ' Checkbox');
-            log(_settings[settingName]);
+            //log(settingName + ' Checkbox');
+            //log(_settings[settingName]);
         });
-        log("Settings Initialized");
+        log("Settings Initialized",1);
     }
     /*-- End Settings --*/
 
@@ -521,40 +524,45 @@
 
     /*-- START Turn Instruction Overrides --*/
 
-    /*
-    $(document).ready(function(){
-        let lastran
-        $( 'input[type=button]' ).on('click', function(){
-            var cursorPos1 = $('#text1').prop('selectionStart');
-            var cursorPos2 = $('#text2').prop('selectionStart');
-            console.log(cursorPos1+","+cursorPos2)
-            var v = $(lastran).val();
-            if (lastran == "#text1") {
-                cursorPos = cursorPos1
-            } else {
-                cursorPos = cursorPos2
+    function TIOButtons() {
+        function AddTxt(character,element) {
+            log(element)
+            let v,textBefore,textAfter
+            if (element.shadowRoot){
+                element = element.shadowRoot.querySelector("#id")
             }
-            var textBefore = v.substring(0,  cursorPos );
-            var textAfter  = v.substring( cursorPos, v.length );
-            $(lastran).val( textBefore+ "»" +textAfter );
-            $(lastran).focus();
-            $(lastran)[0].setSelectionRange(cursorPos+1,cursorPos+1);
+            let cursorPos = element.selectionStart;
+            v = element.value;
+            textBefore = v.substring(0, cursorPos);
+            textAfter = v.substring(cursorPos, v.length);
+            element.value = textBefore + character + textAfter;
+            element.focus();
+            element.setSelectionRange(cursorPos+character.length,cursorPos+character.length);
+        }
 
-        });
-        $("#text1").focus(function(){
-            lastran = "#text1"
-        });
-        $("#text2").focus(function(){
-            lastran = "#text2"
-        });
-    });
+        function ButtonFunctions() {
+            log("GetLastElement Ran")
+            let LastInputElement;
+            $(".panel-content").click(function(){
+                if (document.activeElement.tagName == "INPUT" || document.activeElement.tagName == "TEXTAREA" || document.activeElement.tagName == "WZ-TEXTAREA") {
+                    LastInputElement = document.activeElement
+                    console.log(LastInputElement)
+                }
+            });
 
-    */
-    function RegexMatch2() {
-        if (TESTERS.indexOf(W.loginManager.user.userName) > -1) {
-            let htmlstring = `<div style="position:absolute;top: 6px;right: 30px;font-size:20px;transform: scale(0.65);" id="WMERSH-TIO-Autofill"><wz-button class="hydrated">Autofill</wz-button></div>`
-            document.querySelector("#panel-container > div > div > div.panel-header").insertAdjacentHTML('afterend',htmlstring)
-            let buttonstring = `<div id="RSH-panel" class="show rsh-panel">
+            $("#rsh-txt-towards").click(function(){AddTxt("»",LastInputElement)});
+            $("#rsh-txt-concurrent").click(function(){AddTxt("•",LastInputElement)});
+            $("#rsh-txt-towards").click(function(){AddTxt("»",LastInputElement)});
+            $("#rsh-txt-north").click(function(){AddTxt("Nᴏʀᴛʜ",LastInputElement)});
+            $("#rsh-txt-south").click(function(){AddTxt("Sᴏᴜᴛʜ",LastInputElement)});
+            $("#rsh-txt-east").click(function(){AddTxt("Eᴀsᴛ",LastInputElement)});
+            $("#rsh-txt-west").click(function(){AddTxt("Wᴇsᴛ",LastInputElement)});
+            $("#rsh-txt-to").click(function(){AddTxt("ᴛᴏ",LastInputElement)});
+
+        }
+        let htmlstring = `<div style="position:absolute;top: 6px;right: 30px;font-size:20px;transform: scale(0.65);" id="WMERSH-TIO-Autofill"><wz-button class="hydrated">Autofill</wz-button></div>`
+        document.querySelector("#panel-container > div > div > div.panel-header").insertAdjacentHTML('afterend',htmlstring)
+        let buttonstring = `<div id="RSH-panel" class="show rsh-panel">
                                     <div id="RSH-panel-header" class="panel-header">
                                         <span style="-webkit-box-flex: 1;-ms-flex-positive: 1;flex-grow: 1;">Buttons</span>
                                     </div>
@@ -570,9 +578,12 @@
                                         </div>
                                     </div>
                                 </div>`
-            $("#panel-container > div > div.turn-instructions-panel").before(buttonstring)
+        $("#panel-container > div > div.turn-instructions-panel").before(buttonstring)
+        ButtonFunctions()
+    }
+    function RegexMatch2() {
+        if (TESTERS.indexOf(W.loginManager.user.userName) > -1) {
 
-            //$("#towards").shadowRoot.querySelector("div > wz-label").append(buttonstring)
             document.querySelector("#WMERSH-TIO-Autofill").onclick = function(){
                 //let exittext = document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span > span > input[type=text]").value
                 let exittext = document.querySelector("#tts").shadowRoot.querySelector("#id").placeholder
@@ -633,7 +644,8 @@
             mutations.forEach(mutation => {
                 for (let i = 0; i < mutation.addedNodes.length; i++) {
                     if (document.querySelector("#panel-container > div > div") && document.querySelector("#panel-container > div > div").classList.contains("turn-instructions-panel")) {
-                        log("Panel Observer")
+                        log("TIO Panel Detected")
+                        TIOButtons()
                         RegexMatch2()
                     }
                 }
@@ -643,16 +655,25 @@
     }
     /*-- END Turn Instruction Overrides --*/
 
+    let bootsequence = ["DOM","I18n","Waze","WazeWrap"];
     function bootstrap(tries = 1) {
-        if (W && W.map && W.model && WazeWrap.Ready) {
-            initializei18n();
-            injectCss();
-            initTab();
-            initializeSettings();
-            RSObserver();
-            PanelObserver();
-        } else if (tries < 1000) {
-            log("Loading...")
+        if (bootsequence.length > 0) {
+            log("Waiting on " + bootsequence.join(', '),0)
+            if (bootsequence.indexOf("DOM") > -1) {
+                bootsequence = bootsequence.filter(bs => bs !== "DOM")
+                injectCss();
+            }if (I18n && bootsequence.indexOf("I18n") > -1) {
+                bootsequence = bootsequence.filter(bs => bs !== "I18n")
+                initializei18n();
+            }if (W && W.map && W.model && bootsequence.indexOf("Waze") > -1) {
+                bootsequence = bootsequence.filter(bs => bs !== "Waze")
+                RSObserver();
+                PanelObserver();
+            }if (WazeWrap.Ready) {
+                bootsequence = bootsequence.filter(bs => bs !== "WazeWrap")
+                initTab();
+                initializeSettings();
+            }
             setTimeout(() => bootstrap(tries++), 200);
         }
     }
