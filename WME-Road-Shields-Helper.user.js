@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2021.07.04.0102
+// @version      2021.07.04.0103
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -307,12 +307,12 @@
                 CreateError(`Error: ${match[1]} Road Shield is not available.`);
                 return;
             }
+            debugger;
             log("Make State Shield for "+State);
-            if (document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="${State} - ${Shield} ${Suffix}"]`)) {
-                document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="${State} - ${Shield} ${Suffix}"]`).click()
-            }
-            if ((match[3] == "ALT" | match[3] == "BUS" | match[3] == "SPUR" | match[3] == "TRUCK") && State == "Arkansas") {
+            if ((Suffix == "ALT" | Suffix == "BUS" | Suffix == "SPUR" | Suffix == "TRUCK") && State == "Arkansas") {
                 document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="${State} - ${Shield} Main"]`).click()
+            } else if (document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="${State} - ${Shield} ${Suffix}"]`)) {
+                document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="${State} - ${Shield} ${Suffix}"]`).click()
             } else if (!document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="${State} - ${Shield} ${Suffix}"]`) && match[3] !== undefined) {
                 CreateError(`Error: ${State} - ${Shield} ${Suffix} Road Shield is not available.`);
                 return;
@@ -444,16 +444,16 @@
             }
             switch (match[4]) {
                 case "N":
-                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").value = "North"
+                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").value = "Nᴏʀᴛʜ" //North
                     break;
                 case "E":
-                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").value = "East"
+                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").value = "East" //East
                     break;
                 case "S":
-                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").value = "South"
+                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").value = "Sᴏᴜᴛʜ" //South
                     break;
                 case "W":
-                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").value = "West"
+                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").value = "Wᴇsᴛ" //West
                     break;
                 default:
                     document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").value = ""
@@ -560,8 +560,6 @@
             $("#rsh-txt-to").click(function(){AddTxt("ᴛᴏ",LastInputElement)});
 
         }
-        let htmlstring = `<div style="position:absolute;top: 6px;right: 30px;font-size:20px;transform: scale(0.65);" id="WMERSH-TIO-Autofill"><wz-button class="hydrated">Autofill</wz-button></div>`
-        document.querySelector("#panel-container > div > div > div.panel-header").insertAdjacentHTML('afterend',htmlstring)
         let buttonstring = `<div id="RSH-panel" class="show rsh-panel">
                                     <div id="RSH-panel-header" class="panel-header">
                                         <span style="-webkit-box-flex: 1;-ms-flex-positive: 1;flex-grow: 1;">Buttons</span>
@@ -583,7 +581,8 @@
     }
     function RegexMatch2() {
         if (TESTERS.indexOf(W.loginManager.user.userName) > -1) {
-
+        let htmlstring = `<div style="position:absolute;top: 6px;right: 30px;font-size:20px;transform: scale(0.65);" id="WMERSH-TIO-Autofill"><wz-button class="hydrated">Autofill</wz-button></div>`
+        document.querySelector("#panel-container > div > div > div.panel-header").insertAdjacentHTML('afterend',htmlstring)
             document.querySelector("#WMERSH-TIO-Autofill").onclick = function(){
                 //let exittext = document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span > span > input[type=text]").value
                 let exittext = document.querySelector("#tts").shadowRoot.querySelector("#id").placeholder
