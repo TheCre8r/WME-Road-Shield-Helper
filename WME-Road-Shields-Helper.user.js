@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2021.07.04.0106
+// @version      2021.07.04.0107
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -557,13 +557,15 @@
             $("#rsh-txt-east").click(function(){AddTxt("Eᴀsᴛ",LastInputElement)});
             $("#rsh-txt-west").click(function(){AddTxt("Wᴇsᴛ",LastInputElement)});
             $("#rsh-txt-to").click(function(){AddTxt("ᴛᴏ",LastInputElement)});
+            $("#rsh-txt-via").click(function(){AddTxt("ᴠɪᴀ",LastInputElement)});
+            $("#rsh-txt-jct").click(function(){AddTxt("ᴊᴄᴛ",LastInputElement)});
 
         }
         let buttonstring = `<div id="RSH-panel" class="show rsh-panel">
                                     <div id="RSH-panel-header" class="panel-header">
                                         <span style="-webkit-box-flex: 1;-ms-flex-positive: 1;flex-grow: 1;">Buttons</span>
                                     </div>
-                                    <div class="" style="background: black;color: white;height: 170px;border-bottom-right-radius: 5px;border-bottom-left-radius: 5px;">
+                                    <div id="RSH-panel-buttons" style="background: black;color: white;height: 225px;border-bottom-right-radius: 5px;border-bottom-left-radius: 5px;">
                                         <div style="position: absolute;z-index: 10;margin: 10px;">
                                             <wz-button class="hydrated rsh-button" id="rsh-txt-concurrent">•</wz-button><br>
                                             <wz-button class="hydrated rsh-button" id="rsh-txt-towards">»</wz-button><br>
@@ -571,7 +573,9 @@
                                             <wz-button class="hydrated rsh-button" id="rsh-txt-south">Sᴏᴜᴛʜ</wz-button><br>
                                             <wz-button class="hydrated rsh-button" id="rsh-txt-east">Eᴀsᴛ</wz-button><br>
                                             <wz-button class="hydrated rsh-button" id="rsh-txt-west">Wᴇsᴛ</wz-button><br>
-                                            <wz-button class="hydrated rsh-button" id="rsh-txt-to">ᴛᴏ</wz-button>
+                                            <wz-button class="hydrated rsh-button" id="rsh-txt-to">ᴛᴏ</wz-button><br>
+                                            <wz-button class="hydrated rsh-button" id="rsh-txt-via">ᴠɪᴀ</wz-button><br>
+                                            <wz-button class="hydrated rsh-button" id="rsh-txt-jct">ᴊᴄᴛ</wz-button>
                                         </div>
                                     </div>
                                 </div>`
