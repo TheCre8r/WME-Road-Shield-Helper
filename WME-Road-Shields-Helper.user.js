@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2021.07.04.0101
+// @version      2021.07.04.0102
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -537,6 +537,7 @@
             textAfter = v.substring(cursorPos, v.length);
             element.value = textBefore + character + textAfter;
             element.focus();
+            $(element).trigger('input');
             element.setSelectionRange(cursorPos+character.length,cursorPos+character.length);
         }
 
@@ -550,7 +551,6 @@
                 }
             });
 
-            $("#rsh-txt-towards").click(function(){AddTxt("»",LastInputElement)});
             $("#rsh-txt-concurrent").click(function(){AddTxt("•",LastInputElement)});
             $("#rsh-txt-towards").click(function(){AddTxt("»",LastInputElement)});
             $("#rsh-txt-north").click(function(){AddTxt("Nᴏʀᴛʜ",LastInputElement)});
@@ -607,7 +607,7 @@
                 /** End Add Exit Arrow **/
 
                 /** Start Visual Instructions **/
-                document.querySelector("#text").value = match[2]
+                document.querySelector("#text").value = match[2] //Exit signs
                 let Strings = match[3].split(" / ");
                 if (match[3]) {
                     match2 = match[3].match(regex2);
