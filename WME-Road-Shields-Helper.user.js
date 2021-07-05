@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2021.07.05.0101
+// @version      2021.07.05.0102
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -247,8 +247,9 @@
         let streetname = document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-header > div.street-name").innerText
         let regex = /(?:((?:[A-Z]+)(?=\-))-((?:[A-Z]+)|(?:\d+(?:[A-Z])?(?:-\d+)?)))?(?: (BUS|ALT|BYP|CONN|SPUR|TRUCK))?(?: (N|E|S|W))?(?: • (.*))?/;
         let SHStates = ['Colorado', 'Minnesota', 'Oklahoma', 'Texas'];
-        let SRStates = ['Alabama', 'Arizona', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Illinois', 'Massachusetts', 'New Hampshire', 'New Jersey', 'Ohio', 'Pennsylvania', 'Utah', 'Washington'];
+        let SRStates = ['Alabama', 'Arizona', 'California', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Illinois', 'Massachusetts', 'New Hampshire', 'New Mexico', 'Ohio', 'Pennsylvania', 'Utah', 'Washington'];
         let CRStates = ['Alabama', 'Arkansas', 'Florida', 'Louisiana', 'New Jersey', 'New York'];
+        let DoneStates = ["North Carolina","New Jersey"].concat(SRStates);
         let match = streetname.match(regex);
 
         if (document.querySelector("#WMERSH-Error")) {
@@ -322,7 +323,6 @@
         }
 
         let State = getState()
-        let DoneStates = ["North Carolina"].concat(SRStates);
         switch (match[1]) {
             case "CH":
                 if (State == "Wisconsin") {
