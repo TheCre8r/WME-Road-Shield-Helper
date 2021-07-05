@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2021.07.05.0102
+// @version      2021.07.05.0103
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -245,7 +245,7 @@
     function AutoFiller() {
 
         let streetname = document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-header > div.street-name").innerText
-        let regex = /(?:((?:[A-Z]+)(?=\-))-((?:[A-Z]+)|(?:\d+(?:[A-Z])?(?:-\d+)?)))?(?: (BUS|ALT|BYP|CONN|SPUR|TRUCK))?(?: (N|E|S|W))?(?: • (.*))?/;
+        let regex = /(?:((?:(?:[A-Z]+)(?=\-))|(?:Parish Rd))(?:-|\ )((?:[A-Z]+)|(?:\d+(?:[A-Z])?(?:-\d+)?)))?(?: (BUS|ALT|BYP|CONN|SPUR|TRUCK))?(?: (N|E|S|W))?(?: • (.*))?/;
         let SHStates = ['Colorado', 'Minnesota', 'Oklahoma', 'Texas'];
         let SRStates = ['Alabama', 'Arizona', 'California', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Illinois', 'Massachusetts', 'New Hampshire', 'New Mexico', 'Ohio', 'Pennsylvania', 'Utah', 'Washington'];
         let CRStates = ['Alabama', 'Arkansas', 'Florida', 'Louisiana', 'New Jersey', 'New York'];
@@ -368,6 +368,13 @@
                     CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`);
                 }
                 break;
+            case "MS":
+                if (State == "Mississippi") {
+                    document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="SR generic Main"]`).click()
+                } else {
+                    CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`);
+                }
+                break;
             case "SH":
                 if (SHStates.indexOf(State)>=0) {
                     MakeShield(match,State);
@@ -410,6 +417,13 @@
             case "WIS":
                 if (State == "Wisconsin") {
                     MakeShield(match,State);
+                } else {
+                    CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`);
+                }
+                break;
+            case "Parish Rd":
+                if (State == "Louisiana") {
+                    document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="CR generic Main"]`).click()
                 } else {
                     CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`);
                 }
