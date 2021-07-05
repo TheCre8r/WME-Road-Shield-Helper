@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2021.07.04.0108
+// @version      2021.07.05.0101
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -97,6 +97,7 @@
             '@font-face{font-family:"Font Awesome 5 Free";font-style:normal;font-weight:900;src:url(https://use.fontawesome.com/releases/v5.6.1/webfonts/fa-solid-900.eot);src:url(https://use.fontawesome.com/releases/v5.6.1/webfonts/fa-solid-900.eot?#iefix) format("embedded-opentype"),url(https://use.fontawesome.com/releases/v5.6.1/webfonts/fa-solid-900.woff2) format("woff2"),url(https://use.fontawesome.com/releases/v5.6.1/webfonts/fa-solid-900.woff) format("woff"),url(https://use.fontawesome.com/releases/v5.6.1/webfonts/fa-solid-900.ttf) format("truetype"),url(https://use.fontawesome.com/releases/v5.6.1/webfonts/fa-solid-900.svg#fontawesome) format("svg")}',
             '.far,.fas{font-family:"Font Awesome 5 Free"}',
             '.fas{font-weight:900}',
+            '.rsh-button::shadow button::shadow  {font-family: sans-serif;}'
         ].join(' ');
         $('<style type="text/css" id="wmersh-style">' + css + '</style>').appendTo('head');
         $('<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/regular.css" integrity="sha384-APzfePYec2VC7jyJSpgbPrqGZ365g49SgeW+7abV1GaUnDwW7dQIYFc+EuAuIx0c" crossorigin="anonymous">').appendTo('head');
@@ -527,16 +528,24 @@
             log(element)
             let v,textBefore,textAfter
             if (element.shadowRoot){
+                let cursorStart = element.shadowRoot.querySelector("#id").selectionStart;
+                let cursorEnd = element.shadowRoot.querySelector("#id").selectionEnd;
+                v = element.shadowRoot.querySelector("#id").value;
+                textBefore = v.substring(0, cursorStart);
+                textAfter = v.substring(cursorEnd, v.length);
+                element.value = textBefore + character + textAfter;
+                $(element).trigger('input');
                 element = element.shadowRoot.querySelector("#id")
             }
-            let cursorPos = element.selectionStart;
+            let cursorStart = element.selectionStart;
+            let cursorEnd = element.selectionEnd;
             v = element.value;
-            textBefore = v.substring(0, cursorPos);
-            textAfter = v.substring(cursorPos, v.length);
+            textBefore = v.substring(0, cursorStart);
+            textAfter = v.substring(cursorEnd, v.length);
             element.value = textBefore + character + textAfter;
             element.focus();
             $(element).trigger('input');
-            element.setSelectionRange(cursorPos+character.length,cursorPos+character.length);
+            element.setSelectionRange(cursorStart+character.length,cursorStart+character.length);
         }
 
         function ButtonFunctions() {
