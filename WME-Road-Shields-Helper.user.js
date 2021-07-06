@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2021.07.05.0103
+// @version      2021.07.06.0101
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -26,7 +26,7 @@
     const SCRIPT_NAME = GM_info.script.name;
     const SCRIPT_VERSION = GM_info.script.version.toString();
                                         //{"version": "2021.06.01.02","changes": ""},
-    const SCRIPT_HISTORY = `{"versions": [{"version": "2021.07.04.01","changes": "Added Buttons to Turn Instructions"},{"version": "2021.06.12.01","changes": "Support for Illinois CH Road Shields, a few more SH- States, a few more SR- States, and Arkansas's Shield Name Suffixes"},{"version": "2021.06.05.01","changes": "Support for Missouri Supplemental Road Shields"},{"version": "2021.06.03.02","changes": "Support for Kansas K-xxx format"},{"version": "2021.06.03.01","changes": "Added CR support for states using hexagon type shields"},{"version": "2021.06.02.01","changes": "Added SR Shield for New Hampshire"},{"version": "2021.06.01.02","changes": "Added County Shields for Wisconsin<br>Updated Changelog Format"},{"version": "2021.06.01.01","changes": "Fixed GitHub URL"},{"version": "2021.05.31.01","changes": "Added Wisconsin and other miscellaneous fixes"},{"version": "2021.05.23.01","changes": "Initial Version"}]}`;
+    const SCRIPT_HISTORY = `{"versions": [{"version": "2021.07.06.01","changes": "Added Buttons to Turn Instructions and a few more states are compatible"},{"version": "2021.06.12.01","changes": "Support for Illinois CH Road Shields, a few more SH- States, a few more SR- States, and Arkansas's Shield Name Suffixes"},{"version": "2021.06.05.01","changes": "Support for Missouri Supplemental Road Shields"},{"version": "2021.06.03.02","changes": "Support for Kansas K-xxx format"},{"version": "2021.06.03.01","changes": "Added CR support for states using hexagon type shields"},{"version": "2021.06.02.01","changes": "Added SR Shield for New Hampshire"},{"version": "2021.06.01.02","changes": "Added County Shields for Wisconsin<br>Updated Changelog Format"},{"version": "2021.06.01.01","changes": "Fixed GitHub URL"},{"version": "2021.05.31.01","changes": "Added Wisconsin and other miscellaneous fixes"},{"version": "2021.05.23.01","changes": "Initial Version"}]}`;
     const GH = {link: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/', issue: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/issues/new', wiki: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/wiki'};
     const UPDATE_ALERT = true;
 
@@ -87,9 +87,15 @@
             '#WMERSH-version {font-size:11px;margin-left:10px;color:#aaa;}',
             '.WMERSH-report {text-align:center;padding-top:20px;}',
             '.WMERSH-Button {font-family:"Rubik","Boing-light",sans-serif,FontAwesome;padding-left:10px;padding-right:10px;margin-top:0px;z-index: 3;}',
+            '#WMERSH-Autofill {position:absolute;top: 14px;right: 14px;font-size:20px;}',
+            '#WMERSH-panel-buttons {background: black;color: white;height: 225px;border-bottom-right-radius: 5px;border-bottom-left-radius: 5px;}',
+            '#WMERSH-Message {position:absolute;top: 323px;left: 24px;font-size: 14px;}',
+            '#WMERSH-Message.Error {color:red}',
+            '#WMERSH-Message.Alert {color:orange}',
             '.rsh-button {padding: 2px; height: 10px; width: 10px;}',
-            '#RSH-panel {width: 80px;background: white;border-radius: 5px;position: absolute;z-index: 4;left: 340px;margin-top: 155px;-webkit-box-shadow: 0 2px 3px 0 rgb(60 64 67 / 30%), 0 6px 10px 4px rgb(60 64 67 / 15%);box-shadow: 0 2px 3px 0 rgb(60 64 67 / 30%), 0 6px 10px 4px rgb(60 64 67 / 15%);}',
-            '#RSH-panel-header {font-family: &quot;Boing-medium&quot;, sans-serif;font-size: 16px;line-height: 24px;font-weight: 400;height: 31px;display: -webkit-box;display: -ms-flexbox;display: flex;border-bottom: 1px solid #e8eaed;padding: 6px;text-align: center;}',
+            '#WMERSH-panel {width: 80px;background: white;border-radius: 5px;position: absolute;z-index: 4;left: 340px;margin-top: 155px;-webkit-box-shadow: 0 2px 3px 0 rgb(60 64 67 / 30%), 0 6px 10px 4px rgb(60 64 67 / 15%);box-shadow: 0 2px 3px 0 rgb(60 64 67 / 30%), 0 6px 10px 4px rgb(60 64 67 / 15%);}',
+            '#WMERSH-panel-header {font-family: &quot;Boing-medium&quot;, sans-serif;font-size: 16px;line-height: 24px;font-weight: 400;height: 31px;display: -webkit-box;display: -ms-flexbox;display: flex;border-bottom: 1px solid #e8eaed;padding: 6px;text-align: center;}',
+            '#WMERSH-TIO-Autofill {position:absolute;top: 6px;right: 30px;font-size:20px;transform: scale(0.65);}',
             '.fa, .fas{font-family:"FontAwesome"}',
             '.fab{font-family:"Font Awesome 5 Brands"}',
             '@font-face{font-family:"Font Awesome 5 Free";font-style:normal;font-weight:400;src:url(https://use.fontawesome.com/releases/v5.6.1/webfonts/fa-regular-400.eot);src:url(https://use.fontawesome.com/releases/v5.6.1/webfonts/fa-regular-400.eot?#iefix) format("embedded-opentype"),url(https://use.fontawesome.com/releases/v5.6.1/webfonts/fa-regular-400.woff2) format("woff2"),url(https://use.fontawesome.com/releases/v5.6.1/webfonts/fa-regular-400.woff) format("woff"),url(https://use.fontawesome.com/releases/v5.6.1/webfonts/fa-regular-400.ttf) format("truetype"),url(https://use.fontawesome.com/releases/v5.6.1/webfonts/fa-regular-400.svg#fontawesome) format("svg")}',
@@ -110,32 +116,32 @@
         let $section = $("<div>");
         $section.html([
             '<div>',
-            '<div id="WMERSH-header">',
-            `<span id="WMERSH-title">${I18n.t(`wmersh.tab_title`)}</span>`,
-            `<span id="WMERSH-version">${SCRIPT_VERSION}</span>`,
-            '</div>',
-            '<form class="attributes-form side-panel-section">',
-            '<div class="form-group">',
-            '<div class="controls-container">',
-            `<input type="checkbox" id="WMERSH-FilterByState" value="on"><label for="WMERSH-FilterByState">${I18n.t(`wmersh.filter_by_state`)}</label>`,
-            '</div>',
-            TESTERS.indexOf(W.loginManager.user.userName) > -1 ? `<div class="controls-container"><input type="checkbox" id="WMERSH-Debug" value="on"><label for="WMERSH-Debug">${I18n.t(`wmersh.settings_1`)}</label></div>` : '',
-            '</div>',
-            '<div class="form-group">',
-            '<div class="WMERSH-report">',
-            '<i class="fa fa-github" style="font-size: 13px; padding-right:5px"></i>',
-            '<div style="display: inline-block;">',
-            `<a target="_blank" href="${GH.issue}" id="WMERSH-report-an-issue">${I18n.t(`wmersh.report_an_issue`)}</a>`,
-            '</div>',
-            '</div>',
-            `<div class="WMERSH-help" style="text-align: center;padding-top: 5px;">`,
-            `<i class="fa fa-question-circle-o" style="font-size: 13px; padding-right:5px"></i>`,
-            `<div style="display: inline-block;">`,
-            `<a target="_blank" href="${GH.wiki}" id="WMERSH-help-link">${I18n.t(`wmersh.help`)}</a>`,
-            `</div>`,
-            `</div>`,
-            '</div>',
-            '</form>',
+                '<div id="WMERSH-header">',
+                    `<span id="WMERSH-title">${I18n.t(`wmersh.tab_title`)}</span>`,
+                    `<span id="WMERSH-version">${SCRIPT_VERSION}</span>`,
+                '</div>',
+                '<form class="attributes-form side-panel-section">',
+                    '<div class="form-group">',
+                        '<div class="controls-container">',
+                            `<input type="checkbox" id="WMERSH-FilterByState" value="on"><label for="WMERSH-FilterByState">${I18n.t(`wmersh.filter_by_state`)}</label>`,
+                        '</div>',
+                        TESTERS.indexOf(W.loginManager.user.userName) > -1 ? `<div class="controls-container"><input type="checkbox" id="WMERSH-Debug" value="on"><label for="WMERSH-Debug">${I18n.t(`wmersh.settings_1`)}</label></div>` : '',
+                    '</div>',
+                    '<div class="form-group">',
+                        '<div class="WMERSH-report">',
+                            '<i class="fa fa-github" style="font-size: 13px; padding-right:5px"></i>',
+                            '<div style="display: inline-block;">',
+                                `<a target="_blank" href="${GH.issue}" id="WMERSH-report-an-issue">${I18n.t(`wmersh.report_an_issue`)}</a>`,
+                            '</div>',
+                        '</div>',
+                        `<div class="WMERSH-help" style="text-align: center;padding-top: 5px;">`,
+                            `<i class="fa fa-question-circle-o" style="font-size: 13px; padding-right:5px"></i>`,
+                            `<div style="display: inline-block;">`,
+                                `<a target="_blank" href="${GH.wiki}" id="WMERSH-help-link">${I18n.t(`wmersh.help`)}</a>`,
+                            `</div>`,
+                        `</div>`,
+                    '</div>',
+                '</form>',
             '</div>'
         ].join(' '));
         new WazeWrap.Interface.Tab('WMERSH', $section.html(), function(){});
@@ -148,7 +154,6 @@
 
     function setChecked(checkboxId, checked) {
         $('#WMERSH-' + checkboxId).prop('checked', checked);
-        //log('#WMERSH-' + checkboxId + " is " + checked);
     }
 
     /*-- Start Settings --*/
@@ -199,15 +204,11 @@
             let settingName = "Debug";
             _settings[settingName] = this.checked;
             saveSettings();
-            //log(settingName + ' Checkbox');
-            //log(_settings[settingName]);
         });
         $('#WMERSH-FilterByState').change(function() {
             let settingName = "FilterByState";
             _settings[settingName] = this.checked;
             saveSettings();
-            //log(settingName + ' Checkbox');
-            //log(_settings[settingName]);
         });
         log("Settings Initialized",1);
     }
@@ -252,37 +253,24 @@
         let DoneStates = ["North Carolina","New Jersey"].concat(SRStates);
         let match = streetname.match(regex);
 
-        if (document.querySelector("#WMERSH-Error")) {
-            document.querySelector("#WMERSH-Error").remove()
+        if (document.querySelector("#WMERSH-Message")) {
+            document.querySelector("#WMERSH-Message").remove()
         }
 
-        if (document.querySelector("#WMERSH-Alert")) {
-            document.querySelector("#WMERSH-Alert").remove()
-        }
-
-        //START TODO Merge these into one function
-        function CreateError(text){
-            if (document.querySelector("#WMERSH-Alert")) {
-                document.querySelector("#WMERSH-Alert").remove()
+        function CreateError(text,level){
+            if (document.querySelector("#WMERSH-Message")) {
+                document.querySelector("#WMERSH-Message").remove()
             }
-            let errorhtmlString = `<div style="position:absolute;top: 323px;left: 24px;font-size: 14px;color:red;" id="WMERSH-Error"><span>` + text + `</span></div>`;
-            document.querySelector("#WMERSH-Autofill").insertAdjacentHTML('afterend',errorhtmlString)
-
+            let htmlString = `<div id="WMERSH-Message" class="${level}"><span>` + text + `</span></div>`;
+            document.querySelector("#WMERSH-Autofill").insertAdjacentHTML('afterend',htmlString)
         }
 
-        function CreateAlert(text){
-            if (!document.querySelector("#WMERSH-Error")) {
-                let alerthtmlString = `<div style="position:absolute;top: 323px;left: 24px;font-size: 14px;color:orange;" id="WMERSH-Alert"><span>` + text + `</span></div>`;
-                document.querySelector("#WMERSH-Autofill").insertAdjacentHTML('afterend',alerthtmlString)
-            }
-        }
-        //END TODO
         if (!match[0]) {
             document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-controls > wz-button.remove-road-shield.hydrated").click()
-            CreateError("Error: Road does not need a shield.");
+            CreateError("Error: Road does not need a shield.",`Error`);
             return;
         } else if (streetname != match[0]) {
-            CreateError("Potential Error: Please Review");
+            CreateError("Potential Error: Please Review",`Error`);
         }
 
         function MakeShield(match,stateoverride,shieldoverride,suffixoverride){
@@ -305,7 +293,7 @@
                 Suffix = "Main";
             }
             if (State == undefined) {
-                CreateError(`Error: ${match[1]} Road Shield is not available.`);
+                CreateError(`Error: ${match[1]} Road Shield is not available.`,`Error`);
                 return;
             }
             log("Make State Shield for "+State);
@@ -314,10 +302,10 @@
             } else if (document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="${State} - ${Shield} ${Suffix}"]`)) {
                 document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="${State} - ${Shield} ${Suffix}"]`).click()
             } else if (!document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="${State} - ${Shield} ${Suffix}"]`) && match[3] !== undefined) {
-                CreateError(`Error: ${State} - ${Shield} ${Suffix} Road Shield is not available.`);
+                CreateError(`Error: ${State} - ${Shield} ${Suffix} Road Shield is not available.`,`Error`);
                 return;
             } else {
-                CreateError(`Error: ${match[1]} Road Shield is not available.`);
+                CreateError(`Error: ${match[1]} Road Shield is not available.`,`Error`);
                 return;
             }
         }
@@ -330,7 +318,7 @@
                 } else if (State == "Illinois") {
                     document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="CR generic Main"]`).click()
                 } else {
-                    CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`);
+                    CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`,`Error`);
                 }
                 break;
             case "CR":
@@ -338,9 +326,9 @@
                     console.log(match[1]);
                     document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="CR generic Main"]`).click()
                 } else if (State == "Illinois") {
-                    CreateError(`Warning: Illinois does not use CR shields for CRs.`);
+                    CreateError(`Warning: Illinois does not use CR shields for CRs.`,`Error`);
                 } else {
-                    CreateError(`Warning: CR design for this state has not been defined. <br>Consult local guidance and <a target="_blank" href="${GH.issue}" id="WMERSH-report-an-issue">${I18n.t(`wmersh.report_an_issue`)}</a>`);
+                    CreateError(`Warning: CR design for this state has not been defined. <br>Consult local guidance and <a target="_blank" href="${GH.issue}" id="WMERSH-report-an-issue">${I18n.t(`wmersh.report_an_issue`)}</a>`,`Error`);
                 }
                 break;
             case "H":
@@ -358,21 +346,21 @@
                 if (State == "Kansas") {
                     MakeShield(match,State);
                 } else {
-                    CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`);
+                    CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`,`Error`);
                 }
                 break;
             case "M":
                 if (State == "Michigan") {
                     MakeShield(match,State);
                 } else {
-                    CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`);
+                    CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`,`Error`);
                 }
                 break;
             case "MS":
                 if (State == "Mississippi") {
                     document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="SR generic Main"]`).click()
                 } else {
-                    CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`);
+                    CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`,`Error`);
                 }
                 break;
             case "SH":
@@ -381,24 +369,24 @@
                 } else if (State == "Missouri") {
                     MakeShield(match,State,undefined,"Supplemental");
                 } else {
-                    CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`);
+                    CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`,`Error`);
                 }
                 break;
             case "SR":
                 if (DoneStates.indexOf(State) == -1 ) {
-                    CreateAlert(`Warning: State Shield Not Verified.<br>Consult local guidance and <a target="_blank" href="${GH.issue}" id="WMERSH-report-an-issue">${I18n.t(`wmersh.report_an_issue`)}</a>`)
+                    CreateError(`Warning: State Shield Not Verified.<br>Consult local guidance and <a target="_blank" href="${GH.issue}" id="WMERSH-report-an-issue">${I18n.t(`wmersh.report_an_issue`)}</a>`,`Error`)
                 }
                 if (SRStates.indexOf(State)>= 0) {
                     MakeShield(match,State);
                 } else if (State == "North Carolina") {
-                    CreateError(`Error: ${State} does not use road shields for Secondary Routes`);
+                    CreateError(`Error: ${State} does not use road shields for Secondary Routes`,`Error`);
                 } else if (match[3] == undefined) {
                     document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="SR generic Main"]`).click()
                 } else if (match[3] !== undefined) {
-                    CreateError(`Error: SR ${match[3]} Road Shield is not available`);
+                    CreateError(`Error: SR ${match[3]} Road Shield is not available`,`Error`);
                     return;
                 } else {
-                    CreateError(`Error: SR ${match[3]} Road Shield is not available`);
+                    CreateError(`Error: SR ${match[3]} Road Shield is not available`,`Error`);
                     return;
                 }
                 break;
@@ -410,7 +398,7 @@
                 } else if (document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="US-# ` + match[3] + `"]`)) {
                     document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="US-# ` + match[3] + `"]`).click()
                 } else {
-                    CreateError("Error: US-# ${match[3]} Road Shield is not available or does not parse" );
+                    CreateError(`Error: US-# ${match[3]} Road Shield is not available or does not parse`,`Error`);
                     return;
                 }
                 break;
@@ -418,66 +406,69 @@
                 if (State == "Wisconsin") {
                     MakeShield(match,State);
                 } else {
-                    CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`);
+                    CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`,`Error`);
                 }
                 break;
             case "Parish Rd":
                 if (State == "Louisiana") {
                     document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="CR generic Main"]`).click()
                 } else {
-                    CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`);
+                    CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`,`Error`);
                 }
                 break;
             default:
                 MakeShield(match)
                 break;
         }
-        if (!document.querySelector(`#WMERSH-Error`)){
+        if (!document.querySelector(`#WMERSH-Message`)){
+            let shieldTextInput = document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(2) > wz-text-input");
+            let shieldDirectionInput = document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input");
+            let ApplyButton = document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-controls > wz-button.apply-button.hydrated");
             if (match[2]) {
                 if (match[1] == "H") {
-                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(2) > wz-text-input").value = match[1]+'-'+match[2]
+                    shieldTextInput.value = match[1]+'-'+match[2]
                 } else if ((match[3] == "ALT" | match[3] == "BUS" | match[3] == "SPUR" | match[3] == "TRUCK") && State == "Arkansas"){
                     switch (match[3]) {
                         case "ALT":
-                            document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(2) > wz-text-input").value = match[2]+'A'
+                            shieldTextInput.value = match[2]+'A'
                             break;
                         case "BUS":
-                            document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(2) > wz-text-input").value = match[2]+'B'
+                            shieldTextInput.value = match[2]+'B'
                             break;
                         case "SPUR":
-                            document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(2) > wz-text-input").value = match[2]+'S'
+                            shieldTextInput.value = match[2]+'S'
                             break;
                         case "TRUCK":
-                            document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(2) > wz-text-input").value = match[2]+'T'
+                            shieldTextInput.value = match[2]+'T'
                             break;
                     }
                 }else {
-                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(2) > wz-text-input").value = match[2]
+                    shieldTextInput.value = match[2]
                 }
             }
             switch (match[4]) {
                 case "N":
-                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").value = "Nᴏʀᴛʜ" //North
+                    shieldDirectionInput.value = "Nᴏʀᴛʜ" //North
                     break;
                 case "E":
-                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").value = "Eᴀsᴛ" //East
+                    shieldDirectionInput.value = "Eᴀsᴛ" //East
                     break;
                 case "S":
-                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").value = "Sᴏᴜᴛʜ" //South
+                    shieldDirectionInput = "Sᴏᴜᴛʜ" //South
                     break;
                 case "W":
-                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").value = "Wᴇsᴛ" //West
+                    shieldDirectionInput = "Wᴇsᴛ" //West
                     break;
                 default:
-                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").value = ""
+                    shieldDirectionInput.value = ""
                     break;
             }
-            document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-controls > wz-button.apply-button.hydrated").disabled = false
+            ApplyButton.disabled = false
         }
     }
 
     function RegexMatch() {
-        let htmlstring = `<div style="position:absolute;top: 14px;right: 14px;font-size:20px;" id="WMERSH-Autofill"><wz-button class="hydrated">Autofill</wz-button></div>`
+        let htmlstring = `<div id="WMERSH-Autofill"><wz-button class="hydrated">Autofill</wz-button></div>`
         document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content").insertAdjacentHTML('afterend',htmlstring)
         document.querySelector("#WMERSH-Autofill").onclick = function(){AutoFiller()};
     }
@@ -518,7 +509,7 @@
                             filterShields(getState())
                         }
                         if (_settings.Debug) {
-                            document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-label").insertAdjacentHTML("beforeend", ` <i id="RSF_Test" class="fas fa-flask" style=""></i>`)
+                            document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-label").insertAdjacentHTML("beforeend", ` <i id="RSF_Test" class="fas fa-flask"></i>`)
                             document.querySelector("#RSF_Test").onclick = function(){
                                 var state = prompt("Please enter state name", "");
                                 log(state)
@@ -572,8 +563,8 @@
                 }
             });
 
-            $("#rsh-txt-concurrent").click(function(){AddTxt("•",LastInputElement)});
-            $("#rsh-txt-towards").click(function(){AddTxt("»",LastInputElement)});
+            $("#rsh-txt-concurrent").click(function(){AddTxt("•",LastInputElement)}); //Alt + 7
+            $("#rsh-txt-towards").click(function(){AddTxt("»",LastInputElement)}); //Alt + 175
             $("#rsh-txt-north").click(function(){AddTxt("Nᴏʀᴛʜ",LastInputElement)});
             $("#rsh-txt-south").click(function(){AddTxt("Sᴏᴜᴛʜ",LastInputElement)});
             $("#rsh-txt-east").click(function(){AddTxt("Eᴀsᴛ",LastInputElement)});
@@ -583,30 +574,30 @@
             $("#rsh-txt-jct").click(function(){AddTxt("ᴊᴄᴛ",LastInputElement)});
 
         }
-        let buttonstring = `<div id="RSH-panel" class="show rsh-panel">
-                                    <div id="RSH-panel-header" class="panel-header">
-                                        <span style="-webkit-box-flex: 1;-ms-flex-positive: 1;flex-grow: 1;">Buttons</span>
+        let buttonstring = `<div id="WMERSH-panel" class="show wmersh-panel">
+                                <div id="WMERSH-panel-header" class="panel-header">
+                                    <span style="-webkit-box-flex: 1;-ms-flex-positive: 1;flex-grow: 1;">Buttons</span>
+                                </div>
+                                <div id="WMERSH-panel-buttons">
+                                   <div style="position: absolute;z-index: 10;margin: 10px;">
+                                        <wz-button class="hydrated rsh-button" id="rsh-txt-concurrent">•</wz-button><br>
+                                        <wz-button class="hydrated rsh-button" id="rsh-txt-towards">»</wz-button><br>
+                                        <wz-button class="hydrated rsh-button" id="rsh-txt-north">Nᴏʀᴛʜ</wz-button><br>
+                                        <wz-button class="hydrated rsh-button" id="rsh-txt-south">Sᴏᴜᴛʜ</wz-button><br>
+                                        <wz-button class="hydrated rsh-button" id="rsh-txt-east">Eᴀsᴛ</wz-button><br>
+                                        <wz-button class="hydrated rsh-button" id="rsh-txt-west">Wᴇsᴛ</wz-button><br>
+                                        <wz-button class="hydrated rsh-button" id="rsh-txt-to">ᴛᴏ</wz-button><br>
+                                        <wz-button class="hydrated rsh-button" id="rsh-txt-via">ᴠɪᴀ</wz-button><br>
+                                        <wz-button class="hydrated rsh-button" id="rsh-txt-jct">ᴊᴄᴛ</wz-button>
                                     </div>
-                                    <div id="RSH-panel-buttons" style="background: black;color: white;height: 225px;border-bottom-right-radius: 5px;border-bottom-left-radius: 5px;">
-                                        <div style="position: absolute;z-index: 10;margin: 10px;">
-                                            <wz-button class="hydrated rsh-button" id="rsh-txt-concurrent">•</wz-button><br>
-                                            <wz-button class="hydrated rsh-button" id="rsh-txt-towards">»</wz-button><br>
-                                            <wz-button class="hydrated rsh-button" id="rsh-txt-north">Nᴏʀᴛʜ</wz-button><br>
-                                            <wz-button class="hydrated rsh-button" id="rsh-txt-south">Sᴏᴜᴛʜ</wz-button><br>
-                                            <wz-button class="hydrated rsh-button" id="rsh-txt-east">Eᴀsᴛ</wz-button><br>
-                                            <wz-button class="hydrated rsh-button" id="rsh-txt-west">Wᴇsᴛ</wz-button><br>
-                                            <wz-button class="hydrated rsh-button" id="rsh-txt-to">ᴛᴏ</wz-button><br>
-                                            <wz-button class="hydrated rsh-button" id="rsh-txt-via">ᴠɪᴀ</wz-button><br>
-                                            <wz-button class="hydrated rsh-button" id="rsh-txt-jct">ᴊᴄᴛ</wz-button>
-                                        </div>
-                                    </div>
-                                </div>`
+                                </div>
+                            </div>`
         $("#panel-container > div > div.turn-instructions-panel").before(buttonstring)
         ButtonFunctions()
     }
     function RegexMatch2() {
         if (TESTERS.indexOf(W.loginManager.user.userName) > -1) {
-        let htmlstring = `<div style="position:absolute;top: 6px;right: 30px;font-size:20px;transform: scale(0.65);" id="WMERSH-TIO-Autofill"><wz-button class="hydrated">Autofill</wz-button></div>`
+        let htmlstring = `<div id="WMERSH-TIO-Autofill"><wz-button class="hydrated">Autofill</wz-button></div>`
         document.querySelector("#panel-container > div > div.turn-instructions-panel").insertAdjacentHTML('afterbegin',htmlstring)
             document.querySelector("#WMERSH-TIO-Autofill").onclick = function(){
                 //let exittext = document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span > span > input[type=text]").value
@@ -614,7 +605,6 @@
                 let regex = /(Exits?) (\d+(?:.*)?): (.*)/
                 let regex2 = /(?:((?:[A-Z]+)(?=\-))-((?:[A-Z]+)|(?:\d+(?:[A-Z])?(?:-\d+)?)))?(?: (BUS|ALT|BYP|CONN|SPUR|TRUCK))?(?: (N|E|S|W))?/;
                 let match = exittext.match(regex);
-                console.log(match)
                 let match2
 
                 /** Start Add Exit Arrow **/
