@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         WME Road Shield Helper Nightly
+// @name         WME Road Shield Helper
 // @namespace    https://github.com/thecre8r/
-// @version      2021.07.07.0101
+// @version      2021.07.07.0401
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -26,7 +26,7 @@
     const SCRIPT_NAME = GM_info.script.name;
     const SCRIPT_VERSION = GM_info.script.version.toString();
                                         //{"version": "2021.06.01.02","changes": ""},
-    const SCRIPT_HISTORY = `{"versions": [{"version": "2021.07.07.01","changes": "Added Buttons to Turn Instructions and all states should be compatible. Please be sure to report an issue on GitHub if you find one that is not working."},{"version": "2021.06.12.01","changes": "Support for Illinois CH Road Shields, a few more SH- States, a few more SR- States, and Arkansas's Shield Name Suffixes"},{"version": "2021.06.05.01","changes": "Support for Missouri Supplemental Road Shields"},{"version": "2021.06.03.02","changes": "Support for Kansas K-xxx format"},{"version": "2021.06.03.01","changes": "Added CR support for states using hexagon type shields"},{"version": "2021.06.02.01","changes": "Added SR Shield for New Hampshire"},{"version": "2021.06.01.02","changes": "Added County Shields for Wisconsin<br>Updated Changelog Format"},{"version": "2021.06.01.01","changes": "Fixed GitHub URL"},{"version": "2021.05.31.01","changes": "Added Wisconsin and other miscellaneous fixes"},{"version": "2021.05.23.01","changes": "Initial Version"}]}`;
+    const SCRIPT_HISTORY = `{"versions": [{"version": "2021.07.07.03","changes": "Fixed another small ꜱ in West and East."},{"version": "2021.07.07.02","changes": "Fixed small ꜱ in West and East."},{"version": "2021.07.07.01","changes": "Added Buttons to Turn Instructions and all states should be compatible. Please be sure to report an issue on GitHub if you find one that is not working."},{"version": "2021.06.12.01","changes": "Support for Illinois CH Road Shields, a few more SH- States, a few more SR- States, and Arkansas's Shield Name Suffixes"},{"version": "2021.06.05.01","changes": "Support for Missouri Supplemental Road Shields"},{"version": "2021.06.03.02","changes": "Support for Kansas K-xxx format"},{"version": "2021.06.03.01","changes": "Added CR support for states using hexagon type shields"},{"version": "2021.06.02.01","changes": "Added SR Shield for New Hampshire"},{"version": "2021.06.01.02","changes": "Added County Shields for Wisconsin<br>Updated Changelog Format"},{"version": "2021.06.01.01","changes": "Fixed GitHub URL"},{"version": "2021.05.31.01","changes": "Added Wisconsin and other miscellaneous fixes"},{"version": "2021.05.23.01","changes": "Initial Version"}]}`;
     const GH = {link: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/', issue: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/issues/new', wiki: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/wiki'};
     const UPDATE_ALERT = true;
 
@@ -490,13 +490,13 @@
                     shieldDirectionInput.value = "Nᴏʀᴛʜ" //North
                     break;
                 case "E":
-                    shieldDirectionInput.value = "Eᴀsᴛ" //East
+                    shieldDirectionInput.value = "Eᴀꜱᴛ" //East
                     break;
                 case "S":
                     shieldDirectionInput.value = "Sᴏᴜᴛʜ" //South
                     break;
                 case "W":
-                    shieldDirectionInput.value = "Wᴇsᴛ" //West
+                    shieldDirectionInput.value = "Wᴇꜱᴛ" //West
                     break;
                 default:
                     shieldDirectionInput.value = ""
@@ -606,8 +606,8 @@
             $("#rsh-txt-towards").click(function(){AddTxt("»",LastInputElement)}); //Alt + 175
             $("#rsh-txt-north").click(function(){AddTxt("Nᴏʀᴛʜ",LastInputElement)});
             $("#rsh-txt-south").click(function(){AddTxt("Sᴏᴜᴛʜ",LastInputElement)});
-            $("#rsh-txt-east").click(function(){AddTxt("Eᴀsᴛ",LastInputElement)});
-            $("#rsh-txt-west").click(function(){AddTxt("Wᴇsᴛ",LastInputElement)});
+            $("#rsh-txt-east").click(function(){AddTxt("Eᴀꜱᴛ",LastInputElement)});
+            $("#rsh-txt-west").click(function(){AddTxt("Wᴇꜱᴛ",LastInputElement)});
             $("#rsh-txt-to").click(function(){AddTxt("ᴛᴏ",LastInputElement)});
             $("#rsh-txt-via").click(function(){AddTxt("ᴠɪᴀ",LastInputElement)});
             $("#rsh-txt-jct").click(function(){AddTxt("ᴊᴄᴛ",LastInputElement)});
@@ -623,8 +623,8 @@
                                         <wz-button class="hydrated rsh-button" id="rsh-txt-towards">»</wz-button><br>
                                         <wz-button class="hydrated rsh-button" id="rsh-txt-north">Nᴏʀᴛʜ</wz-button><br>
                                         <wz-button class="hydrated rsh-button" id="rsh-txt-south">Sᴏᴜᴛʜ</wz-button><br>
-                                        <wz-button class="hydrated rsh-button" id="rsh-txt-east">Eᴀsᴛ</wz-button><br>
-                                        <wz-button class="hydrated rsh-button" id="rsh-txt-west">Wᴇsᴛ</wz-button><br>
+                                        <wz-button class="hydrated rsh-button" id="rsh-txt-east">Eᴀꜱᴛ</wz-button><br>
+                                        <wz-button class="hydrated rsh-button" id="rsh-txt-west">Wᴇꜱᴛ</wz-button><br>
                                         <wz-button class="hydrated rsh-button" id="rsh-txt-to">ᴛᴏ</wz-button><br>
                                         <wz-button class="hydrated rsh-button" id="rsh-txt-via">ᴠɪᴀ</wz-button><br>
                                         <wz-button class="hydrated rsh-button" id="rsh-txt-jct">ᴊᴄᴛ</wz-button>
@@ -636,8 +636,8 @@
     }
     function RegexMatch2() {
         if (TESTERS.indexOf(W.loginManager.user.userName) > -1) {
-        let htmlstring = `<div id="WMERSH-TIO-Autofill"><wz-button class="hydrated">Autofill</wz-button></div>`
-        document.querySelector("#panel-container > div > div.turn-instructions-panel").insertAdjacentHTML('afterbegin',htmlstring)
+            let htmlstring = `<div id="WMERSH-TIO-Autofill"><wz-button class="hydrated">Autofill</wz-button></div>`
+            document.querySelector("#panel-container > div > div.turn-instructions-panel").insertAdjacentHTML('afterbegin',htmlstring)
             document.querySelector("#WMERSH-TIO-Autofill").onclick = function(){
                 //let exittext = document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span > span > input[type=text]").value
                 let exittext = document.querySelector("#tts").shadowRoot.querySelector("#id").placeholder
