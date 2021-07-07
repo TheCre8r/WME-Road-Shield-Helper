@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2021.07.06.0103
+// @version      2021.07.06.0104
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -373,6 +373,13 @@
             case "MS":
                 if (State == "Mississippi") {
                     document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="SR generic Main"]`).click()
+                } else {
+                    CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`,`Error`);
+                }
+                break;
+            case "N":
+                if (State == "Nebraska") {
+                    MakeShield(match,State);
                 } else {
                     CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`,`Error`);
                 }
