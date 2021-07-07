@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2021.07.06.0102
+// @version      2021.07.06.0103
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -250,7 +250,7 @@
         let SHStates = ['Colorado', 'Minnesota', 'Oklahoma', 'Texas'];
         let SRStates = ['Alabama', 'Arizona', 'California', 'Connecticut', 'Florida', 'Georgia', 'Illinois', 'Massachusetts', 'Maine', 'New Hampshire', 'New Mexico', 'Ohio', 'Pennsylvania', 'Utah', 'Washington'];
         let CRStates = ['Alabama', 'Arkansas', 'Florida', 'Louisiana', 'New Jersey', 'New York'];
-        let DoneStates = ['Delaware', 'North Carolina', 'New Jersey'].concat(SRStates);
+        let DoneStates = ['Delaware', 'North Carolina', 'New Jersey', 'Virginia'].concat(SRStates);
         let match = streetname.match(regex);
 
         if (document.querySelector("#WMERSH-Message")) {
@@ -388,12 +388,18 @@
                 break;
             case "SR":
                 if (DoneStates.indexOf(State) == -1 ) {
-                    CreateError(`Warning: State Shield Not Verified.<br>Consult local guidance and <a target="_blank" href="${GH.issue}" id="WMERSH-report-an-issue">${I18n.t(`wmersh.report_an_issue`)}</a>`,`Error`)
+                    CreateError(`Warning: State Shield Not Verified.<br>Consult local guidance and <a target="_blank" href="${GH.issue}" id="WMERSH-report-an-issue">${I18n.t(`wmersh.report_an_issue`)}</a>`,`Alert`)
                 }
                 if (SRStates.indexOf(State)>= 0) {
                     MakeShield(match,State);
                 } else if (State == "North Carolina") {
                     CreateError(`Error: ${State} does not use road shields for Secondary Routes`,`Error`);
+                } else if (State == "Virginia") {
+                   if (match[2] < 600 || match[2] == 785 || match[2] == 895) {
+                        MakeShield(match,State);
+                    } else {
+                        CreateError(`Warning: Please verify that this road uses <b>SR Generic Main</b> and not <b>VA - State Main.</b>`,`Alert`);
+                    }
                 } else if (match[3] == undefined) {
                     document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="SR generic Main"]`).click()
                 } else if (match[3] !== undefined) {
@@ -430,11 +436,23 @@
                     CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`,`Error`);
                 }
                 break;
+            case "VA":
+                if (State == "Virginia" ) {
+                    if (match[2] >= 600) {
+                        document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="SR generic Main"]`).click()
+                    } else {
+                        CreateError(`Warning: Please verify that this road uses <b>VA - State Main.</b> and not <b>SR Generic Main</b>`,`Alert`);
+                    }
+
+                } else {
+                    CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`,`Error`);
+                }
+                break;
             default:
                 MakeShield(match)
                 break;
         }
-        if (!document.querySelector(`#WMERSH-Message`)){
+        if (!document.querySelector(`#WMERSH-Message`) || (document.querySelector(`#WMERSH-Message`) && !document.querySelector("#WMERSH-Message").classList.contains("Warning"))){
             let shieldTextInput = document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(2) > wz-text-input");
             let shieldDirectionInput = document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input");
             let ApplyButton = document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-controls > wz-button.apply-button.hydrated");
