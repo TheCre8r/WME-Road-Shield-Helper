@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2021.07.08.01001
+// @version      2021.07.08.0102
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -766,14 +766,14 @@
             }if (W && W.map && W.model && bootsequence.indexOf("Waze") > -1) {
                 bootsequence = bootsequence.filter(bs => bs !== "Waze")
                 RSObserver();
-                if (W.loginManager.user.userName == "The_Cre8r") {
-                    BTRObserver();
-                }
                 PanelObserver();
             }if (WazeWrap.Ready) {
                 bootsequence = bootsequence.filter(bs => bs !== "WazeWrap")
                 initTab();
                 initializeSettings();
+                if (W.loginManager.user.userName == "The_Cre8r") {
+                    BTRObserver();
+                }
             }
             setTimeout(() => bootstrap(tries++), 200);
         }
