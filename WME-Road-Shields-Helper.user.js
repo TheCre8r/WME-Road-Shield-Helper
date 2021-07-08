@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2021.07.07.0402
+// @version      2021.07.08.01001
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -536,7 +536,52 @@
             }
         }
     }
+    function BTRObserver(){
+        let observer = new MutationObserver(mutations => {
+            mutations.forEach(mutation => {
+                for (let i = 0; i < mutation.addedNodes.length; i++) {
+                    if (document.querySelector("#big-tooltip-region > div")) {
+                        let htmlstring = `<div class="turn-preview-wrapper" style="margin: -15px -15px 5px;border-radius: 4px;"><div class="turn-preview" style="border-radius: 4px;">
+                                              <div>
+                                                  <div class="turn-preview-inner">
+                                                      <span class="turn-preview-arrow-wrapper">
+                                                          <div class="default-waze-selected">
+                                                              <div class="default-waze-selected-inner">Waze selected</div>
+                                                          </div>
+                                                      </span>
+                                                          <span class="turn-preview-content">
+                                                              <div>XXX feet</div>
+                                                                  <span class="exit-signs-preview"></span>
+                                                                  <div class="primary-markup">
+                                                                      <span class="inline-free-text">Farm St&nbsp;</span>
+                                                                  </div>
+                                                                  <div class="secondary-markup markup-placeholder">Optional guidance for the driver</div>
+                                                              </span>
+                                                          </div>
+                                                      </div>
+                                                  </div>
+                                              </div>`
+                        document.querySelector("#big-tooltip-region > div").insertAdjacentHTML('afterbegin',htmlstring)
+                        log("big-tooltip-region Detected")
+                        console.log(W.selectionManager.getSelectedFeatures())
+                        /*    let turn = W.model.getTurnGraph().getTurnThroughNode(node,seg1,seg2);
+                        let turnData = turn.getTurnData();
+                        let hasGuidence = turnData.hasTurnGuidance();
+                         for (let i=0; i < conSegs.length; i++) {
+                             let seg1 = W.model.segments.getObjectById(conSegs[i]);
+                             for (let j=0; j < conSegs.length; j++) {
+                                 let seg2 = W.model.segments.getObjectById(conSegs[j]);
+                                 processNode(node, seg1, seg2);
+                             }
+                         }
+                        */
+                    }
+                }
+            });
+        });
+        observer.observe(document.querySelector("#big-tooltip-region"), { childList: true });
 
+    }
     function RSObserver() {
         let observer = new MutationObserver(mutations => {
             mutations.forEach(mutation => {
@@ -721,6 +766,9 @@
             }if (W && W.map && W.model && bootsequence.indexOf("Waze") > -1) {
                 bootsequence = bootsequence.filter(bs => bs !== "Waze")
                 RSObserver();
+                if (W.loginManager.user.userName == "The_Cre8r") {
+                    BTRObserver();
+                }
                 PanelObserver();
             }if (WazeWrap.Ready) {
                 bootsequence = bootsequence.filter(bs => bs !== "WazeWrap")
