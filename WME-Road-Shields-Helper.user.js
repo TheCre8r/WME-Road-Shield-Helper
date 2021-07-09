@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2021.07.08.0102
+// @version      2021.07.08.0103
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -146,7 +146,7 @@
         ].join(' '));
         new WazeWrap.Interface.Tab('WMERSH', $section.html(), function(){});
         $('a[href$="#sidepanel-wmersh"]').html(`<span>`+svglogo+`</span>`)
-        $('a[href$="#sidepanel-wmersh"]').prop('title', 'WME RSF');
+        $('a[href$="#sidepanel-wmersh"]').prop('title', 'WME RSH');
         log("Tab Initialized",1);
     }
 
@@ -541,7 +541,54 @@
             mutations.forEach(mutation => {
                 for (let i = 0; i < mutation.addedNodes.length; i++) {
                     if (document.querySelector("#big-tooltip-region > div")) {
-                        let htmlstring = `<div class="turn-preview-wrapper" style="margin: -15px -15px 5px;border-radius: 4px;"><div class="turn-preview" style="border-radius: 4px;">
+                        log("big-tooltip-region Detected")
+                        console.log(W.selectionManager._getSelectedSegments()[0])
+                        let SegmentArray = document.querySelector("div.arrow.turn-arrow-state-open.hover").dataset.id.split("f")
+                        SegmentArray = SegmentArray.filter(element => {
+                            return element != null && element != '';
+                        });
+                        console.log(SegmentArray)
+                        let node = W.model.nodes.getObjectById(W.model.segments.getObjectById(SegmentArray[0]).attributes.toNodeID);
+                        let fromID = W.model.segments.getObjectById(SegmentArray[0])
+                        let toID = W.model.segments.getObjectById(SegmentArray[1])
+                        let turnData = W.model.turnGraph.getTurnThroughNode(node,fromID,toID).turnData
+                        console.log(turnData)
+                        let SignPreviewHTML = ''
+                        if (turnData.turnGuidance) {
+                            if (turnData.turnGuidance.exitSigns.length > 0) {
+                                SignPreviewHTML = `<img class="inline-exit-sign" src="https://renderer-am.waze.com/renderer/v1/signs/${turnData.turnGuidance.exitSigns[0].type}?text=${turnData.turnGuidance.exitSigns[0].text}">`
+                            }
+                            let turnGuidance =turnData.turnGuidance //"$RS-0 ᴛᴏ $RS-1 $RS-2 $RS-3"
+                            let viArray = turnGuidance.visualInstruction.split(' ');
+                            let visualInstructionHTML = ``
+                            for (let j = 0; j < viArray.length; j++) {
+                                if (viArray[j].includes("$RS-")) {
+                                    let Shield = turnGuidance.roadShields[viArray[j].replace('$', '')]
+                                    visualInstructionHTML += `<span class="inline-road-shield"><img class="sign-image" src="https://renderer-am.waze.com/renderer/v1/signs/${Shield.type}?text=${Shield.text}">&nbsp;<span></span></span>`
+                                } else {
+                                    visualInstructionHTML += `<span class="inline-free-text">${viArray[j]}</span>`
+                                }
+                            }
+                            let towardsHTML = ``;
+                            if (turnGuidance.towards) {
+                                let towardsArray = turnGuidance.towards.split(' ');
+                                towardsHTML = `<div class="secondary-markup"><span class="inline-free-text">Hillsborough Rd » Chapel Hill&nbsp;</span></div>`
+                                for (let j = 0; j < towardsArray.length; j++) {
+                                    if (towardsArray[j].includes("$RS-")) {
+                                        let Shield = turnGuidance.roadShields[towardsArray[j].replace('$', '')]
+                                        towardsHTML += `<span class="inline-road-shield"><img class="sign-image" src="https://renderer-am.waze.com/renderer/v1/signs/${Shield.type}?text=${Shield.text}">&nbsp;<span></span></span>`
+                                    } else {
+                                        towardsHTML += `<span class="inline-free-text">${viArray[j]}</span>`
+                                    }
+                                }
+                                towardsHTML += `<\div>`
+                            } else {
+                                towardsHTML = `<div class="secondary-markup markup-placeholder">Optional guidance for the driver</div>`
+                            }
+
+                            //temp1.turnGuidance.roadShields["RS-0"]  -   {type: 2065, text: "295", direction: null}
+                            let towards = turnData.turnGuidance.towards
+                            let htmlstring = `<div class="turn-preview-wrapper" style="margin: -15px -15px 5px;border-radius: 4px;"><div class="turn-preview" style="border-radius: 4px;">
                                               <div>
                                                   <div class="turn-preview-inner">
                                                       <span class="turn-preview-arrow-wrapper">
@@ -551,30 +598,21 @@
                                                       </span>
                                                           <span class="turn-preview-content">
                                                               <div>XXX feet</div>
-                                                                  <span class="exit-signs-preview"></span>
+                                                                  <span class="exit-signs-preview">
+                                                                      ${SignPreviewHTML}
+                                                                  </span>
                                                                   <div class="primary-markup">
-                                                                      <span class="inline-free-text">Farm St&nbsp;</span>
+                                                                     ${visualInstructionHTML}
                                                                   </div>
-                                                                  <div class="secondary-markup markup-placeholder">Optional guidance for the driver</div>
+                                                                  ${towardsHTML}
                                                               </span>
                                                           </div>
                                                       </div>
                                                   </div>
                                               </div>`
-                        document.querySelector("#big-tooltip-region > div").insertAdjacentHTML('afterbegin',htmlstring)
-                        log("big-tooltip-region Detected")
-                        console.log(W.selectionManager.getSelectedFeatures())
-                        /*    let turn = W.model.getTurnGraph().getTurnThroughNode(node,seg1,seg2);
-                        let turnData = turn.getTurnData();
-                        let hasGuidence = turnData.hasTurnGuidance();
-                         for (let i=0; i < conSegs.length; i++) {
-                             let seg1 = W.model.segments.getObjectById(conSegs[i]);
-                             for (let j=0; j < conSegs.length; j++) {
-                                 let seg2 = W.model.segments.getObjectById(conSegs[j]);
-                                 processNode(node, seg1, seg2);
-                             }
-                         }
-                        */
+                            document.querySelector("#big-tooltip-region > div").insertAdjacentHTML('afterbegin',htmlstring)
+                            document.querySelector("#big-tooltip-region > div > div.turn-arrow-tooltip > div.turn-header").remove()
+                        }
                     }
                 }
             });
@@ -593,8 +631,8 @@
                             filterShields(getState())
                         }
                         if (_settings.Debug) {
-                            document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-label").insertAdjacentHTML("beforeend", ` <i id="RSF_Test" class="fas fa-flask"></i>`)
-                            document.querySelector("#RSF_Test").onclick = function(){
+                            document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-label").insertAdjacentHTML("beforeend", ` <i id="RSH_Flask" class="fas fa-flask"></i>`)
+                            document.querySelector("#RSH_Flask").onclick = function(){
                                 var state = prompt("Please enter state name", "");
                                 log(state)
                                 if (state !== null) {
@@ -767,13 +805,11 @@
                 bootsequence = bootsequence.filter(bs => bs !== "Waze")
                 RSObserver();
                 PanelObserver();
+                BTRObserver();
             }if (WazeWrap.Ready) {
                 bootsequence = bootsequence.filter(bs => bs !== "WazeWrap")
                 initTab();
                 initializeSettings();
-                if (W.loginManager.user.userName == "The_Cre8r") {
-                    BTRObserver();
-                }
             }
             setTimeout(() => bootstrap(tries++), 200);
         }
