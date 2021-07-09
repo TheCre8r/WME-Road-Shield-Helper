@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2021.07.08.0103
+// @version      2021.07.08.0104
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -572,7 +572,7 @@
                             let towardsHTML = ``;
                             if (turnGuidance.towards) {
                                 let towardsArray = turnGuidance.towards.split(' ');
-                                towardsHTML = `<div class="secondary-markup"><span class="inline-free-text">Hillsborough Rd » Chapel Hill&nbsp;</span></div>`
+                                towardsHTML = `<div class="secondary-markup">`
                                 for (let j = 0; j < towardsArray.length; j++) {
                                     if (towardsArray[j].includes("$RS-")) {
                                         let Shield = turnGuidance.roadShields[towardsArray[j].replace('$', '')]
