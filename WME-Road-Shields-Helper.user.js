@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2021.07.10.0102
+// @version      2021.07.10.0103
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -561,20 +561,53 @@
         let SignPreviewHTML = ''
         if (turnData.turnGuidance) {
             /* START Turn Arrow */
+            let ContinueSVG = `<div class="default-waze-selected-inner" style="color: red;">More Stuff<br> to Fix</div>`;
+            let ExitLeftSVG = `<div class="default-waze-selected-inner" style="color: red;">More Stuff<br> to Fix</div>`;
+            let ExitRightSVG = `<div class="default-waze-selected-inner" style="color: red;">More Stuff<br> to Fix</div>`;
+            let KeepLeftSVG = `<div class="default-waze-selected-inner" style="color: red;">More Stuff<br> to Fix</div>`;
+            let KeepRightSVG = `<div class="default-waze-selected-inner" style="color: red;">More Stuff<br> to Fix</div>`;
+            let NoneSVG = `<div class="default-waze-selected-inner" style="color: red;">More Stuff<br> to Fix</div>`;
+            let TurnLeftSVG = `<div class="default-waze-selected-inner" style="color: red;">More Stuff<br> to Fix</div>`;
+            let TurnRightSVG = `<div class="default-waze-selected-inner" style="color: red;">More Stuff<br> to Fix</div>`;
             let UTurnSVG = `<svg width="210px" height="210px" viewBox="0 0 210 210" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"><g id="Artboard-6" transform="translate(-550.000000, -363.000000)" stroke="white"><g id="big_direction_u_turn" transform="translate(550.000000, 363.000000)"><path d="M63.1093667,161.533902 L63.1093667,76.082849 M144,159 L144,78 M63.0006146,78 C62.8786912,54.9287685 80.9135963,36.1263855 103.27922,36.0006339 C125.646468,35.8748823 143.878077,54.474386 144,77.5439408" id="Imported-Layers" stroke-width="18"></path><polygon id="Stroke-3-Copy-5" stroke-width="12" fill="white" transform="translate(63.000000, 154.500000) rotate(-180.000000) translate(-63.000000, -154.500000) " points="63.124426 141 39 168 87 167.762865"></polygon></g></g></g></svg>`
-            let TurnHTML
-            let DefaultTurnHTML =`<div class="default-waze-selected"><div class="default-waze-selected-inner">Waze selected</div></div>`
+            let TurnHTML;
+            let DefaultTurnHTML =`<div class="default-waze-selected"><div class="default-waze-selected-inner">Waze selected</div></div>`;
 
-            if (turnData.instructionOpcode) {
-                if (turnData.instructionOpcode == "UTURN") {
+            switch (turnData.instructionOpcode) {
+                case null:
+                    TurnHTML = DefaultTurnHTML
+                    break;
+                case "CONTINUE":
+                    TurnHTML = ContinueSVG;
+                    break;
+                case "EXIT_LEFT":
+                    TurnHTML = ExitLeftSVG;
+                    break;
+                case "EXIT_RIGHT":
+                    TurnHTML = ExitRightSVG;
+                    break;
+                case "KEEP_LEFT":
+                    TurnHTML = KeepLeftSVG;
+                    break;
+                case "KEEP_RIGHT":
+                    TurnHTML = KeepRightSVG;
+                    break;
+                case "NONE":
+                    TurnHTML = NoneSVG;
+                    break;
+                case "TURN_LEFT":
+                    TurnHTML = TurnLeftSVG;
+                    break;
+                case "TURN_RIGHT":
+                    TurnHTML = TurnRightSVG;
+                    break;
+                case "UTURN":
                     TurnHTML = UTurnSVG;
-                } else {
+                    break;
+                default:
                     TurnHTML = `<div class="default-waze-selected-inner" style="color: red;">More Stuff<br> to Fix</div>`
-                }
-            } else {
-                TurnHTML = DefaultTurnHTML
+                    break;
             }
-
             /* START Exit Sign */
             if (turnData.turnGuidance.exitSigns.length > 0) {
                 SignPreviewHTML = `<img class="inline-exit-sign" src="https://renderer-am.waze.com/renderer/v1/signs/${turnData.turnGuidance.exitSigns[0].type}?text=${turnData.turnGuidance.exitSigns[0].text}">`
