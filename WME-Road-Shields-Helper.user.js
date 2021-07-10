@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2021.07.08.0104
+// @version      2021.07.10.0101
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -536,84 +536,97 @@
             }
         }
     }
+    function BuildBRTDiv() {
+        log("big-tooltip-region Detected")
+        console.log(W.selectionManager._getSelectedSegments()[0])
+        let SegmentArray = document.querySelector("div.arrow.turn-arrow-state-open.hover").dataset.id.split(/(f|r)/g) //forward or reverse
+        SegmentArray = SegmentArray.filter(element => {
+            return element != null && element != '';
+        });
+        let SegmentJSON = JSON.stringify(SegmentArray);
+        let node;
+        if (SegmentArray[1] == "f") {
+            node = W.model.nodes.getObjectById(W.model.segments.getObjectById(SegmentArray[0]).attributes.toNodeID);
+        } else if (SegmentArray[1] == "r"){
+            node = W.model.nodes.getObjectById(W.model.segments.getObjectById(SegmentArray[0]).attributes.fromNodeID);
+        } else {
+            alert("Let The_Cre8r know about this PL.")
+        }
+        let fromSeg = W.model.segments.getObjectById(SegmentArray[0])
+        let toSeg = W.model.segments.getObjectById(SegmentArray[2])
+        let turnData = W.model.turnGraph.getTurnThroughNode(node,fromSeg,toSeg).turnData
+        console.log(turnData)
+        let SignPreviewHTML = ''
+        if (turnData.turnGuidance) {
+            /* START Exit Sign */
+            if (turnData.turnGuidance.exitSigns.length > 0) {
+                SignPreviewHTML = `<img class="inline-exit-sign" src="https://renderer-am.waze.com/renderer/v1/signs/${turnData.turnGuidance.exitSigns[0].type}?text=${turnData.turnGuidance.exitSigns[0].text}">`
+            }
+            /* START Visual Instuctions */
+            let turnGuidance =turnData.turnGuidance //"$RS-0 ᴛᴏ $RS-1 $RS-2 $RS-3"
+            let viArray = turnGuidance.visualInstruction.split('&nbsp;');
+            let visualInstructionHTML = ``
+            for (let j = 0; j < viArray.length; j++) {
+                if (viArray[j].includes("$RS-")) {
+                    let Shield = turnGuidance.roadShields[viArray[j].replace('$', '')]
+                    visualInstructionHTML += `<span class="inline-road-shield"><img class="sign-image" src="https://renderer-am.waze.com/renderer/v1/signs/${Shield.type}?text=${Shield.text}">&nbsp;<span>${Shield.direction ? Shield.direction : ''}</span></span>`
+                } else {
+                    visualInstructionHTML += `<span class="inline-free-text">${viArray[j]}</span>`
+                }
+            }
+            /* START Toward */
+            let towardsHTML = ``;
+            if (turnGuidance.towards) {
+                let towardsArray = turnGuidance.towards.split('&nbsp;');
+                towardsHTML = `<div class="secondary-markup">`
+                for (let j = 0; j < towardsArray.length; j++) {
+                    if (towardsArray[j].includes("$RS-")) {
+                        let Shield = turnGuidance.roadShields[towardsArray[j].replace('$', '')]
+                        towardsHTML += `<span class="inline-road-shield"><img class="sign-image" src="https://renderer-am.waze.com/renderer/v1/signs/${Shield.type}?text=${Shield.text}">&nbsp;<span></span></span>`
+                    } else {
+                        towardsHTML += `<span class="inline-free-text">${towardsArray[j]}</span>`
+                    }
+                }
+                towardsHTML += `<\div>`
+            } else {
+                towardsHTML = `<div class="secondary-markup markup-placeholder">Optional guidance for the driver</div>`
+            }
+
+            //temp1.turnGuidance.roadShields["RS-0"]  -   {type: 2065, text: "295", direction: null}
+            /* START HTML */
+            let htmlstring = `<div class="turn-preview-wrapper" style="margin: -15px -15px 5px;border-radius: 4px;"><div class="turn-preview" style="border-radius: 4px;">
+                                  <div>
+                                      <div class="turn-preview-inner">
+                                          <span class="turn-preview-arrow-wrapper">
+                                              <div class="default-waze-selected">
+                                                  <div class="default-waze-selected-inner">Waze selected</div>
+                                              </div>
+                                          </span>
+                                          <span class="turn-preview-content">
+                                              <div>XXX feet</div>
+                                              <span class="exit-signs-preview">
+                                                  ${SignPreviewHTML}
+                                              </span>
+                                              <div class="primary-markup">
+                                                  ${visualInstructionHTML}
+                                              </div>
+                                              ${towardsHTML}
+                                          </span>
+                                      </div>
+                                  </div>
+                              </div>`
+            document.querySelector("#big-tooltip-region > div").insertAdjacentHTML('afterbegin',htmlstring)
+            document.querySelector("#big-tooltip-region > div > div.turn-arrow-tooltip > div.turn-header").remove()
+        }
+    }
+
     function BTRObserver(){
         let observer = new MutationObserver(mutations => {
             mutations.forEach(mutation => {
                 for (let i = 0; i < mutation.addedNodes.length; i++) {
                     if (document.querySelector("#big-tooltip-region > div")) {
-                        log("big-tooltip-region Detected")
-                        console.log(W.selectionManager._getSelectedSegments()[0])
-                        let SegmentArray = document.querySelector("div.arrow.turn-arrow-state-open.hover").dataset.id.split("f")
-                        SegmentArray = SegmentArray.filter(element => {
-                            return element != null && element != '';
-                        });
-                        console.log(SegmentArray)
-                        let node = W.model.nodes.getObjectById(W.model.segments.getObjectById(SegmentArray[0]).attributes.toNodeID);
-                        let fromID = W.model.segments.getObjectById(SegmentArray[0])
-                        let toID = W.model.segments.getObjectById(SegmentArray[1])
-                        let turnData = W.model.turnGraph.getTurnThroughNode(node,fromID,toID).turnData
-                        console.log(turnData)
-                        let SignPreviewHTML = ''
-                        if (turnData.turnGuidance) {
-                            if (turnData.turnGuidance.exitSigns.length > 0) {
-                                SignPreviewHTML = `<img class="inline-exit-sign" src="https://renderer-am.waze.com/renderer/v1/signs/${turnData.turnGuidance.exitSigns[0].type}?text=${turnData.turnGuidance.exitSigns[0].text}">`
-                            }
-                            let turnGuidance =turnData.turnGuidance //"$RS-0 ᴛᴏ $RS-1 $RS-2 $RS-3"
-                            let viArray = turnGuidance.visualInstruction.split(' ');
-                            let visualInstructionHTML = ``
-                            for (let j = 0; j < viArray.length; j++) {
-                                if (viArray[j].includes("$RS-")) {
-                                    let Shield = turnGuidance.roadShields[viArray[j].replace('$', '')]
-                                    visualInstructionHTML += `<span class="inline-road-shield"><img class="sign-image" src="https://renderer-am.waze.com/renderer/v1/signs/${Shield.type}?text=${Shield.text}">&nbsp;<span></span></span>`
-                                } else {
-                                    visualInstructionHTML += `<span class="inline-free-text">${viArray[j]}</span>`
-                                }
-                            }
-                            let towardsHTML = ``;
-                            if (turnGuidance.towards) {
-                                let towardsArray = turnGuidance.towards.split(' ');
-                                towardsHTML = `<div class="secondary-markup">`
-                                for (let j = 0; j < towardsArray.length; j++) {
-                                    if (towardsArray[j].includes("$RS-")) {
-                                        let Shield = turnGuidance.roadShields[towardsArray[j].replace('$', '')]
-                                        towardsHTML += `<span class="inline-road-shield"><img class="sign-image" src="https://renderer-am.waze.com/renderer/v1/signs/${Shield.type}?text=${Shield.text}">&nbsp;<span></span></span>`
-                                    } else {
-                                        towardsHTML += `<span class="inline-free-text">${viArray[j]}</span>`
-                                    }
-                                }
-                                towardsHTML += `<\div>`
-                            } else {
-                                towardsHTML = `<div class="secondary-markup markup-placeholder">Optional guidance for the driver</div>`
-                            }
-
-                            //temp1.turnGuidance.roadShields["RS-0"]  -   {type: 2065, text: "295", direction: null}
-                            let towards = turnData.turnGuidance.towards
-                            let htmlstring = `<div class="turn-preview-wrapper" style="margin: -15px -15px 5px;border-radius: 4px;"><div class="turn-preview" style="border-radius: 4px;">
-                                              <div>
-                                                  <div class="turn-preview-inner">
-                                                      <span class="turn-preview-arrow-wrapper">
-                                                          <div class="default-waze-selected">
-                                                              <div class="default-waze-selected-inner">Waze selected</div>
-                                                          </div>
-                                                      </span>
-                                                          <span class="turn-preview-content">
-                                                              <div>XXX feet</div>
-                                                                  <span class="exit-signs-preview">
-                                                                      ${SignPreviewHTML}
-                                                                  </span>
-                                                                  <div class="primary-markup">
-                                                                     ${visualInstructionHTML}
-                                                                  </div>
-                                                                  ${towardsHTML}
-                                                              </span>
-                                                          </div>
-                                                      </div>
-                                                  </div>
-                                              </div>`
-                            document.querySelector("#big-tooltip-region > div").insertAdjacentHTML('afterbegin',htmlstring)
-                            document.querySelector("#big-tooltip-region > div > div.turn-arrow-tooltip > div.turn-header").remove()
-                        }
-                    }
+                        BuildBRTDiv()
+                     }
                 }
             });
         });
