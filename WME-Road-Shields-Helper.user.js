@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2021.07.10.0101
+// @version      2021.07.10.0102
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -538,6 +538,7 @@
     }
     function BuildBRTDiv() {
         log("big-tooltip-region Detected")
+        log("Selected Segment[0]")
         console.log(W.selectionManager._getSelectedSegments()[0])
         let SegmentArray = document.querySelector("div.arrow.turn-arrow-state-open.hover").dataset.id.split(/(f|r)/g) //forward or reverse
         SegmentArray = SegmentArray.filter(element => {
@@ -555,13 +556,30 @@
         let fromSeg = W.model.segments.getObjectById(SegmentArray[0])
         let toSeg = W.model.segments.getObjectById(SegmentArray[2])
         let turnData = W.model.turnGraph.getTurnThroughNode(node,fromSeg,toSeg).turnData
+        log("Turn Data")
         console.log(turnData)
         let SignPreviewHTML = ''
         if (turnData.turnGuidance) {
+            /* START Turn Arrow */
+            let UTurnSVG = `<svg width="210px" height="210px" viewBox="0 0 210 210" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"><g id="Artboard-6" transform="translate(-550.000000, -363.000000)" stroke="white"><g id="big_direction_u_turn" transform="translate(550.000000, 363.000000)"><path d="M63.1093667,161.533902 L63.1093667,76.082849 M144,159 L144,78 M63.0006146,78 C62.8786912,54.9287685 80.9135963,36.1263855 103.27922,36.0006339 C125.646468,35.8748823 143.878077,54.474386 144,77.5439408" id="Imported-Layers" stroke-width="18"></path><polygon id="Stroke-3-Copy-5" stroke-width="12" fill="white" transform="translate(63.000000, 154.500000) rotate(-180.000000) translate(-63.000000, -154.500000) " points="63.124426 141 39 168 87 167.762865"></polygon></g></g></g></svg>`
+            let TurnHTML
+            let DefaultTurnHTML =`<div class="default-waze-selected"><div class="default-waze-selected-inner">Waze selected</div></div>`
+
+            if (turnData.instructionOpcode) {
+                if (turnData.instructionOpcode == "UTURN") {
+                    TurnHTML = UTurnSVG;
+                } else {
+                    TurnHTML = `<div class="default-waze-selected-inner" style="color: red;">More Stuff<br> to Fix</div>`
+                }
+            } else {
+                TurnHTML = DefaultTurnHTML
+            }
+
             /* START Exit Sign */
             if (turnData.turnGuidance.exitSigns.length > 0) {
                 SignPreviewHTML = `<img class="inline-exit-sign" src="https://renderer-am.waze.com/renderer/v1/signs/${turnData.turnGuidance.exitSigns[0].type}?text=${turnData.turnGuidance.exitSigns[0].text}">`
             }
+
             /* START Visual Instuctions */
             let turnGuidance =turnData.turnGuidance //"$RS-0 ᴛᴏ $RS-1 $RS-2 $RS-3"
             let viArray = turnGuidance.visualInstruction.split('&nbsp;');
@@ -574,6 +592,7 @@
                     visualInstructionHTML += `<span class="inline-free-text">${viArray[j]}</span>`
                 }
             }
+
             /* START Toward */
             let towardsHTML = ``;
             if (turnGuidance.towards) {
@@ -592,14 +611,13 @@
                 towardsHTML = `<div class="secondary-markup markup-placeholder">Optional guidance for the driver</div>`
             }
 
-            //temp1.turnGuidance.roadShields["RS-0"]  -   {type: 2065, text: "295", direction: null}
             /* START HTML */
             let htmlstring = `<div class="turn-preview-wrapper" style="margin: -15px -15px 5px;border-radius: 4px;"><div class="turn-preview" style="border-radius: 4px;">
                                   <div>
                                       <div class="turn-preview-inner">
                                           <span class="turn-preview-arrow-wrapper">
                                               <div class="default-waze-selected">
-                                                  <div class="default-waze-selected-inner">Waze selected</div>
+                                                  ${TurnHTML}
                                               </div>
                                           </span>
                                           <span class="turn-preview-content">
