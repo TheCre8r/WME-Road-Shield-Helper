@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2021.07.10.0105
+// @version      2021.07.10.0106
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -768,7 +768,7 @@
                                         <button class="WMERSH-button" type="button" id="rsh-txt-to" value="ᴛᴏ"><span>ᴛᴏ</span></button>
                                         <button class="WMERSH-button" type="button" id="rsh-txt-via" value="ᴠɪᴀ"><span>ᴠɪᴀ</span></button>
                                         <button class="WMERSH-button" type="button" id="rsh-txt-jct" value="ᴊᴄᴛ"><span>ᴊᴄᴛ</span></button>
-                                        ${TESTERS.indexOf(W.loginManager.user.userName) == 0 ? `<button class="WMERSH-button" type="button" id="rsh-txt-parking" value="🅿"><span>🅿</span></button>` : ''}
+                                        <button class="WMERSH-button" type="button" id="rsh-txt-parking" value="🅿"><span>🅿</span></button>
                                     </div>
                                 </div>
                             </div>`
