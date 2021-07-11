@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2021.07.10.0108
+// @version      2021.07.11.0101
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -627,7 +627,7 @@
 
             /* START Visual Instuctions */
             let turnGuidance =turnData.turnGuidance //"$RS-0 ᴛᴏ $RS-1 $RS-2 $RS-3"
-            let viArray = turnGuidance.visualInstruction.split('&nbsp;');
+            let viArray = turnGuidance.visualInstruction.split(' ');
             let visualInstructionHTML = ``
             for (let j = 0; j < viArray.length; j++) {
                 if (viArray[j].includes("$RS-")) {
@@ -641,7 +641,7 @@
             /* START Toward */
             let towardsHTML = ``;
             if (turnGuidance.towards) {
-                let towardsArray = turnGuidance.towards.split('&nbsp;');
+                let towardsArray = turnGuidance.towards.split(' ');
                 towardsHTML = `<div class="secondary-markup">`
                 for (let j = 0; j < towardsArray.length; j++) {
                     if (towardsArray[j].includes("$RS-")) {
@@ -676,6 +676,8 @@
                                       </div>
                                   </div>
                               </div>`
+            let AdDIV = `<div style="margin: -10px -15px 5px;background:lightgray"><span style="font-size:10px; margin:auto; text-align: center;display: block;">Preview courtesy of Road Sheild Helper</span></div>`
+            document.querySelector("#big-tooltip-region > div").insertAdjacentHTML('afterbegin',AdDIV)
             document.querySelector("#big-tooltip-region > div").insertAdjacentHTML('afterbegin',htmlstring)
             document.querySelector("#big-tooltip-region > div > div.turn-arrow-tooltip > div.turn-header").remove()
         }
