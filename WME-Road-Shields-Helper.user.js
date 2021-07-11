@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2021.07.10.0107
+// @version      2021.07.10.0108
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -49,6 +49,7 @@
                 report_an_issue: 'Report an Issue on GitHub',
                 help: 'Help',
                 filter_by_state: `Filter Shields By State`,
+                turn_instruction_preview: "Turn Instruction Preview",
                 settings_1: 'Enable Debug Mode',
             },
             es: {
@@ -126,6 +127,9 @@
                         '<div class="controls-container">',
                             `<input type="checkbox" id="WMERSH-FilterByState" value="on"><label for="WMERSH-FilterByState">${I18n.t(`wmersh.filter_by_state`)}</label>`,
                         '</div>',
+                        '<div class="controls-container">',
+                            `<input type="checkbox" id="WMERSH-TurnInstructionPreview" value="on"><label for="WMERSH-TurnInstructionPreview">${I18n.t(`wmersh.turn_instruction_preview`)}</label>`,
+                        '</div>',
                         TESTERS.indexOf(W.loginManager.user.userName) > -1 ? `<div class="controls-container"><input type="checkbox" id="WMERSH-Debug" value="on"><label for="WMERSH-Debug">${I18n.t(`wmersh.settings_1`)}</label></div>` : '',
                     '</div>',
                     '<div class="form-group">',
@@ -162,6 +166,7 @@
         let loadedSettings = $.parseJSON(localStorage.getItem(STORE_NAME));
         let defaultSettings = {
             FilterByState: true,
+            TurnInstructionPreview: true,
             Debug: false,
             lastVersion: 0
         };
@@ -201,6 +206,7 @@
         }
         setChecked('Debug', _settings.Debug);
         setChecked('FilterByState', _settings.FilterByState);
+        setChecked('TurnInstructionPreview', _settings.TurnInstructionPreview);
         $('#WMERSH-Debug').change(function() {
             let settingName = "Debug";
             _settings[settingName] = this.checked;
@@ -208,6 +214,11 @@
         });
         $('#WMERSH-FilterByState').change(function() {
             let settingName = "FilterByState";
+            _settings[settingName] = this.checked;
+            saveSettings();
+        });
+        $('#WMERSH-TurnInstructionPreview').change(function() {
+            let settingName = "TurnInstructionPreview";
             _settings[settingName] = this.checked;
             saveSettings();
         });
@@ -675,7 +686,9 @@
             mutations.forEach(mutation => {
                 for (let i = 0; i < mutation.addedNodes.length; i++) {
                     if (document.querySelector("#big-tooltip-region > div")) {
-                        BuildBRTDiv()
+                        if (_settings.TurnInstructionPreview) {
+                            BuildBRTDiv()
+                        }
                      }
                 }
             });
