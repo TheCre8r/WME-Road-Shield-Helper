@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2021.07.10.0104
+// @version      2021.07.10.0105
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -86,15 +86,16 @@
             '#WMERSH-title {font-size:15px;font-weight:600;}',
             '#WMERSH-version {font-size:11px;margin-left:10px;color:#aaa;}',
             '.WMERSH-report {text-align:center;padding-top:20px;}',
-            '.WMERSH-Button {font-family:"Rubik","Boing-light",sans-serif,FontAwesome;padding-left:10px;padding-right:10px;margin-top:0px;z-index: 3;}',
+            '.WMERSH-button {background-color: var(--wz-button-background-color, #09f);color: rgb(255, 255, 255);border-radius: 100px;font-size: 15px;height: 25px;padding: 0px 20px;align-items: center;border: 1px solid transparent;cursor: pointer;display: inline-flex;font-family: Boing, Rubik, sans-serif;font-weight: 500;justify-content: center;letter-spacing: 0.3px;width: 58px;outline: none;text-align: center;text-decoration: unset;user-select: none;white-space: nowrap;margin:1px}',
+            '.WMERSH-button > span {position: relative;bottom: -1px;}',
             '#WMERSH-Autofill {position:absolute;top: 14px;right: 14px;font-size:20px;}',
-            '#WMERSH-panel-buttons {background: black;color: white;height: 225px;border-bottom-right-radius: 5px;border-bottom-left-radius: 5px;}',
+            '#WMERSH-panel-buttons {background: black;position: absolute;z-index: 10;border: 10px;border-color: black;border-style: solid;border-bottom-right-radius: 5px;border-bottom-left-radius: 5px;}',
             '#WMERSH-Message {position:absolute;top: 323px;left: 24px;font-size: 14px;}',
             '#WMERSH-Message.Error {color:red}',
             '#WMERSH-Message.Alert {color:orange}',
             '.rsh-button {padding: 2px; height: 10px; width: 10px;}',
-            '#WMERSH-panel {width: 80px;background: white;border-radius: 5px;position: absolute;z-index: 4;left: 340px;margin-top: 155px;-webkit-box-shadow: 0 2px 3px 0 rgb(60 64 67 / 30%), 0 6px 10px 4px rgb(60 64 67 / 15%);box-shadow: 0 2px 3px 0 rgb(60 64 67 / 30%), 0 6px 10px 4px rgb(60 64 67 / 15%);}',
-            '#WMERSH-panel-header {font-family: &quot;Boing-medium&quot;, sans-serif;font-size: 16px;line-height: 24px;font-weight: 400;height: 31px;display: -webkit-box;display: -ms-flexbox;display: flex;border-bottom: 1px solid #e8eaed;padding: 6px;text-align: center;}',
+            '#WMERSH-panel {width: 80px;background: white; border-top-left-radius: 5px;border-top-right-radius: 5px; position: absolute;z-index: 4;left: 340px;margin-top: 155px;-webkit-box-shadow: 0 2px 3px 0 rgb(60 64 67 / 30%), 0 6px 10px 4px rgb(60 64 67 / 15%);box-shadow: 0 2px 3px 0 rgb(60 64 67 / 30%), 0 6px 10px 4px rgb(60 64 67 / 15%);}',
+            '#WMERSH-panel-header {font-family: "Boing-medium", sans-serif;font-size: 16px;line-height: 24px;font-weight: 400;height: 31px;display: -webkit-box;display: -ms-flexbox;display: flex;border-bottom: 1px solid #e8eaed;padding: 6px;text-align: center;}',
             '#WMERSH-TIO-Autofill {position:absolute;top: 6px;right: 30px;font-size:20px;transform: scale(0.65);}',
             '.fa, .fas{font-family:"FontAwesome"}',
             '.fab{font-family:"Font Awesome 5 Brands"}',
@@ -749,32 +750,25 @@
                 }
             });
 
-            $("#rsh-txt-concurrent").click(function(){AddTxt("•",LastInputElement)}); //Alt + 7
-            $("#rsh-txt-towards").click(function(){AddTxt("»",LastInputElement)}); //Alt + 175
-            $("#rsh-txt-north").click(function(){AddTxt("Nᴏʀᴛʜ",LastInputElement)});
-            $("#rsh-txt-south").click(function(){AddTxt("Sᴏᴜᴛʜ",LastInputElement)});
-            $("#rsh-txt-east").click(function(){AddTxt("Eᴀꜱᴛ",LastInputElement)});
-            $("#rsh-txt-west").click(function(){AddTxt("Wᴇꜱᴛ",LastInputElement)});
-            $("#rsh-txt-to").click(function(){AddTxt("ᴛᴏ",LastInputElement)});
-            $("#rsh-txt-via").click(function(){AddTxt("ᴠɪᴀ",LastInputElement)});
-            $("#rsh-txt-jct").click(function(){AddTxt("ᴊᴄᴛ",LastInputElement)});
+            $(".WMERSH-button").click(function(){AddTxt(this.value,LastInputElement)});
 
         }
         let buttonstring = `<div id="WMERSH-panel" class="show wmersh-panel">
                                 <div id="WMERSH-panel-header" class="panel-header">
                                     <span style="-webkit-box-flex: 1;-ms-flex-positive: 1;flex-grow: 1;">Buttons</span>
                                 </div>
-                                <div id="WMERSH-panel-buttons">
-                                   <div style="position: absolute;z-index: 10;margin: 10px;">
-                                        <wz-button class="hydrated rsh-button" id="rsh-txt-concurrent">•</wz-button><br>
-                                        <wz-button class="hydrated rsh-button" id="rsh-txt-towards">»</wz-button><br>
-                                        <wz-button class="hydrated rsh-button" id="rsh-txt-north">Nᴏʀᴛʜ</wz-button><br>
-                                        <wz-button class="hydrated rsh-button" id="rsh-txt-south">Sᴏᴜᴛʜ</wz-button><br>
-                                        <wz-button class="hydrated rsh-button" id="rsh-txt-east">Eᴀꜱᴛ</wz-button><br>
-                                        <wz-button class="hydrated rsh-button" id="rsh-txt-west">Wᴇꜱᴛ</wz-button><br>
-                                        <wz-button class="hydrated rsh-button" id="rsh-txt-to">ᴛᴏ</wz-button><br>
-                                        <wz-button class="hydrated rsh-button" id="rsh-txt-via">ᴠɪᴀ</wz-button><br>
-                                        <wz-button class="hydrated rsh-button" id="rsh-txt-jct">ᴊᴄᴛ</wz-button>
+                                <div>
+                                    <div id="WMERSH-panel-buttons">
+                                        <button class="WMERSH-button" type="button" id="rsh-txt-concurrent" value="•"><span>•</span></button>
+                                        <button class="WMERSH-button" type="button" id="rsh-txt-towards" value="»"><span>»</span></button>
+                                        <button class="WMERSH-button" type="button" id="rsh-txt-north" value="Nᴏʀᴛʜ"><span>Nᴏʀᴛʜ</span></button>
+                                        <button class="WMERSH-button" type="button" id="rsh-txt-south" value="Sᴏᴜᴛʜ"><span>Sᴏᴜᴛʜ</span></button>
+                                        <button class="WMERSH-button" type="button" id="rsh-txt-east" value="Eᴀꜱᴛ"><span>Eᴀꜱᴛ</span></button>
+                                        <button class="WMERSH-button" type="button" id="rsh-txt-west" value="Wᴇꜱᴛ"><span>Wᴇꜱᴛ</span></button>
+                                        <button class="WMERSH-button" type="button" id="rsh-txt-to" value="ᴛᴏ"><span>ᴛᴏ</span></button>
+                                        <button class="WMERSH-button" type="button" id="rsh-txt-via" value="ᴠɪᴀ"><span>ᴠɪᴀ</span></button>
+                                        <button class="WMERSH-button" type="button" id="rsh-txt-jct" value="ᴊᴄᴛ"><span>ᴊᴄᴛ</span></button>
+                                        ${TESTERS.indexOf(W.loginManager.user.userName) == 0 ? `<button class="WMERSH-button" type="button" id="rsh-txt-parking" value="🅿"><span>🅿</span></button>` : ''}
                                     </div>
                                 </div>
                             </div>`
