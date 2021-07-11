@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2021.07.10.0106
+// @version      2021.07.10.0107
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -650,9 +650,7 @@
                                   <div>
                                       <div class="turn-preview-inner">
                                           <span class="turn-preview-arrow-wrapper">
-                                              <div class="default-waze-selected">
-                                                  ${TurnHTML}
-                                              </div>
+                                              ${TurnHTML}
                                           </span>
                                           <span class="turn-preview-content">
                                               <div>XXX feet</div>
