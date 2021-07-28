@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2021.07.14.0101
+// @version      2021.07.28.0101
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -569,9 +569,28 @@
         } else {
             alert("Let The_Cre8r know about this PL.")
         }
+        let turnData
         let fromSeg = W.model.segments.getObjectById(SegmentArray[0])
         let toSeg = W.model.segments.getObjectById(SegmentArray[2])
-        let turnData = W.model.turnGraph.getTurnThroughNode(node,fromSeg,toSeg).turnData
+        if (node.isConnectedToBigJunction() && !W.model.turnGraph.getTurnThroughNode(node,fromSeg,toSeg).turnData.turnGuidance) {
+            log("Node is Connected to Junction Box")
+            let JBpaths
+            if (SegmentArray[1] == "f") {
+                JBpaths = W.model.bigJunctions.getObjectById(W.selectionManager._getSelectedSegments()[0].attributes.toCrossroads[0])._pathCache
+            } else if (SegmentArray[1] == "r"){
+                JBpaths = W.model.bigJunctions.getObjectById(W.selectionManager._getSelectedSegments()[0].attributes.fromCrossroads[0])._pathCache
+            } else {
+                alert("Let The_Cre8r know about this PL.")
+            }
+            for (let path = 0; path < JBpaths.length; path++) {
+                if (JBpaths[path].fromVertex.segmentID == SegmentArray[0] && JBpaths[path].toVertex.segmentID == SegmentArray[2]) {
+                    turnData = JBpaths[path].turnData
+                    console.log(JBpaths[path]);
+                }
+            }
+        } else {
+            turnData = W.model.turnGraph.getTurnThroughNode(node,fromSeg,toSeg).turnData
+        }
         log("Turn Data")
         console.log(turnData);
         let SignPreviewHTML = ''
