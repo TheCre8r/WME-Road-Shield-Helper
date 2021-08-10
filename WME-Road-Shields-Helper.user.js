@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper
 // @namespace    https://github.com/thecre8r/
-// @version      2021.07.07.04
+// @version      2021.08.09.01
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -26,7 +26,7 @@
     const SCRIPT_NAME = GM_info.script.name;
     const SCRIPT_VERSION = GM_info.script.version.toString();
                                         //{"version": "2021.06.01.02","changes": ""},
-    const SCRIPT_HISTORY = `{"versions": [{"version": "2021.07.07.03","changes": "Fixed another small ꜱ in West and East."},{"version": "2021.07.07.02","changes": "Fixed small ꜱ in West and East."},{"version": "2021.07.07.01","changes": "Added Buttons to Turn Instructions and all states should be compatible. Please be sure to report an issue on GitHub if you find one that is not working."},{"version": "2021.06.12.01","changes": "Support for Illinois CH Road Shields, a few more SH- States, a few more SR- States, and Arkansas's Shield Name Suffixes"},{"version": "2021.06.05.01","changes": "Support for Missouri Supplemental Road Shields"},{"version": "2021.06.03.02","changes": "Support for Kansas K-xxx format"},{"version": "2021.06.03.01","changes": "Added CR support for states using hexagon type shields"},{"version": "2021.06.02.01","changes": "Added SR Shield for New Hampshire"},{"version": "2021.06.01.02","changes": "Added County Shields for Wisconsin<br>Updated Changelog Format"},{"version": "2021.06.01.01","changes": "Fixed GitHub URL"},{"version": "2021.05.31.01","changes": "Added Wisconsin and other miscellaneous fixes"},{"version": "2021.05.23.01","changes": "Initial Version"}]}`;
+    const SCRIPT_HISTORY = `{"versions": [{"version": "2021.08.09.01","changes": "Added the preview on the turn instruction dialog box"},{"version": "2021.07.07.03","changes": "Fixed another small ꜱ in West and East."},{"version": "2021.07.07.02","changes": "Fixed small ꜱ in West and East."},{"version": "2021.07.07.01","changes": "Added Buttons to Turn Instructions and all states should be compatible. Please be sure to report an issue on GitHub if you find one that is not working."},{"version": "2021.06.12.01","changes": "Support for Illinois CH Road Shields, a few more SH- States, a few more SR- States, and Arkansas's Shield Name Suffixes"},{"version": "2021.06.05.01","changes": "Support for Missouri Supplemental Road Shields"},{"version": "2021.06.03.02","changes": "Support for Kansas K-xxx format"},{"version": "2021.06.03.01","changes": "Added CR support for states using hexagon type shields"},{"version": "2021.06.02.01","changes": "Added SR Shield for New Hampshire"},{"version": "2021.06.01.02","changes": "Added County Shields for Wisconsin<br>Updated Changelog Format"},{"version": "2021.06.01.01","changes": "Fixed GitHub URL"},{"version": "2021.05.31.01","changes": "Added Wisconsin and other miscellaneous fixes"},{"version": "2021.05.23.01","changes": "Initial Version"}]}`;
     const GH = {link: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/', issue: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/issues/new', wiki: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/wiki'};
     const UPDATE_ALERT = true;
 
@@ -49,6 +49,7 @@
                 report_an_issue: 'Report an Issue on GitHub',
                 help: 'Help',
                 filter_by_state: `Filter Shields By State`,
+                turn_instruction_preview: "Turn Instruction Preview",
                 settings_1: 'Enable Debug Mode',
             },
             es: {
@@ -86,15 +87,20 @@
             '#WMERSH-title {font-size:15px;font-weight:600;}',
             '#WMERSH-version {font-size:11px;margin-left:10px;color:#aaa;}',
             '.WMERSH-report {text-align:center;padding-top:20px;}',
-            '.WMERSH-Button {font-family:"Rubik","Boing-light",sans-serif,FontAwesome;padding-left:10px;padding-right:10px;margin-top:0px;z-index: 3;}',
+            '.WMERSH-button{background-color: var(--wz-button-background-color, #09f);color: rgb(255, 255, 255);border-radius: 100px;font-size: 15px;height: 25px;align-items: center;border: 1px solid transparent;cursor: pointer;display: inline-flex;font-family: Boing, Rubik, sans-serif;font-weight: 500;justify-content: center;letter-spacing: 0.3px;width: 58px;outline: none;text-align: center;text-decoration: unset;user-select: none;white-space: nowrap;}',
+            '.WMERSH-button.sm {border-radius: 100px;font-size: 13px;height: 32px;padding: 0px 12px;}',
+            '.WMERSH-button.xs {border-radius: 43px;font-family: Rubik, sans-serif;font-size: 10px;height: 18px;padding: 0px 8px;}',
+            '.WMERSH-button.red {background-color: red}',
+            '.WMERSH-button.insertChar {margin:1px}',
+            '.WMERSH-button > span {position: relative;bottom: -1px;}',
             '#WMERSH-Autofill {position:absolute;top: 14px;right: 14px;font-size:20px;}',
-            '#WMERSH-panel-buttons {background: black;color: white;height: 225px;border-bottom-right-radius: 5px;border-bottom-left-radius: 5px;}',
+            '#WMERSH-panel-buttons {background: black;position: absolute;z-index: 10;border: 10px;border-color: black;border-style: solid;border-bottom-right-radius: 5px;border-bottom-left-radius: 5px;}',
             '#WMERSH-Message {position:absolute;top: 323px;left: 24px;font-size: 14px;}',
             '#WMERSH-Message.Error {color:red}',
             '#WMERSH-Message.Alert {color:orange}',
             '.rsh-button {padding: 2px; height: 10px; width: 10px;}',
-            '#WMERSH-panel {width: 80px;background: white;border-radius: 5px;position: absolute;z-index: 4;left: 340px;margin-top: 155px;-webkit-box-shadow: 0 2px 3px 0 rgb(60 64 67 / 30%), 0 6px 10px 4px rgb(60 64 67 / 15%);box-shadow: 0 2px 3px 0 rgb(60 64 67 / 30%), 0 6px 10px 4px rgb(60 64 67 / 15%);}',
-            '#WMERSH-panel-header {font-family: &quot;Boing-medium&quot;, sans-serif;font-size: 16px;line-height: 24px;font-weight: 400;height: 31px;display: -webkit-box;display: -ms-flexbox;display: flex;border-bottom: 1px solid #e8eaed;padding: 6px;text-align: center;}',
+            '#WMERSH-panel {width: 80px;background: white; border-top-left-radius: 5px;border-top-right-radius: 5px; position: absolute;z-index: 4;left: 340px;margin-top: 155px;-webkit-box-shadow: 0 2px 3px 0 rgb(60 64 67 / 30%), 0 6px 10px 4px rgb(60 64 67 / 15%);box-shadow: 0 2px 3px 0 rgb(60 64 67 / 30%), 0 6px 10px 4px rgb(60 64 67 / 15%);}',
+            '#WMERSH-panel-header {font-family: "Boing-medium", sans-serif;font-size: 16px;line-height: 24px;font-weight: 400;height: 31px;display: -webkit-box;display: -ms-flexbox;display: flex;border-bottom: 1px solid #e8eaed;padding: 6px;text-align: center;}',
             '#WMERSH-TIO-Autofill {position:absolute;top: 6px;right: 30px;font-size:20px;transform: scale(0.65);}',
             '.fa, .fas{font-family:"FontAwesome"}',
             '.fab{font-family:"Font Awesome 5 Brands"}',
@@ -125,6 +131,9 @@
                         '<div class="controls-container">',
                             `<input type="checkbox" id="WMERSH-FilterByState" value="on"><label for="WMERSH-FilterByState">${I18n.t(`wmersh.filter_by_state`)}</label>`,
                         '</div>',
+                        '<div class="controls-container">',
+                            `<input type="checkbox" id="WMERSH-TurnInstructionPreview" value="on"><label for="WMERSH-TurnInstructionPreview">${I18n.t(`wmersh.turn_instruction_preview`)}</label>`,
+                        '</div>',
                         TESTERS.indexOf(W.loginManager.user.userName) > -1 ? `<div class="controls-container"><input type="checkbox" id="WMERSH-Debug" value="on"><label for="WMERSH-Debug">${I18n.t(`wmersh.settings_1`)}</label></div>` : '',
                     '</div>',
                     '<div class="form-group">',
@@ -146,7 +155,7 @@
         ].join(' '));
         new WazeWrap.Interface.Tab('WMERSH', $section.html(), function(){});
         $('a[href$="#sidepanel-wmersh"]').html(`<span>`+svglogo+`</span>`)
-        $('a[href$="#sidepanel-wmersh"]').prop('title', 'WME RSF');
+        $('a[href$="#sidepanel-wmersh"]').prop('title', 'WME RSH');
         log("Tab Initialized",1);
     }
 
@@ -161,6 +170,7 @@
         let loadedSettings = $.parseJSON(localStorage.getItem(STORE_NAME));
         let defaultSettings = {
             FilterByState: true,
+            TurnInstructionPreview: true,
             Debug: false,
             lastVersion: 0
         };
@@ -200,6 +210,7 @@
         }
         setChecked('Debug', _settings.Debug);
         setChecked('FilterByState', _settings.FilterByState);
+        setChecked('TurnInstructionPreview', _settings.TurnInstructionPreview);
         $('#WMERSH-Debug').change(function() {
             let settingName = "Debug";
             _settings[settingName] = this.checked;
@@ -207,6 +218,11 @@
         });
         $('#WMERSH-FilterByState').change(function() {
             let settingName = "FilterByState";
+            _settings[settingName] = this.checked;
+            saveSettings();
+        });
+        $('#WMERSH-TurnInstructionPreview').change(function() {
+            let settingName = "TurnInstructionPreview";
             _settings[settingName] = this.checked;
             saveSettings();
         });
@@ -536,7 +552,194 @@
             }
         }
     }
+    function BuildBRTDiv() {
+        log("big-tooltip-region Detected")
+        log("Selected Segment[0]")
+        console.log(W.selectionManager._getSelectedSegments()[0])
+        let SegmentArray = document.querySelector("div.arrow.turn-arrow-state-open.hover").dataset.id.split(/(f|r)/g) //forward or reverse
+        SegmentArray = SegmentArray.filter(element => {
+            return element != null && element != '';
+        });
+        let SegmentJSON = JSON.stringify(SegmentArray);
+        let node;
+        if (SegmentArray[1] == "f") {
+            node = W.model.nodes.getObjectById(W.model.segments.getObjectById(SegmentArray[0]).attributes.toNodeID);
+        } else if (SegmentArray[1] == "r"){
+            node = W.model.nodes.getObjectById(W.model.segments.getObjectById(SegmentArray[0]).attributes.fromNodeID);
+        } else {
+            alert("Let The_Cre8r know about this PL.")
+        }
+        let turnData
+        let fromSeg = W.model.segments.getObjectById(SegmentArray[0])
+        let toSeg = W.model.segments.getObjectById(SegmentArray[2])
+        if (node.isConnectedToBigJunction() && !W.model.turnGraph.getTurnThroughNode(node,fromSeg,toSeg).turnData.turnGuidance) {
+            log("Node is Connected to Junction Box")
+            let JBpaths
+            if (SegmentArray[1] == "f") {
+                JBpaths = W.model.bigJunctions.getObjectById(W.selectionManager._getSelectedSegments()[0].attributes.toCrossroads[0])._pathCache
+            } else if (SegmentArray[1] == "r"){
+                JBpaths = W.model.bigJunctions.getObjectById(W.selectionManager._getSelectedSegments()[0].attributes.fromCrossroads[0])._pathCache
+            } else {
+                alert("Let The_Cre8r know about this PL.")
+            }
+            for (let path = 0; path < JBpaths.length; path++) {
+                if (JBpaths[path].fromVertex.segmentID == SegmentArray[0] && JBpaths[path].toVertex.segmentID == SegmentArray[2]) {
+                    turnData = JBpaths[path].turnData
+                    console.log(JBpaths[path]);
+                }
+            }
+        } else {
+            turnData = W.model.turnGraph.getTurnThroughNode(node,fromSeg,toSeg).turnData
+        }
+        log("Turn Data")
+        console.log(turnData);
+        let SignPreviewHTML = ''
+        if (turnData.turnGuidance) {
+            /* START Turn Arrow */
+            let ContinueSVG = `<svg width="210px" height="210px" viewBox="0 0 210 210" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"><g id="Artboard-6" transform="translate(-324.000000, -120.000000)" stroke="white"><g id="big_direction_forward" transform="translate(324.000000, 120.000000)"><line x1="105" y1="171" x2="105" y2="54" id="Stroke-2" stroke-width="18"></line><polygon id="Stroke-3" stroke-width="12" fill="white" points="105.124426 33 81 60 129 59.7628647"></polygon></g></g></g></svg>`;
+            let ExitLeftSVG = `<svg width="210px" height="210px" viewBox="0 0 210 210" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><linearGradient x1="50%" y1="-13.7465911%" x2="50%" y2="54.2487695%" id="linearGradient-1"><stop stop-color="#929292" stop-opacity="0" offset="0%"></stop><stop stop-color="#535353" offset="100%"></stop></linearGradient></defs><g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"><g id="Artboard-6" transform="translate(-89.000000, -363.000000)"><g id="big_direction_exit_left" transform="translate(89.000000, 363.000000)"><line x1="133" y1="166" x2="133" y2="31" id="Line-Copy" stroke="url(#linearGradient-1)" stroke-width="18"></line><path d="M133.5,60 L98.1375,94.9496104 C92.0048462,101.01039 86.9870769,112.982338 86.9870769,121.553766 L86.9870769,166.259221" id="Imported-Layers" stroke="white" stroke-width="18" transform="translate(110.243538, 113.129610) scale(-1, 1) translate(-110.243538, -113.129610) "></path><polygon id="Stroke-3-Copy-3" stroke="white" stroke-width="12" fill="white" transform="translate(74.250000, 48.750000) rotate(-45.000000) translate(-74.250000, -48.750000) " points="75.3106602 36.0220779 49.854816 61.4779221 98.645184 59.3566017"></polygon></g></g></g></svg>`
+            let ExitRightSVG = `<svg width="210px" height="210px" viewBox="0 0 210 210" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><linearGradient x1="50%" y1="-13.7465911%" x2="50%" y2="54.2487695%" id="linearGradient-1"><stop stop-color="#929292" stop-opacity="0" offset="0%"></stop><stop stop-color="#535353" offset="100%"></stop></linearGradient></defs><g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"><g id="Artboard-6" transform="translate(-320.000000, -363.000000)"><g id="big_direction_exit_right" transform="translate(425.000000, 468.000000) scale(-1, 1) translate(-425.000000, -468.000000) translate(320.000000, 363.000000)"><line x1="132" y1="165" x2="132" y2="30" id="Line-Copy" stroke="url(#linearGradient-1)" stroke-width="18"></line><path d="M132,60 L96.6375,94.9496104 C90.5048462,101.01039 85.4870769,112.982338 85.4870769,121.553766 L85.4870769,166.259221" id="Imported-Layers-Copy" stroke="white" stroke-width="18" transform="translate(108.743538, 113.129610) scale(-1, 1) translate(-108.743538, -113.129610) "></path><polygon id="Stroke-3-Copy-4" stroke="white" stroke-width="12" fill="white" transform="translate(71.250000, 48.750000) rotate(-45.000000) translate(-71.250000, -48.750000) " points="72.3106602 36.0220779 46.854816 61.4779221 95.645184 59.3566017"></polygon></g></g></g></svg>`
+            let KeepLeftSVG = ExitLeftSVG
+            let KeepRightSVG = ExitRightSVG
+            let NoneSVG = ``
+            let TurnLeftSVG = `<svg width="210px" height="210px" viewBox="0 0 210 210" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"><g id="Artboard-6" transform="translate(-544.000000, -120.000000)" stroke="white"><g id="big_direction_left-copy" transform="translate(544.000000, 120.000000)"><path d="M54,60 L86.621739,60 M154.290566,171 L154.290566,125.092254 M86.3366151,60.0721694 C123.663966,59.8744286 154.08866,88.9838184 154.290566,125.092254" id="Stroke-2" stroke-width="18"></path><polygon id="Stroke-3-Copy" stroke-width="12" fill="white" transform="translate(52.500000, 60.000000) rotate(-90.000000) translate(-52.500000, -60.000000) " points="52.624426 46.5 28.5 73.5 76.5 73.2628647"></polygon></g></g></g></svg>`
+            let TurnRightSVG = `<svg width="210px" height="210px" viewBox="0 0 210 210" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"><g id="Artboard-6" transform="translate(-764.000000, -120.000000)" stroke="white"><g id="big_direction_right-copy-2" transform="translate(764.000000, 120.000000)"><path d="M54,60 L86.621739,60 M154.290566,171 L154.290566,125.092254 M86.3366151,60.0721694 C123.663966,59.8744286 154.08866,88.9838184 154.290566,125.092254" id="Stroke-2-Copy" stroke-width="18" transform="translate(105.000000, 115.500000) scale(-1, 1) translate(-105.000000, -115.500000) "></path><polygon id="Stroke-3-Copy-2" stroke-width="12" fill="white" transform="translate(154.500000, 60.000000) scale(-1, 1) rotate(-90.000000) translate(-154.500000, -60.000000) " points="154.624426 46.5 130.5 73.5 178.5 73.2628647"></polygon></g></g></g></svg>`
+            let UTurnSVG = `<svg width="210px" height="210px" viewBox="0 0 210 210" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"><g id="Artboard-6" transform="translate(-550.000000, -363.000000)" stroke="white"><g id="big_direction_u_turn" transform="translate(550.000000, 363.000000)"><path d="M63.1093667,161.533902 L63.1093667,76.082849 M144,159 L144,78 M63.0006146,78 C62.8786912,54.9287685 80.9135963,36.1263855 103.27922,36.0006339 C125.646468,35.8748823 143.878077,54.474386 144,77.5439408" id="Imported-Layers" stroke-width="18"></path><polygon id="Stroke-3-Copy-5" stroke-width="12" fill="white" transform="translate(63.000000, 154.500000) rotate(-180.000000) translate(-63.000000, -154.500000) " points="63.124426 141 39 168 87 167.762865"></polygon></g></g></g></svg>`
+            let TurnHTML
+            let DefaultTurnHTML =`<div class="default-waze-selected"><div class="default-waze-selected-inner">Waze selected</div></div>`
 
+            switch (turnData.instructionOpcode) {
+                case null:
+                    TurnHTML = DefaultTurnHTML
+                    break;
+                case "CONTINUE":
+                    TurnHTML = ContinueSVG;
+                    break;
+                case "EXIT_LEFT":
+                    TurnHTML = ExitLeftSVG;
+                    break;
+                case "EXIT_RIGHT":
+                    TurnHTML = ExitRightSVG;
+                    break;
+                case "KEEP_LEFT":
+                    TurnHTML = KeepLeftSVG;
+                    break;
+                case "KEEP_RIGHT":
+                    TurnHTML = KeepRightSVG;
+                    break;
+                case "NONE":
+                    TurnHTML = NoneSVG;
+                    break;
+                case "TURN_LEFT":
+                    TurnHTML = TurnLeftSVG;
+                    break;
+                case "TURN_RIGHT":
+                    TurnHTML = TurnRightSVG;
+                    break;
+                case "UTURN":
+                    TurnHTML = UTurnSVG;
+                    break;
+                default:
+                    TurnHTML = `<div class="default-waze-selected-inner" style="color: red;">More Stuff<br> to Fix</div>`
+                    break;
+            }
+            /* START Exit Sign */
+            if (turnData.turnGuidance.exitSigns.length > 0) {
+                SignPreviewHTML = `<img class="inline-exit-sign" src="https://renderer-am.waze.com/renderer/v1/signs/${turnData.turnGuidance.exitSigns[0].type}?text=${turnData.turnGuidance.exitSigns[0].text}">`
+            }
+
+            /* START Visual Instuctions */
+            let turnGuidance =turnData.turnGuidance //"$RS-0 ᴛᴏ $RS-1 $RS-2 $RS-3"
+            let viArray = turnGuidance.visualInstruction.split(' ');
+            let visualInstructionHTML = ``
+            for (let j = 0; j < viArray.length; j++) {
+                if (viArray[j].includes("$RS-")) {
+                    let Shield = turnGuidance.roadShields[viArray[j].replace('$', '')]
+                    visualInstructionHTML += `<span class="inline-road-shield"><img class="sign-image" src="https://renderer-am.waze.com/renderer/v1/signs/${Shield.type}?text=${Shield.text}">&nbsp;<span>${Shield.direction ? Shield.direction : ''}</span></span>`
+                } else {
+                    visualInstructionHTML += `<span class="inline-free-text">${viArray[j]}</span>`
+                }
+            }
+
+            /* START Toward */
+            let towardsHTML = ``;
+            if (turnGuidance.towards) {
+                let towardsArray = turnGuidance.towards.split(' ');
+                towardsHTML = `<div class="secondary-markup">`
+                for (let j = 0; j < towardsArray.length; j++) {
+                    if (towardsArray[j].includes("$RS-")) {
+                        let Shield = turnGuidance.roadShields[towardsArray[j].replace('$', '')]
+                        towardsHTML += `<span class="inline-road-shield"><img class="sign-image" src="https://renderer-am.waze.com/renderer/v1/signs/${Shield.type}?text=${Shield.text}">&nbsp;<span></span></span>`
+                    } else {
+                        towardsHTML += `<span class="inline-free-text">${towardsArray[j]}</span>`
+                    }
+                }
+                towardsHTML += `<\div>`
+            } else {
+                towardsHTML = `<div class="secondary-markup markup-placeholder">Optional guidance for the driver</div>`
+            }
+
+            /* START HTML */
+            let htmlstring = `<div class="turn-preview-wrapper" style="margin: -15px -15px 5px;border-radius: 4px;"><div class="turn-preview" style="border-radius: 4px;">
+                                  <div>
+                                      <div class="turn-preview-inner">
+                                          <span class="turn-preview-arrow-wrapper">
+                                              ${TurnHTML}
+                                          </span>
+                                          <span class="turn-preview-content">
+                                              <div>XXX feet</div>
+                                              <span class="exit-signs-preview">
+                                                  ${SignPreviewHTML}
+                                              </span>
+                                              <div class="primary-markup">
+                                                  ${visualInstructionHTML}
+                                              </div>
+                                              ${towardsHTML}
+                                          </span>
+                                      </div>
+                                  </div>
+                              </div>`
+            let AdDIV = `<div id="wmersh-pc" style="margin: -10px -15px 5px;background:lightgray;" data-original-title="...and users like you." ><span style="font-size:10px; margin:auto; text-align: center;display: block;">Preview Courtesy of Road Shield Helper</span></div>`
+            let emptydiv = `<div style="background:red"></div>`
+            document.querySelector("#big-tooltip-region > div").insertAdjacentHTML('afterbegin',AdDIV)
+            document.querySelector("#big-tooltip-region > div").insertAdjacentHTML('afterbegin',htmlstring)
+            document.querySelector("#big-tooltip-region > div").insertAdjacentHTML('afterbegin',emptydiv)
+            document.querySelector("#big-tooltip-region > div > div.turn-arrow-tooltip > div.turn-header").remove()
+            $('#wmersh-pc').tooltip({placement: "bottom",container: "body"})
+
+            /* Start TTS Override */
+            let TTShtml
+            if (turnGuidance.tts) {
+                TTShtml = `<div id="wmersh-tts" data-original-title="TTS Override Active" style="display: inline-block;">
+                               <i class="fa fa-volume-up" aria-hidden="true" style="color: orange;font-size: 18px;margin-left: 7px;vertical-align: middle;"></i>
+                           </div>`
+                document.querySelector("#big-tooltip-region > div > div.turn-arrow-tooltip > div:nth-child(2) > span > i").insertAdjacentHTML('afterend',TTShtml)
+                $('#wmersh-tts').tooltip()
+            } else {
+                TTShtml = `<div id="wmersh-tts" data-original-title="Default TTS" style="display: inline-block;">
+                               <i class="fa fa-volume-up" aria-hidden="true" style="color: #72767d;font-size: 18px;margin-left: 7px;vertical-align: middle;"></i>
+                           </div>`
+                document.querySelector("#big-tooltip-region > div > div.turn-arrow-tooltip > div:nth-child(2) > span > i").insertAdjacentHTML('afterend',TTShtml)
+                $('#wmersh-tts').tooltip()
+            }
+        }
+    }
+
+    function BTRObserver(){
+        let observer = new MutationObserver(mutations => {
+            mutations.forEach(mutation => {
+                for (let i = 0; i < mutation.addedNodes.length; i++) {
+                    if (document.querySelector("#big-tooltip-region > div")) {
+                        if (_settings.TurnInstructionPreview) {
+                            BuildBRTDiv()
+                        }
+                     }
+                }
+            });
+        });
+        observer.observe(document.querySelector("#big-tooltip-region"), { childList: true });
+
+    }
     function RSObserver() {
         let observer = new MutationObserver(mutations => {
             mutations.forEach(mutation => {
@@ -548,8 +751,8 @@
                             filterShields(getState())
                         }
                         if (_settings.Debug) {
-                            document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-label").insertAdjacentHTML("beforeend", ` <i id="RSF_Test" class="fas fa-flask"></i>`)
-                            document.querySelector("#RSF_Test").onclick = function(){
+                            document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-label").insertAdjacentHTML("beforeend", ` <i id="RSH_Flask" class="fas fa-flask"></i>`)
+                            document.querySelector("#RSH_Flask").onclick = function(){
                                 var state = prompt("Please enter state name", "");
                                 log(state)
                                 if (state !== null) {
@@ -591,6 +794,10 @@
             $(element).trigger('input');
             element.setSelectionRange(cursorStart+character.length,cursorStart+character.length);
         }
+        let TTSResetButtonhtml = `
+        <button class="WMERSH-button" style="display: inline-block; position: absolute; left: 44px; font-size: 12px; font-weight: 500;cursor: pointer;" type="button" id="WMERSH-TTS-reset" value="Reset"><span>Reset</span></button>`
+        document.querySelector("#panel-container > div > div.turn-instructions-panel > div.panel-content > div:nth-child(5) > wz-label").insertAdjacentHTML('afterend',TTSResetButtonhtml)
+        $("#WMERSH-TTS-reset").click(function(){document.querySelector("#tts").value = null});
 
         function ButtonFunctions() {
             log("GetLastElement Ran")
@@ -602,32 +809,25 @@
                 }
             });
 
-            $("#rsh-txt-concurrent").click(function(){AddTxt("•",LastInputElement)}); //Alt + 7
-            $("#rsh-txt-towards").click(function(){AddTxt("»",LastInputElement)}); //Alt + 175
-            $("#rsh-txt-north").click(function(){AddTxt("Nᴏʀᴛʜ",LastInputElement)});
-            $("#rsh-txt-south").click(function(){AddTxt("Sᴏᴜᴛʜ",LastInputElement)});
-            $("#rsh-txt-east").click(function(){AddTxt("Eᴀꜱᴛ",LastInputElement)});
-            $("#rsh-txt-west").click(function(){AddTxt("Wᴇꜱᴛ",LastInputElement)});
-            $("#rsh-txt-to").click(function(){AddTxt("ᴛᴏ",LastInputElement)});
-            $("#rsh-txt-via").click(function(){AddTxt("ᴠɪᴀ",LastInputElement)});
-            $("#rsh-txt-jct").click(function(){AddTxt("ᴊᴄᴛ",LastInputElement)});
+            $(".WMERSH-button.insertChar").click(function(){AddTxt(this.value,LastInputElement)});
 
         }
-        let buttonstring = `<div id="WMERSH-panel" class="show wmersh-panel">
+        let buttonstring = `<div id="WMERSH-panel" class="wmersh-panel">
                                 <div id="WMERSH-panel-header" class="panel-header">
                                     <span style="-webkit-box-flex: 1;-ms-flex-positive: 1;flex-grow: 1;">Buttons</span>
                                 </div>
-                                <div id="WMERSH-panel-buttons">
-                                   <div style="position: absolute;z-index: 10;margin: 10px;">
-                                        <wz-button class="hydrated rsh-button" id="rsh-txt-concurrent">•</wz-button><br>
-                                        <wz-button class="hydrated rsh-button" id="rsh-txt-towards">»</wz-button><br>
-                                        <wz-button class="hydrated rsh-button" id="rsh-txt-north">Nᴏʀᴛʜ</wz-button><br>
-                                        <wz-button class="hydrated rsh-button" id="rsh-txt-south">Sᴏᴜᴛʜ</wz-button><br>
-                                        <wz-button class="hydrated rsh-button" id="rsh-txt-east">Eᴀꜱᴛ</wz-button><br>
-                                        <wz-button class="hydrated rsh-button" id="rsh-txt-west">Wᴇꜱᴛ</wz-button><br>
-                                        <wz-button class="hydrated rsh-button" id="rsh-txt-to">ᴛᴏ</wz-button><br>
-                                        <wz-button class="hydrated rsh-button" id="rsh-txt-via">ᴠɪᴀ</wz-button><br>
-                                        <wz-button class="hydrated rsh-button" id="rsh-txt-jct">ᴊᴄᴛ</wz-button>
+                                <div>
+                                    <div id="WMERSH-panel-buttons">
+                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-concurrent" value="•"><span>•</span></button>
+                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-towards" value="»"><span>»</span></button>
+                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-north" value="Nᴏʀᴛʜ"><span>Nᴏʀᴛʜ</span></button>
+                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-south" value="Sᴏᴜᴛʜ"><span>Sᴏᴜᴛʜ</span></button>
+                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-east" value="Eᴀꜱᴛ"><span>Eᴀꜱᴛ</span></button>
+                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-west" value="Wᴇꜱᴛ"><span>Wᴇꜱᴛ</span></button>
+                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-to" value="ᴛᴏ"><span>ᴛᴏ</span></button>
+                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-via" value="ᴠɪᴀ"><span>ᴠɪᴀ</span></button>
+                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-jct" value="ᴊᴄᴛ"><span>ᴊᴄᴛ</span></button>
+                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-parking" value="🅿"><span>🅿</span></button>
                                     </div>
                                 </div>
                             </div>`
@@ -667,6 +867,7 @@
                 bootsequence = bootsequence.filter(bs => bs !== "Waze")
                 RSObserver();
                 PanelObserver();
+                BTRObserver();
             }if (WazeWrap.Ready) {
                 bootsequence = bootsequence.filter(bs => bs !== "WazeWrap")
                 initTab();
