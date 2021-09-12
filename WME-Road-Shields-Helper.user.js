@@ -26,7 +26,7 @@
     const SCRIPT_NAME = GM_info.script.name;
     const SCRIPT_VERSION = GM_info.script.version.toString();
                                         //{"version": "2021.06.01.02","changes": ""},
-    const SCRIPT_HISTORY = `{"versions": [{"version": "2021.09.11.02","changes": "Fixed imperial units displaying in metric countries"},{"version": "2021.09.11.01","changes": "Fixed shield direction not displaying in Towards line of preview"},{"version": "2021.08.09.01","changes": "Added the preview on the turn instruction dialog box"},{"version": "2021.07.07.03","changes": "Fixed another small ꜱ in West and East."},{"version": "2021.07.07.02","changes": "Fixed small ꜱ in West and East."},{"version": "2021.07.07.01","changes": "Added Buttons to Turn Instructions and all states should be compatible. Please be sure to report an issue on GitHub if you find one that is not working."},{"version": "2021.06.12.01","changes": "Support for Illinois CH Road Shields, a few more SH- States, a few more SR- States, and Arkansas's Shield Name Suffixes"},{"version": "2021.06.05.01","changes": "Support for Missouri Supplemental Road Shields"},{"version": "2021.06.03.02","changes": "Support for Kansas K-xxx format"},{"version": "2021.06.03.01","changes": "Added CR support for states using hexagon type shields"},{"version": "2021.06.02.01","changes": "Added SR Shield for New Hampshire"},{"version": "2021.06.01.02","changes": "Added County Shields for Wisconsin<br>Updated Changelog Format"},{"version": "2021.06.01.01","changes": "Fixed GitHub URL"},{"version": "2021.05.31.01","changes": "Added Wisconsin and other miscellaneous fixes"},{"version": "2021.05.23.01","changes": "Initial Version"}]}`;
+    const SCRIPT_HISTORY = `{"versions": [{"version": "2021.09.11.02","changes": "Added appropriate button text for Canada; removed American button text for other countries; fixed imperial units displaying in metric countries"},{"version": "2021.09.11.01","changes": "Fixed shield direction not displaying in Towards line of preview"},{"version": "2021.08.09.01","changes": "Added the preview on the turn instruction dialog box"},{"version": "2021.07.07.03","changes": "Fixed another small ꜱ in West and East."},{"version": "2021.07.07.02","changes": "Fixed small ꜱ in West and East."},{"version": "2021.07.07.01","changes": "Added Buttons to Turn Instructions and all states should be compatible. Please be sure to report an issue on GitHub if you find one that is not working."},{"version": "2021.06.12.01","changes": "Support for Illinois CH Road Shields, a few more SH- States, a few more SR- States, and Arkansas's Shield Name Suffixes"},{"version": "2021.06.05.01","changes": "Support for Missouri Supplemental Road Shields"},{"version": "2021.06.03.02","changes": "Support for Kansas K-xxx format"},{"version": "2021.06.03.01","changes": "Added CR support for states using hexagon type shields"},{"version": "2021.06.02.01","changes": "Added SR Shield for New Hampshire"},{"version": "2021.06.01.02","changes": "Added County Shields for Wisconsin<br>Updated Changelog Format"},{"version": "2021.06.01.01","changes": "Fixed GitHub URL"},{"version": "2021.05.31.01","changes": "Added Wisconsin and other miscellaneous fixes"},{"version": "2021.05.23.01","changes": "Initial Version"}]}`;
     const GH = {link: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/', issue: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/issues/new', wiki: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/wiki'};
     const UPDATE_ALERT = true;
 
@@ -842,27 +842,53 @@
             $(".WMERSH-button.insertChar").click(function(){AddTxt(this.value,LastInputElement)});
 
         }
-        let buttonstring = `<div id="WMERSH-panel" class="wmersh-panel">
-                                <div id="WMERSH-panel-header" class="panel-header">
-                                    <span style="-webkit-box-flex: 1;-ms-flex-positive: 1;flex-grow: 1;">Buttons</span>
-                                </div>
-                                <div>
-                                    <div id="WMERSH-panel-buttons">
-                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-concurrent" value="•"><span>•</span></button>
-                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-towards" value="»"><span>»</span></button>
-                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-north" value="Nᴏʀᴛʜ"><span>Nᴏʀᴛʜ</span></button>
-                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-south" value="Sᴏᴜᴛʜ"><span>Sᴏᴜᴛʜ</span></button>
-                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-east" value="Eᴀꜱᴛ"><span>Eᴀꜱᴛ</span></button>
-                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-west" value="Wᴇꜱᴛ"><span>Wᴇꜱᴛ</span></button>
-                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-to" value="ᴛᴏ"><span>ᴛᴏ</span></button>
-                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-via" value="ᴠɪᴀ"><span>ᴠɪᴀ</span></button>
-                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-jct" value="ᴊᴄᴛ"><span>ᴊᴄᴛ</span></button>
-                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-parking" value="🅿"><span>🅿</span></button>
+
+        let countryCode = W.model.cities.getObjectById(W.model.streets.getObjectById(W.selectionManager._getSelectedSegments()[0].attributes.primaryStreetID).cityID).getCountryID()
+        if (countryCode == 235) { // USA
+            let buttonstring = `<div id="WMERSH-panel" class="wmersh-panel">
+                                    <div id="WMERSH-panel-header" class="panel-header">
+                                        <span style="-webkit-box-flex: 1;-ms-flex-positive: 1;flex-grow: 1;">Buttons</span>
                                     </div>
-                                </div>
-                            </div>`
-        $("#panel-container > div > div.turn-instructions-panel").before(buttonstring)
-        ButtonFunctions()
+                                    <div>
+                                        <div id="WMERSH-panel-buttons">
+                                            <button class="WMERSH-button insertChar" type="button" id="rsh-txt-concurrent" value="•"><span>•</span></button>
+                                            <button class="WMERSH-button insertChar" type="button" id="rsh-txt-towards" value="»"><span>»</span></button>
+                                            <button class="WMERSH-button insertChar" type="button" id="rsh-txt-north" value="Nᴏʀᴛʜ"><span>Nᴏʀᴛʜ</span></button>
+                                            <button class="WMERSH-button insertChar" type="button" id="rsh-txt-south" value="Sᴏᴜᴛʜ"><span>Sᴏᴜᴛʜ</span></button>
+                                            <button class="WMERSH-button insertChar" type="button" id="rsh-txt-east" value="Eᴀꜱᴛ"><span>Eᴀꜱᴛ</span></button>
+                                            <button class="WMERSH-button insertChar" type="button" id="rsh-txt-west" value="Wᴇꜱᴛ"><span>Wᴇꜱᴛ</span></button>
+                                            <button class="WMERSH-button insertChar" type="button" id="rsh-txt-to" value="ᴛᴏ"><span>ᴛᴏ</span></button>
+                                            <button class="WMERSH-button insertChar" type="button" id="rsh-txt-via" value="ᴠɪᴀ"><span>ᴠɪᴀ</span></button>
+                                            <button class="WMERSH-button insertChar" type="button" id="rsh-txt-jct" value="ᴊᴄᴛ"><span>ᴊᴄᴛ</span></button>
+                                            <button class="WMERSH-button insertChar" type="button" id="rsh-txt-parking" value="🅿"><span>🅿</span></button>
+                                        </div>
+                                    </div>
+                                </div>`
+            $("#panel-container > div > div.turn-instructions-panel").before(buttonstring)
+            ButtonFunctions()
+        } else if (countryCode == 40) { // Canada
+            let buttonstring = `<div id="WMERSH-panel" class="wmersh-panel">
+                                    <div id="WMERSH-panel-header" class="panel-header">
+                                        <span style="-webkit-box-flex: 1;-ms-flex-positive: 1;flex-grow: 1;">Buttons</span>
+                                    </div>
+                                    <div>
+                                        <div id="WMERSH-panel-buttons">
+                                            <button class="WMERSH-button insertChar" type="button" id="rsh-txt-concurrent" value="•"><span>•</span></button>
+                                            <button class="WMERSH-button insertChar" type="button" id="rsh-txt-towards" value="»"><span>»</span></button>
+                                            <button class="WMERSH-button insertChar" type="button" id="rsh-txt-north" value="ɴᴏʀᴛʜ"><span>ɴᴏʀᴛʜ</span></button>
+                                            <button class="WMERSH-button insertChar" type="button" id="rsh-txt-south" value="ꜱᴏᴜᴛʜ"><span>ꜱᴏᴜᴛʜ</span></button>
+                                            <button class="WMERSH-button insertChar" type="button" id="rsh-txt-east" value="ᴇᴀꜱᴛ"><span>ᴇᴀꜱᴛ</span></button>
+                                            <button class="WMERSH-button insertChar" type="button" id="rsh-txt-west" value="ᴡᴇꜱᴛ"><span>ᴡᴇꜱᴛ</span></button>
+                                            <button class="WMERSH-button insertChar" type="button" id="rsh-txt-nord" value="ɴᴏʀᴅ"><span>ɴᴏʀᴅ</span></button>
+                                            <button class="WMERSH-button insertChar" type="button" id="rsh-txt-sud" value="ꜱᴜᴅ"><span>ꜱᴜᴅ</span></button>
+                                            <button class="WMERSH-button insertChar" type="button" id="rsh-txt-est" value="ᴇꜱᴛ"><span>ᴇꜱᴛ</span></button>
+                                            <button class="WMERSH-button insertChar" type="button" id="rsh-txt-ouest" value="ᴏᴜᴇꜱᴛ"><span>ᴏᴜᴇꜱᴛ</span></button>
+                                        </div>
+                                    </div>
+                                </div>`
+            $("#panel-container > div > div.turn-instructions-panel").before(buttonstring)
+            ButtonFunctions()
+        }
     }
     function RegexMatch2() {
     }
