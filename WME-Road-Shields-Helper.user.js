@@ -556,7 +556,7 @@
         log("big-tooltip-region Detected")
         log("Selected Segment[0]")
         console.log(W.selectionManager._getSelectedSegments()[0])
-        let countryCode = W.model.cities.getObjectById(W.model.streets.getObjectById(W.selectionManager._getSelectedSegments()[0].attributes.primaryStreetID).cityID).getCountryID()
+        let countryName = W.selectionManager.getSegmentSelection().segments[0].model.topCountry.name
         let SegmentArray = document.querySelector("div.arrow.turn-arrow-state-open.hover").dataset.id.split(/(f|r)/g) //forward or reverse
         SegmentArray = SegmentArray.filter(element => {
             return element != null && element != '';
@@ -681,7 +681,7 @@
             }
 
             /* START HTML */
-            if (countryCode == 235) { // USA: use imperial units
+            if (countryName == 'United States' || countryName == 'Myanmar' || countryName == 'Liberia') { // use imperial units
                 let htmlstring = `<div class="turn-preview-wrapper" style="margin: -15px -15px 5px;border-radius: 4px;"><div class="turn-preview" style="border-radius: 4px;">
                                       <div>
                                           <div class="turn-preview-inner">
@@ -843,8 +843,8 @@
 
         }
 
-        let countryCode = W.model.cities.getObjectById(W.model.streets.getObjectById(W.selectionManager._getSelectedSegments()[0].attributes.primaryStreetID).cityID).getCountryID()
-        if (countryCode == 235) { // USA
+        let countryName = W.selectionManager.getSegmentSelection().segments[0].model.topCountry.name
+        if (countryName == 'United States') {
             let buttonstring = `<div id="WMERSH-panel" class="wmersh-panel">
                                     <div id="WMERSH-panel-header" class="panel-header">
                                         <span style="-webkit-box-flex: 1;-ms-flex-positive: 1;flex-grow: 1;">Buttons</span>
@@ -866,7 +866,7 @@
                                 </div>`
             $("#panel-container > div > div.turn-instructions-panel").before(buttonstring)
             ButtonFunctions()
-        } else if (countryCode == 40) { // Canada
+        } else if (countryName == 'Canada') {
             let buttonstring = `<div id="WMERSH-panel" class="wmersh-panel">
                                     <div id="WMERSH-panel-header" class="panel-header">
                                         <span style="-webkit-box-flex: 1;-ms-flex-positive: 1;flex-grow: 1;">Buttons</span>
