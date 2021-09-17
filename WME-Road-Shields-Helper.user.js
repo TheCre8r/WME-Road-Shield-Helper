@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper
 // @namespace    https://github.com/thecre8r/
-// @version      2021.09.11.02
+// @version      2021.09.16.01
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -26,7 +26,7 @@
     const SCRIPT_NAME = GM_info.script.name;
     const SCRIPT_VERSION = GM_info.script.version.toString();
                                         //{"version": "2021.06.01.02","changes": ""},
-    const SCRIPT_HISTORY = `{"versions": [{"version": "2021.09.11.02","changes": "Added appropriate button text for Canada; removed American button text for other countries; fixed imperial units displaying in metric countries"},{"version": "2021.09.11.01","changes": "Fixed shield direction not displaying in Towards line of preview"},{"version": "2021.08.09.01","changes": "Added the preview on the turn instruction dialog box"},{"version": "2021.07.07.03","changes": "Fixed another small ꜱ in West and East."},{"version": "2021.07.07.02","changes": "Fixed small ꜱ in West and East."},{"version": "2021.07.07.01","changes": "Added Buttons to Turn Instructions and all states should be compatible. Please be sure to report an issue on GitHub if you find one that is not working."},{"version": "2021.06.12.01","changes": "Support for Illinois CH Road Shields, a few more SH- States, a few more SR- States, and Arkansas's Shield Name Suffixes"},{"version": "2021.06.05.01","changes": "Support for Missouri Supplemental Road Shields"},{"version": "2021.06.03.02","changes": "Support for Kansas K-xxx format"},{"version": "2021.06.03.01","changes": "Added CR support for states using hexagon type shields"},{"version": "2021.06.02.01","changes": "Added SR Shield for New Hampshire"},{"version": "2021.06.01.02","changes": "Added County Shields for Wisconsin<br>Updated Changelog Format"},{"version": "2021.06.01.01","changes": "Fixed GitHub URL"},{"version": "2021.05.31.01","changes": "Added Wisconsin and other miscellaneous fixes"},{"version": "2021.05.23.01","changes": "Initial Version"}]}`;
+    const SCRIPT_HISTORY = `{"versions": [{"version": "2021.09.16.01","changes": "Improved country detection"},{"version": "2021.09.11.02","changes": "Added appropriate button text for Canada; removed American button text for other countries; fixed imperial units displaying in metric countries"},{"version": "2021.09.11.01","changes": "Fixed shield direction not displaying in Towards line of preview"},{"version": "2021.08.09.01","changes": "Added the preview on the turn instruction dialog box"},{"version": "2021.07.07.03","changes": "Fixed another small ꜱ in West and East."},{"version": "2021.07.07.02","changes": "Fixed small ꜱ in West and East."},{"version": "2021.07.07.01","changes": "Added Buttons to Turn Instructions and all states should be compatible. Please be sure to report an issue on GitHub if you find one that is not working."},{"version": "2021.06.12.01","changes": "Support for Illinois CH Road Shields, a few more SH- States, a few more SR- States, and Arkansas's Shield Name Suffixes"},{"version": "2021.06.05.01","changes": "Support for Missouri Supplemental Road Shields"},{"version": "2021.06.03.02","changes": "Support for Kansas K-xxx format"},{"version": "2021.06.03.01","changes": "Added CR support for states using hexagon type shields"},{"version": "2021.06.02.01","changes": "Added SR Shield for New Hampshire"},{"version": "2021.06.01.02","changes": "Added County Shields for Wisconsin<br>Updated Changelog Format"},{"version": "2021.06.01.01","changes": "Fixed GitHub URL"},{"version": "2021.05.31.01","changes": "Added Wisconsin and other miscellaneous fixes"},{"version": "2021.05.23.01","changes": "Initial Version"}]}`;
     const GH = {link: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/', issue: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/issues/new', wiki: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/wiki'};
     const UPDATE_ALERT = true;
 
@@ -681,8 +681,9 @@
             }
 
             /* START HTML */
+            let htmlstring = ``
             if (countryName == 'United States' || countryName == 'Myanmar' || countryName == 'Liberia') { // use imperial units
-                let htmlstring = `<div class="turn-preview-wrapper" style="margin: -15px -15px 5px;border-radius: 4px;"><div class="turn-preview" style="border-radius: 4px;">
+                htmlstring = `<div class="turn-preview-wrapper" style="margin: -15px -15px 5px;border-radius: 4px;"><div class="turn-preview" style="border-radius: 4px;">
                                       <div>
                                           <div class="turn-preview-inner">
                                               <span class="turn-preview-arrow-wrapper">
@@ -701,15 +702,8 @@
                                           </div>
                                       </div>
                                   </div>`
-                let AdDIV = `<div id="wmersh-pc" style="margin: -10px -15px 5px;background:lightgray;" data-original-title="...and users like you." ><span style="font-size:10px; margin:auto; text-align: center;display: block;">Preview Courtesy of Road Shield Helper</span></div>`
-                let emptydiv = `<div style="background:red"></div>`
-                document.querySelector("#big-tooltip-region > div").insertAdjacentHTML('afterbegin',AdDIV)
-                document.querySelector("#big-tooltip-region > div").insertAdjacentHTML('afterbegin',htmlstring)
-                document.querySelector("#big-tooltip-region > div").insertAdjacentHTML('afterbegin',emptydiv)
-                document.querySelector("#big-tooltip-region > div > div.turn-arrow-tooltip > div.turn-header").remove()
-                $('#wmersh-pc').tooltip({placement: "bottom",container: "body"})
             } else { // use metric units
-                let htmlstring = `<div class="turn-preview-wrapper" style="margin: -15px -15px 5px;border-radius: 4px;"><div class="turn-preview" style="border-radius: 4px;">
+                htmlstring = `<div class="turn-preview-wrapper" style="margin: -15px -15px 5px;border-radius: 4px;"><div class="turn-preview" style="border-radius: 4px;">
                                       <div>
                                           <div class="turn-preview-inner">
                                               <span class="turn-preview-arrow-wrapper">
@@ -728,14 +722,14 @@
                                           </div>
                                       </div>
                                   </div>`
-                let AdDIV = `<div id="wmersh-pc" style="margin: -10px -15px 5px;background:lightgray;" data-original-title="...and users like you." ><span style="font-size:10px; margin:auto; text-align: center;display: block;">Preview Courtesy of Road Shield Helper</span></div>`
-                let emptydiv = `<div style="background:red"></div>`
-                document.querySelector("#big-tooltip-region > div").insertAdjacentHTML('afterbegin',AdDIV)
-                document.querySelector("#big-tooltip-region > div").insertAdjacentHTML('afterbegin',htmlstring)
-                document.querySelector("#big-tooltip-region > div").insertAdjacentHTML('afterbegin',emptydiv)
-                document.querySelector("#big-tooltip-region > div > div.turn-arrow-tooltip > div.turn-header").remove()
-                $('#wmersh-pc').tooltip({placement: "bottom",container: "body"})
             }
+            let AdDIV = `<div id="wmersh-pc" style="margin: -10px -15px 5px;background:lightgray;" data-original-title="...and users like you." ><span style="font-size:10px; margin:auto; text-align: center;display: block;">Preview Courtesy of Road Shield Helper</span></div>`
+            let emptydiv = `<div style="background:red"></div>`
+            document.querySelector("#big-tooltip-region > div").insertAdjacentHTML('afterbegin',AdDIV)
+            document.querySelector("#big-tooltip-region > div").insertAdjacentHTML('afterbegin',htmlstring)
+            document.querySelector("#big-tooltip-region > div").insertAdjacentHTML('afterbegin',emptydiv)
+            document.querySelector("#big-tooltip-region > div > div.turn-arrow-tooltip > div.turn-header").remove()
+            $('#wmersh-pc').tooltip({placement: "bottom",container: "body"})
 
             /* Start TTS Override */
             let TTShtml
