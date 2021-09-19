@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper
 // @namespace    https://github.com/thecre8r/
-// @version      2021.09.11.01
+// @version      2021.09.19.01
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -26,7 +26,7 @@
     const SCRIPT_NAME = GM_info.script.name;
     const SCRIPT_VERSION = GM_info.script.version.toString();
                                         //{"version": "2021.06.01.02","changes": ""},
-    const SCRIPT_HISTORY = `{"versions": [{"version": "2021.09.11.01","changes": "Fixed shield direction not displaying in Towards line of preview"},{"version": "2021.08.09.01","changes": "Added the preview on the turn instruction dialog box"},{"version": "2021.07.07.03","changes": "Fixed another small ꜱ in West and East."},{"version": "2021.07.07.02","changes": "Fixed small ꜱ in West and East."},{"version": "2021.07.07.01","changes": "Added Buttons to Turn Instructions and all states should be compatible. Please be sure to report an issue on GitHub if you find one that is not working."},{"version": "2021.06.12.01","changes": "Support for Illinois CH Road Shields, a few more SH- States, a few more SR- States, and Arkansas's Shield Name Suffixes"},{"version": "2021.06.05.01","changes": "Support for Missouri Supplemental Road Shields"},{"version": "2021.06.03.02","changes": "Support for Kansas K-xxx format"},{"version": "2021.06.03.01","changes": "Added CR support for states using hexagon type shields"},{"version": "2021.06.02.01","changes": "Added SR Shield for New Hampshire"},{"version": "2021.06.01.02","changes": "Added County Shields for Wisconsin<br>Updated Changelog Format"},{"version": "2021.06.01.01","changes": "Fixed GitHub URL"},{"version": "2021.05.31.01","changes": "Added Wisconsin and other miscellaneous fixes"},{"version": "2021.05.23.01","changes": "Initial Version"}]}`;
+    const SCRIPT_HISTORY = `{"versions": [{"version": "2021.09.19.01","changes": "Added region-dependent text buttons and distance units"},{"version": "2021.09.11.01","changes": "Fixed shield direction not displaying in Towards line of preview"},{"version": "2021.08.09.01","changes": "Added the preview on the turn instruction dialog box"},{"version": "2021.07.07.03","changes": "Fixed another small ꜱ in West and East."},{"version": "2021.07.07.02","changes": "Fixed small ꜱ in West and East."},{"version": "2021.07.07.01","changes": "Added Buttons to Turn Instructions and all states should be compatible. Please be sure to report an issue on GitHub if you find one that is not working."},{"version": "2021.06.12.01","changes": "Support for Illinois CH Road Shields, a few more SH- States, a few more SR- States, and Arkansas's Shield Name Suffixes"},{"version": "2021.06.05.01","changes": "Support for Missouri Supplemental Road Shields"},{"version": "2021.06.03.02","changes": "Support for Kansas K-xxx format"},{"version": "2021.06.03.01","changes": "Added CR support for states using hexagon type shields"},{"version": "2021.06.02.01","changes": "Added SR Shield for New Hampshire"},{"version": "2021.06.01.02","changes": "Added County Shields for Wisconsin<br>Updated Changelog Format"},{"version": "2021.06.01.01","changes": "Fixed GitHub URL"},{"version": "2021.05.31.01","changes": "Added Wisconsin and other miscellaneous fixes"},{"version": "2021.05.23.01","changes": "Initial Version"}]}`;
     const GH = {link: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/', issue: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/issues/new', wiki: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/wiki'};
     const UPDATE_ALERT = true;
 
@@ -58,6 +58,14 @@
                 help: 'Ayuda',
                 filter_by_state: `Filtros de Escudos Por Estado`,
                 settings_1: 'Habilitar el modo de Limpiar',
+            },
+            fr: {
+                tab_title: `${SCRIPT_NAME}`,
+                report_an_issue: 'Signaler un problème sur GitHub',
+                help: 'Aide',
+                filter_by_state: `Filtrer les cartouches de localisation par région`,
+                turn_instruction_preview: "Aperçu des instructions de guidage",
+                settings_1: 'Activer le mode de débogage',
             }
         };
         translations['en-GB'] = translations['en-US'] = translations['en-AU'] = translations.en;
@@ -159,7 +167,7 @@
         log("Tab Initialized",1);
     }
 
-    let TESTERS = ["The_Cre8r","jm6087","s18slider","locojd1","SethSpeedy28","nzahn1","doctorkb","turnertr","sketch","phuz"];
+    const TESTERS = ["The_Cre8r","jm6087","s18slider","locojd1","SethSpeedy28","nzahn1","Harmonious4","turnertr","sketch","phuz"];
 
     function setChecked(checkboxId, checked) {
         $('#WMERSH-' + checkboxId).prop('checked', checked);
@@ -231,12 +239,6 @@
     /*-- End Settings --*/
 
     /*-- Start Libraries --*/
-    function getState() {
-        if (W.selectionManager.getSelectedFeatures().length > 0) {
-            let pStID = W.selectionManager._getSelectedSegments()[0].attributes.primaryStreetID;
-            return WazeWrap.Model.getStateName(pStID);
-        }
-    }
 
     function abbrState(input, to){
         var states = [['Arizona', 'AZ'],['Alabama', 'AL'],['Alaska', 'AK'],['Arkansas', 'AR'],['California', 'CA'],['Colorado', 'CO'],['Connecticut', 'CT'],['Delaware', 'DE'],['District of Columbia','DC'],['Florida', 'FL'],['Georgia', 'GA'],['Hawaii', 'HI'],['Idaho', 'ID'],['Illinois', 'IL'],['Indiana', 'IN'],['Iowa', 'IA'],['Kansas', 'KS'],['Kentucky', 'KY'],['Louisiana', 'LA'],['Maine', 'ME'],['Maryland', 'MD'],['Massachusetts', 'MA'],['Michigan', 'MI'],['Minnesota', 'MN'],['Mississippi', 'MS'],['Missouri', 'MO'],['Montana', 'MT'],['Nebraska', 'NE'],['Nevada', 'NV'],['New Hampshire', 'NH'],['New Jersey', 'NJ'],['New Mexico', 'NM'],['New York', 'NY'],['North Carolina', 'NC'],['North Dakota', 'ND'],['Ohio', 'OH'],['Oklahoma', 'OK'],['Oregon', 'OR'],['Pennsylvania', 'PA'],['Rhode Island', 'RI'],['South Carolina', 'SC'],['South Dakota', 'SD'],['Tennessee', 'TN'],['Texas', 'TX'],['Utah', 'UT'],['Vermont', 'VT'],['Virginia', 'VA'],['Washington', 'WA'],['West Virginia', 'WV'],['Wisconsin', 'WI'],['Wyoming', 'WY'],];
@@ -326,7 +328,7 @@
             }
         }
 
-        let State = getState()
+        let State = W.selectionManager.getSegmentSelection().segments[0].model.topState.name
         switch (match[1]) {
             case "CH":
                 if (State == "Wisconsin") {
@@ -556,6 +558,7 @@
         log("big-tooltip-region Detected")
         log("Selected Segment[0]")
         console.log(W.selectionManager._getSelectedSegments()[0])
+        let countryName = W.selectionManager.getSegmentSelection().segments[0].model.topCountry.name
         let SegmentArray = document.querySelector("div.arrow.turn-arrow-state-open.hover").dataset.id.split(/(f|r)/g) //forward or reverse
         SegmentArray = SegmentArray.filter(element => {
             return element != null && element != '';
@@ -676,29 +679,38 @@
                 }
                 towardsHTML += `<\div>`
             } else {
-                towardsHTML = `<div class="secondary-markup markup-placeholder">Optional guidance for the driver</div>`
+                towardsHTML = `<div class="secondary-markup markup-placeholder">${I18n.translations[I18n.currentLocale()].turn_instructions_panel.optional_towards}</div>`
+            }
+
+            /* START Units*/
+            let unitsString = ``;
+            let imperialCountries = ['United States', 'United Kingdom', 'Liberia', 'Myanmar', 'American Samoa', 'Bahamas', 'Belize', 'British Virgin Islands', 'Cayman Islands', 'Dominica', 'Falkland Islands', 'Grenada', 'Guam', 'Northern Mariana Islands', 'Samoa', 'St. Lucia', 'St. Vincent and the Grenadines', 'St. Helena', 'St. Kitts and Nevis', 'Turks and Caicos Islands', 'U.S. Virgin Islands']
+            if (imperialCountries.includes(countryName)) { // use imperial units
+                unitsString = I18n.translations[I18n.currentLocale()].turn_instructions_panel.preview.distance_missing_imperial
+            } else {
+                unitsString = I18n.translations[I18n.currentLocale()].turn_instructions_panel.preview.distance_missing
             }
 
             /* START HTML */
             let htmlstring = `<div class="turn-preview-wrapper" style="margin: -15px -15px 5px;border-radius: 4px;"><div class="turn-preview" style="border-radius: 4px;">
-                                  <div>
-                                      <div class="turn-preview-inner">
-                                          <span class="turn-preview-arrow-wrapper">
-                                              ${TurnHTML}
-                                          </span>
-                                          <span class="turn-preview-content">
-                                              <div>XXX feet</div>
-                                              <span class="exit-signs-preview">
-                                                  ${SignPreviewHTML}
+                                      <div>
+                                          <div class="turn-preview-inner">
+                                              <span class="turn-preview-arrow-wrapper">
+                                                  ${TurnHTML}
                                               </span>
-                                              <div class="primary-markup">
-                                                  ${visualInstructionHTML}
-                                              </div>
-                                              ${towardsHTML}
-                                          </span>
+                                              <span class="turn-preview-content">
+                                                  <div>${unitsString}</div>
+                                                  <span class="exit-signs-preview">
+                                                      ${SignPreviewHTML}
+                                                  </span>
+                                                  <div class="primary-markup">
+                                                      ${visualInstructionHTML}
+                                                  </div>
+                                                  ${towardsHTML}
+                                              </span>
+                                          </div>
                                       </div>
-                                  </div>
-                              </div>`
+                                  </div>`
             let AdDIV = `<div id="wmersh-pc" style="margin: -10px -15px 5px;background:lightgray;" data-original-title="...and users like you." ><span style="font-size:10px; margin:auto; text-align: center;display: block;">Preview Courtesy of Road Shield Helper</span></div>`
             let emptydiv = `<div style="background:red"></div>`
             document.querySelector("#big-tooltip-region > div").insertAdjacentHTML('afterbegin',AdDIV)
@@ -708,20 +720,19 @@
             $('#wmersh-pc').tooltip({placement: "bottom",container: "body"})
 
             /* Start TTS Override */
-            let TTShtml
+            let title, color
             if (turnGuidance.tts) {
-                TTShtml = `<div id="wmersh-tts" data-original-title="TTS Override Active" style="display: inline-block;">
-                               <i class="fa fa-volume-up" aria-hidden="true" style="color: orange;font-size: 18px;margin-left: 7px;vertical-align: middle;"></i>
-                           </div>`
-                document.querySelector("#big-tooltip-region > div > div.turn-arrow-tooltip > div:nth-child(2) > span > i").insertAdjacentHTML('afterend',TTShtml)
-                $('#wmersh-tts').tooltip()
+                title = 'TTS Override Active'
+                color = 'orange'
             } else {
-                TTShtml = `<div id="wmersh-tts" data-original-title="Default TTS" style="display: inline-block;">
-                               <i class="fa fa-volume-up" aria-hidden="true" style="color: #72767d;font-size: 18px;margin-left: 7px;vertical-align: middle;"></i>
-                           </div>`
-                document.querySelector("#big-tooltip-region > div > div.turn-arrow-tooltip > div:nth-child(2) > span > i").insertAdjacentHTML('afterend',TTShtml)
-                $('#wmersh-tts').tooltip()
+                title = 'Default TTS'
+                color = '#72767d'
             }
+            let TTShtml = `<div id="wmersh-tts" data-original-title="${title}" style="display: inline-block;">
+                               <i class="fa fa-volume-up" aria-hidden="true" style="color: ${color};font-size: 18px;margin-left: 7px;vertical-align: middle;"></i>
+                           </div>`
+            document.querySelector("#big-tooltip-region > div > div.turn-arrow-tooltip > div:nth-child(2) > span > i").insertAdjacentHTML('afterend',TTShtml)
+            $('#wmersh-tts').tooltip()
         }
     }
 
@@ -748,7 +759,7 @@
                         log("Filter Ran")
                         RegexMatch()
                         if (_settings.FilterByState) {
-                            filterShields(getState())
+                            filterShields(W.selectionManager.getSegmentSelection().segments[0].model.topState.name)
                         }
                         if (_settings.Debug) {
                             document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-label").insertAdjacentHTML("beforeend", ` <i id="RSH_Flask" class="fas fa-flask"></i>`)
@@ -812,22 +823,46 @@
             $(".WMERSH-button.insertChar").click(function(){AddTxt(this.value,LastInputElement)});
 
         }
+
+        let countryName = W.selectionManager.getSegmentSelection().segments[0].model.topCountry.name
+        let stateName = W.selectionManager.getSegmentSelection().segments[0].model.topState.name
+        let buttonHTML = ``
+        function addButton(id, value) {
+            buttonHTML += `<button class="WMERSH-button insertChar" type="button" id="rsh-txt-${id}" value="${value}"><span>${value}</span></button>`
+        }
+        if (countryName == 'United States' || countryName == 'Canada') {
+            addButton('concurrent', '•')
+            addButton('towards', '»')
+        }
+        if (countryName == 'United States') {
+            addButton('north', 'Nᴏʀᴛʜ')
+            addButton('south', 'Sᴏᴜᴛʜ')
+            addButton('east', 'Eᴀꜱᴛ')
+            addButton('west', 'Wᴇꜱᴛ')
+            addButton('to', 'ᴛᴏ')
+            addButton('via', 'ᴠɪᴀ')
+            addButton('jct', 'ᴊᴄᴛ')
+            addButton('parking', '🅿')
+        } else if (countryName == 'Canada') {
+            if (stateName == 'Quebec') {
+                addButton('nord', 'ɴᴏʀᴅ')
+                addButton('sud', 'ꜱᴜᴅ')
+                addButton('est', 'ᴇꜱᴛ')
+                addButton('ouest', 'ᴏᴜᴇꜱᴛ')
+            } else {
+                addButton('north', 'ɴᴏʀᴛʜ')
+                addButton('south', 'ꜱᴏᴜᴛʜ')
+                addButton('east', 'ᴇᴀꜱᴛ')
+                addButton('west', 'ᴡᴇꜱᴛ')
+            }
+        }
         let buttonstring = `<div id="WMERSH-panel" class="wmersh-panel">
                                 <div id="WMERSH-panel-header" class="panel-header">
                                     <span style="-webkit-box-flex: 1;-ms-flex-positive: 1;flex-grow: 1;">Buttons</span>
                                 </div>
                                 <div>
                                     <div id="WMERSH-panel-buttons">
-                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-concurrent" value="•"><span>•</span></button>
-                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-towards" value="»"><span>»</span></button>
-                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-north" value="Nᴏʀᴛʜ"><span>Nᴏʀᴛʜ</span></button>
-                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-south" value="Sᴏᴜᴛʜ"><span>Sᴏᴜᴛʜ</span></button>
-                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-east" value="Eᴀꜱᴛ"><span>Eᴀꜱᴛ</span></button>
-                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-west" value="Wᴇꜱᴛ"><span>Wᴇꜱᴛ</span></button>
-                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-to" value="ᴛᴏ"><span>ᴛᴏ</span></button>
-                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-via" value="ᴠɪᴀ"><span>ᴠɪᴀ</span></button>
-                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-jct" value="ᴊᴄᴛ"><span>ᴊᴄᴛ</span></button>
-                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-parking" value="🅿"><span>🅿</span></button>
+                                        ${buttonHTML}
                                     </div>
                                 </div>
                             </div>`
@@ -843,7 +878,10 @@
                 for (let i = 0; i < mutation.addedNodes.length; i++) {
                     if (document.querySelector("#panel-container > div > div") && document.querySelector("#panel-container > div > div").classList.contains("turn-instructions-panel")) {
                         log("TIO Panel Detected")
-                        TIOButtons()
+                        let countryName = W.selectionManager.getSegmentSelection().segments[0].model.topCountry.name
+                        if (countryName == 'United States' || countryName == 'Canada') {
+                            TIOButtons()
+                        }
                         RegexMatch2()
                     }
                 }
