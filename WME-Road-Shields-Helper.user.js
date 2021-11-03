@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2021.08.24.0101
+// @version      2021.11.01.0101
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -688,7 +688,7 @@
                 for (let j = 0; j < towardsArray.length; j++) {
                     if (towardsArray[j].includes("$RS-")) {
                         let Shield = turnGuidance.roadShields[towardsArray[j].replace('$', '')]
-                        towardsHTML += `<span class="inline-road-shield"><img class="sign-image" src="https://renderer-am.waze.com/renderer/v1/signs/${Shield.type}?text=${Shield.text}">&nbsp;<span></span></span>`
+                        towardsHTML += `<span class="inline-road-shield"><img class="sign-image" src="https://renderer-am.waze.com/renderer/v1/signs/${Shield.type}?text=${Shield.text}">&nbsp;<span>${Shield.direction ? Shield.direction : ''}</span></span>`
                     } else {
                         towardsHTML += `<span class="inline-free-text">${towardsArray[j]}</span>`
                     }
