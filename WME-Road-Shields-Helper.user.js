@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper
 // @namespace    https://github.com/thecre8r/
-// @version      2021.09.19.01
+// @version      2021.11.03.01
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -267,7 +267,7 @@
         let regex = /(?:((?:(?:[A-Z]+)(?=\-))|(?:Parish Rd))(?:-|\ )((?:[A-Z]+)|(?:\d+(?:[A-Z])?(?:-\d+)?)))?(?: (BUS|ALT|BYP|CONN|SPUR|TRUCK))?(?: (N|E|S|W))?(?: • (.*))?/;
         let SHStates = ['Colorado', 'Minnesota', 'Oklahoma', 'Texas'];
         let SRStates = ['Alabama', 'Arizona', 'California', 'Connecticut', 'Florida', 'Georgia', 'Illinois', 'Massachusetts', 'Maine', 'New Hampshire', 'New Mexico', 'Ohio', 'Pennsylvania', 'Utah', 'Washington'];
-        let CRStates = ['Alabama', 'Arkansas', 'Florida', 'Louisiana', 'New Jersey', 'New York'];
+        let CRStates = ['Alabama', 'Arkansas', 'Florida', 'Louisiana', 'New Jersey', 'New York', 'North Dakota'];
         let DoneStates = ['Delaware', 'North Carolina', 'New Jersey', 'Virginia'].concat(SRStates);
         let match = streetname.match(regex);
 
