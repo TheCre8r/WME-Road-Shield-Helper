@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper
 // @namespace    https://github.com/thecre8r/
-// @version      2021.11.03.01
+// @version      2021.11.04.01
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -843,6 +843,7 @@
             addButton('via', 'ᴠɪᴀ')
             addButton('jct', 'ᴊᴄᴛ')
             addButton('parking', '🅿')
+            addButton('airport', '✈︎')
         } else if (countryName == 'Canada') {
             if (stateName == 'Quebec') {
                 addButton('nord', 'ɴᴏʀᴅ')
