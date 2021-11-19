@@ -66,6 +66,14 @@
                 filter_by_state: `Filtrer les cartouches de localisation par région`,
                 turn_instruction_preview: "Aperçu des instructions de guidage",
                 settings_1: 'Activer le mode de débogage',
+            },
+            he: {
+                tab_title: `${SCRIPT_NAME}`,
+                report_an_issue: 'דווח על בעיה',
+                help: 'עזרה',
+                filter_by_state: 'סנן מגנין לפי מדינה',
+                turn_instruction_preview: 'הפעל תצוגה מקדימה להנחיות',
+                settings_1: 'הפעל מצב ניפוי באגים'
             }
         };
         translations['en-GB'] = translations['en-US'] = translations['en-AU'] = translations.en;
