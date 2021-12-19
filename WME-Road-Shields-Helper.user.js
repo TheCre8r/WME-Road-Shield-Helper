@@ -157,7 +157,7 @@
         log("Tab Initialized",1);
     }
 
-    let TESTERS = ["The_Cre8r","jm6087","s18slider","locojd1","SethSpeedy28","nzahn1","doctorkb","turnertr","sketch","phuz"];
+    let TESTERS = ["The_Cre8r","jm6087","s18slider","locojd1","SethSpeedy28","nzahn1","doctorkb","turnertr","sketch","phuz","ABelter"];
 
     function setChecked(checkboxId, checked) {
         $('#WMERSH-' + checkboxId).prop('checked', checked);
@@ -576,7 +576,7 @@
         }
         turnData = W.model.turnGraph.getTurnThroughNode(node,fromSeg,toSeg).turnData
         if (turnData && turnData.turnGuidance) {
-            WazeWrap.Alerts.info(GM_info.script.name, ` TurnGuidance`);
+            //WazeWrap.Alerts.info(GM_info.script.name, ` TurnGuidance`);
             console.log(turnData)
         }
         /* -- END Get Node Details --*/
@@ -859,15 +859,21 @@
             let htmlstring = `<div id="WMERSH-TIO-Autofill"><wz-button class="hydrated">Autofill</wz-button></div>`
             document.querySelector("#panel-container > div > div.turn-instructions-panel").insertAdjacentHTML('afterbegin',htmlstring)
             document.querySelector("#WMERSH-TIO-Autofill").onclick = function(){
-                //let exittext = document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span > span > input[type=text]").value
-                let exittext = document.querySelector("#tts").shadowRoot.querySelector("#id").placeholder
-                let regex = /(Exits?) (\d+(?:.*)?): (.*)/
+                let exittext = document.querySelector("#tts").value
+                if (!exittext) {
+                    exittext = document.querySelector("#tts").shadowRoot.querySelector("#id").placeholder
+                }
+                let regex = /(Exits?) (\d+(?:.*)?): (.*)/;
                 let regex2 = /(?:((?:[A-Z]+)(?=\-))-((?:[A-Z]+)|(?:\d+(?:[A-Z])?(?:-\d+)?)))?(?: (BUS|ALT|BYP|CONN|SPUR|TRUCK))?(?: (N|E|S|W))?/;
+                let regex3 = /^(to ).*/;
                 let match = exittext.match(regex);
+                console.log(match)
                 let match2
+                let match3 = exittext.match(regex3);
+                console.log(match3)
 
                 /** Start Add Exit Arrow **/
-                if (match[1].includes("Exit")) {
+                if (match && match[1].includes("Exit")) {
                     if ($('.exit-sign-item').length == 0) {
                         document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(3) > div > wz-button").shadowRoot.querySelector("button").click()
                     }
@@ -876,37 +882,87 @@
                     } else {
                         document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(3) > div > div > div > span > span > wz-menu > wz-menu-item:nth-child(1) > img").click()
                     }
+                    document.querySelector("#text").value = match[2] //Exit number
                 }
                 /** End Add Exit Arrow **/
 
                 /** Start Visual Instructions **/
-                document.querySelector("#text").value = match[2] //Exit signs
-                let Strings = match[3].split(" / ");
-                if (match[3]) {
-                    match2 = match[3].match(regex2);
+                let Visuals;
+                if (match3 && match3[1].includes("to")) {
+                    Visuals = exittext.split(" » ");
+                } else {
+                    Visuals = match[3].split(" » "); //Split remaining segment name (after exit #) into before/after towards (»)
+                }
+                let Towards = Visuals[1]; //Used later
+                let Strings = Visuals[0].split(/ \/ | • /);
+                if (Visuals[0]) {
+                    match2 = Visuals[0].match(regex2);
                     console.log(match2)
                 }
                 document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(1) > span > i").click()
+                let adjIndex = 0;
                 Strings.forEach(function(item, index){
+                    console.log('Processing string '+index+': '+item)
+                    let match4 = item.match(regex3);
+                    console.log(match4)
+                    if (match4 && match4[1] == "to ") {
+                        document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > wz-menu > wz-menu-item:nth-child(2)").click()
+                        document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+adjIndex+1}) > span > input[type=text]`).value = "ᴛᴏ";
+                        $(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+adjIndex+1}) > span > input[type=text]`).trigger('input');
+                        item = item.replace('to ','');
+                        adjIndex += 1;
+                    }
                     let match2 = item.match(regex2);
+                    console.log(match2)
+                    let shieldID
+                    let replaceDirection = false;
+
                     if (match2[1] && match2[2]) {
-                        console.log(match2)
                         document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > wz-menu > wz-menu-item:nth-child(1)").click()
-                        //document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).value = item;
-                        document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > wz-menu > wz-menu-item:nth-child(1)`).click()
-                        //document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span > span > wz-menu > wz-menu-item:nth-child(1)").click()
-                        $("input#direction").trigger('input');
+                        //document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+adjIndex+1}) > span > input[type=text]`).value = item;
+                        const shieldsList = document.querySelectorAll(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+adjIndex+1}) > span > wz-menu > wz-menu-item > span.street-name`);
+                        shieldsList.forEach(function(item2, index2){
+                            //item2 = String(item2).replace('<span class="street-name">','').replace('</span>','')
+                            let roadName = item2.textContent;
+                            let baseRoadName = roadName.replace(/(?: (N|E|S|W))$/,'');
+                            if (item == roadName){
+                                shieldID = index2;
+                                console.log('shield: '+index2+' '+roadName)
+                                return;
+                            } else if (item == baseRoadName) {
+                                shieldID = index2;
+                                console.log('shield: '+index2+' '+baseRoadName)
+                                replaceDirection = true;
+                                return;
+                            }
+                        });
+                        if (shieldID > -1) {
+                            document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+adjIndex+1}) > span > wz-menu > wz-menu-item:nth-child(${shieldID+1})`).click()
+                            if (replaceDirection) {
+                                document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+adjIndex+1}) > span > input#direction`).value = '';
+                            }
+                            $("input#direction").trigger('input');
+                        } else {
+                            WazeWrap.Alerts.error(GM_info.script.name,'Shield does not exist nearby for '+item+'. If you know it exists, try panning around and/or zooming out to load it in the shields menu, otherwise add to a nearby segment.');
+                        }
                     } else {
                         document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > wz-menu > wz-menu-item:nth-child(2)").click()
-                        document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).value = item;
-                        $(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).trigger('input');
+                        document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+adjIndex+1}) > span > input[type=text]`).value = item;
+                        $(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+adjIndex+1}) > span > input[type=text]`).trigger('input');
                     }
-                    console.log(index);
-                    console.log(item);
 
                 });
                 $('input#text').trigger('input');
                 /** End Visual Instructions **/
+
+                /** Start Towards **/
+                if (Towards) {
+                    console.log(Towards)
+                    document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(2) > div > wz-menu > wz-menu-item:nth-child(2)").click()
+                    document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(2) > div > div > div > span:nth-child(1) > span > input[type=text]").value = Towards;
+                    $("#panel-container > div > div > div.panel-content > div:nth-child(2) > div > div > div > span:nth-child(1) > span > input[type=text]").trigger('input');
+                }
+                /** End Towards **/
 
             };
         }
@@ -927,6 +983,84 @@
         observer.observe(document.querySelector("#panel-container"), { childList: true });
     }
     /*-- END Turn Instruction Overrides --*/
+
+    /*-- START Street Names (• and ») --*/
+    function AddressFormButtons() {
+        function AddTxt(character,element) {
+            log(element)
+            let v,textBefore,textAfter
+            if (element.shadowRoot){
+                let cursorStart = element.shadowRoot.querySelector("#id").selectionStart;
+                let cursorEnd = element.shadowRoot.querySelector("#id").selectionEnd;
+                v = element.shadowRoot.querySelector("#id").value;
+                textBefore = v.substring(0, cursorStart);
+                textAfter = v.substring(cursorEnd, v.length);
+                element.value = textBefore + character + textAfter;
+                $(element).trigger('input');
+                element = element.shadowRoot.querySelector("#id")
+            }
+            let cursorStart = element.selectionStart;
+            let cursorEnd = element.selectionEnd;
+            v = element.value;
+            textBefore = v.substring(0, cursorStart);
+            textAfter = v.substring(cursorEnd, v.length);
+            element.value = textBefore + character + textAfter;
+            element.focus();
+            $(element).trigger('input');
+            element.setSelectionRange(cursorStart+character.length,cursorStart+character.length);
+        }
+
+        function ButtonFunctions() {
+            log("GetLastElement Ran")
+            let LastInputElement;
+            $(".panel-content").click(function(){
+                if (document.activeElement.tagName == "INPUT" || document.activeElement.tagName == "TEXTAREA" || document.activeElement.tagName == "WZ-TEXTAREA") {
+                    LastInputElement = document.activeElement
+                    console.log(LastInputElement)
+                }
+            });
+
+            $(".WMERSH-button.insertChar").click(function(){AddTxt(this.value,LastInputElement)});
+
+        }
+        let buttonstring2 = `<div id="WMERSH-panel2" class="wmersh-panel">
+                                <div id="WMERSH-panel2-header" class="panel-header">
+                                    <span style="-webkit-box-flex: 1;-ms-flex-positive: 1;flex-grow: 1;">Buttons</span>
+                                </div>
+                                <div>
+                                    <div id="WMERSH-panel2-buttons">
+                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-concurrent2" value="•"><span>•</span></button>
+                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-towards2" value="»"><span>»</span></button>
+                                    </div>
+                                </div>
+                            </div>`
+        $("#editor-container > div#map > div#map-popover-layers").after(buttonstring2)
+        ButtonFunctions()
+    }
+    function PrimaryNameObserver() {
+        var addressForm = document.querySelector('#segment-edit-general > div.address-edit > div > form.address-form');
+        log("test")
+        var previousValue = addressForm.style.display;
+
+        var observer = new MutationObserver( function(mutations){
+            mutations.forEach( function(mutation) {
+                if (mutation.attributeName !== 'style') return;
+                var currentValue = mutation.target.style.display;
+                if (currentValue !== previousValue) {
+                    if (previousValue === "none" && currentValue !== "none") {
+                        log("Address Form Detected")
+                        AddressFormButtons()
+                    }
+
+                    previousValue = mutation.target.style.display;
+                }
+            });
+        });
+
+
+        observer.observe(addressForm, { attributes: true });
+    }
+    /*-- END Street Names --*/
 
     let bootsequence = ["DOM","I18n","Waze","WazeWrap"];
     function bootstrap(tries = 1) {
