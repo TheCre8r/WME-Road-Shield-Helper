@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2021.11.04.0101
+// @version      2021.12.30.0101
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -23,11 +23,18 @@
     const STORE_NAME = "WMERSH_Settings";
     const SCRIPT_NAME = GM_info.script.name;
     const SCRIPT_VERSION = GM_info.script.version.toString();
-                                        //{"version": "2021.06.01.02","changes": ""},
+    //{"version": "2021.06.01.02","changes": ""},
     const SCRIPT_HISTORY = `{"versions": [{"version": "2021.08.24.01","changes": "Fixed Popup not showing in some junction boxes"},"version": "2021.08.09.01","changes": "Added the preview on the turn instruction dialog box"},{"version": "2021.07.07.03","changes": "Fixed another small ꜱ in West and East."},{"version": "2021.07.07.02","changes": "Fixed small ꜱ in West and East."},{"version": "2021.07.07.01","changes": "Added Buttons to Turn Instructions and all states should be compatible. Please be sure to report an issue on GitHub if you find one that is not working."},{"version": "2021.06.12.01","changes": "Support for Illinois CH Road Shields, a few more SH- States, a few more SR- States, and Arkansas's Shield Name Suffixes"},{"version": "2021.06.05.01","changes": "Support for Missouri Supplemental Road Shields"},{"version": "2021.06.03.02","changes": "Support for Kansas K-xxx format"},{"version": "2021.06.03.01","changes": "Added CR support for states using hexagon type shields"},{"version": "2021.06.02.01","changes": "Added SR Shield for New Hampshire"},{"version": "2021.06.01.02","changes": "Added County Shields for Wisconsin<br>Updated Changelog Format"},{"version": "2021.06.01.01","changes": "Fixed GitHub URL"},{"version": "2021.05.31.01","changes": "Added Wisconsin and other miscellaneous fixes"},{"version": "2021.05.23.01","changes": "Initial Version"}]}`;
     const GH = {link: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/', issue: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/issues/new', wiki: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/wiki'};
     const UPDATE_ALERT = true;
-
+    
+// Version 2021.12.30.001 - Pushed by jm6087
+    //Fixed the autofill for "Exits".  It now works with "to" ramps.  It also selects the correct shield if it is listed in the shield list.
+    // It will now parse on "/", "»", and "•"
+    // If there is only 1 street name/shield after "Exit ###" or "to ", it will only fill in the Visual Instructions box.
+    // If there are 2 or more street names/shields, it will duplicate the information in both the Visual Instruction and Toward box
+    // This will allow you to delete whichever street name/shield does not belong per field instead of having to add to the Toward box
+    
     let _settings = {};
     let svglogo = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" width="13" height="13" viewBox="0 0 384 384" overflow="visible" enable-background="new 0 0 13384" xml:space="preserve" style="vertical-align: middle;"><path xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd" d="M303.8720703,28.0273438l50.3662109,52.1557617    C339.7480469,97.5253906,331,119.8857422,331,144.2758789c0,20.8432617,6.4052734,40.2626953,17.3476563,56.3041992    C357.5654297,214.0683594,363,230.4316406,363,248c0,46.2294922-37.3447266,83.7363281-83.5097656,83.9990234    C247.1210938,332.0214844,217.1582031,341.6162109,192,358.0605469c-25.1884766-16.4648438-55.1953125-26.0625-87.609375-26.0625    C58.2797852,331.6728516,21,294.1904297,21,248c0-17.5673828,5.4345703-33.9316406,14.6523438-47.4199219    C46.5942383,184.5385742,53,165.1191406,53,144.2758789c0-24.390625-8.7480469-46.7504883-23.2382813-64.0927734    l50.3662109-52.1557617C96.0566406,37.9365234,114.8740234,43.6699219,135,43.6699219c21.0283203,0,40.6298828-6.2587891,57-17    c16.3701172,10.7412109,35.9716797,17,57,17C269.1259766,43.6699219,287.9433594,37.9365234,303.8720703,28.0273438z     M249,31.6699219c21.2548828,0,40.8378906-7.2177734,56.4121094-19.3222656l65.4033203,67.7265625    C353.7060547,96.1201172,343,118.9477539,343,144.2758789c0,18.3544922,5.6318359,35.425293,15.2578125,49.5375977    C368.7890625,209.2226563,375,227.9277344,375,248c0,52.8339844-42.6796875,95.6992188-95.4414063,95.9980469    c-32.8427734,0.0117188-62.9824219,10.65625-87.5585938,28.6523438    c-24.5898438-18.0048828-54.7475586-28.6523438-87.609375-28.6523438C51.6513672,343.671875,9,300.8164063,9,248    c0-20.0722656,6.2109375-38.7773438,16.7421875-54.1865234C35.3681641,179.7011719,41,162.6303711,41,144.2758789    c0-25.328125-10.706543-48.1557617-27.8154297-64.2016602l65.4033203-67.7265625    C94.1621094,24.4521484,113.7451172,31.6699219,135,31.6699219c21.5219727,0,41.3310547-7.3989258,57-19.7802734    C207.6689453,24.2709961,227.4775391,31.6699219,249,31.6699219z"></path></svg>`
 
@@ -120,35 +127,35 @@
         let $section = $("<div>");
         $section.html([
             '<div>',
-                '<div id="WMERSH-header">',
-                    `<span id="WMERSH-title">${I18n.t(`wmersh.tab_title`)}</span>`,
-                    `<span id="WMERSH-version">${SCRIPT_VERSION}</span>`,
-                '</div>',
-                '<form class="attributes-form side-panel-section">',
-                    '<div class="form-group">',
-                        '<div class="controls-container">',
-                            `<input type="checkbox" id="WMERSH-FilterByState" value="on"><label for="WMERSH-FilterByState">${I18n.t(`wmersh.filter_by_state`)}</label>`,
-                        '</div>',
-                        '<div class="controls-container">',
-                            `<input type="checkbox" id="WMERSH-TurnInstructionPreview" value="on"><label for="WMERSH-TurnInstructionPreview">${I18n.t(`wmersh.turn_instruction_preview`)}</label>`,
-                        '</div>',
-                        TESTERS.indexOf(W.loginManager.user.userName) > -1 ? `<div class="controls-container"><input type="checkbox" id="WMERSH-Debug" value="on"><label for="WMERSH-Debug">${I18n.t(`wmersh.settings_1`)}</label></div>` : '',
-                    '</div>',
-                    '<div class="form-group">',
-                        '<div class="WMERSH-report">',
-                            '<i class="fa fa-github" style="font-size: 13px; padding-right:5px"></i>',
-                            '<div style="display: inline-block;">',
-                                `<a target="_blank" href="${GH.issue}" id="WMERSH-report-an-issue">${I18n.t(`wmersh.report_an_issue`)}</a>`,
-                            '</div>',
-                        '</div>',
-                        `<div class="WMERSH-help" style="text-align: center;padding-top: 5px;">`,
-                            `<i class="fa fa-question-circle-o" style="font-size: 13px; padding-right:5px"></i>`,
-                            `<div style="display: inline-block;">`,
-                                `<a target="_blank" href="${GH.wiki}" id="WMERSH-help-link">${I18n.t(`wmersh.help`)}</a>`,
-                            `</div>`,
-                        `</div>`,
-                    '</div>',
-                '</form>',
+            '<div id="WMERSH-header">',
+            `<span id="WMERSH-title">${I18n.t(`wmersh.tab_title`)}</span>`,
+            `<span id="WMERSH-version">${SCRIPT_VERSION}</span>`,
+            '</div>',
+            '<form class="attributes-form side-panel-section">',
+            '<div class="form-group">',
+            '<div class="controls-container">',
+            `<input type="checkbox" id="WMERSH-FilterByState" value="on"><label for="WMERSH-FilterByState">${I18n.t(`wmersh.filter_by_state`)}</label>`,
+            '</div>',
+            '<div class="controls-container">',
+            `<input type="checkbox" id="WMERSH-TurnInstructionPreview" value="on"><label for="WMERSH-TurnInstructionPreview">${I18n.t(`wmersh.turn_instruction_preview`)}</label>`,
+            '</div>',
+            TESTERS.indexOf(W.loginManager.user.userName) > -1 ? `<div class="controls-container"><input type="checkbox" id="WMERSH-Debug" value="on"><label for="WMERSH-Debug">${I18n.t(`wmersh.settings_1`)}</label></div>` : '',
+            '</div>',
+            '<div class="form-group">',
+            '<div class="WMERSH-report">',
+            '<i class="fa fa-github" style="font-size: 13px; padding-right:5px"></i>',
+            '<div style="display: inline-block;">',
+            `<a target="_blank" href="${GH.issue}" id="WMERSH-report-an-issue">${I18n.t(`wmersh.report_an_issue`)}</a>`,
+            '</div>',
+            '</div>',
+            `<div class="WMERSH-help" style="text-align: center;padding-top: 5px;">`,
+            `<i class="fa fa-question-circle-o" style="font-size: 13px; padding-right:5px"></i>`,
+            `<div style="display: inline-block;">`,
+            `<a target="_blank" href="${GH.wiki}" id="WMERSH-help-link">${I18n.t(`wmersh.help`)}</a>`,
+            `</div>`,
+            `</div>`,
+            '</div>',
+            '</form>',
             '</div>'
         ].join(' '));
         new WazeWrap.Interface.Tab('WMERSH', $section.html(), function(){});
@@ -157,7 +164,7 @@
         log("Tab Initialized",1);
     }
 
-    let TESTERS = ["The_Cre8r","jm6087","s18slider","locojd1","SethSpeedy28","nzahn1","doctorkb","turnertr","sketch","phuz"];
+    let TESTERS = ["The_Cre8r","jm6087","s18slider","locojd1","SethSpeedy28","nzahn1","Harmonious4","turnertr","sketch","phuz"];
 
     function setChecked(checkboxId, checked) {
         $('#WMERSH-' + checkboxId).prop('checked', checked);
@@ -416,7 +423,7 @@
                 } else if (State == "North Carolina") {
                     CreateError(`Error: ${State} does not use road shields for Secondary Routes`,`Error`);
                 } else if (State == "Virginia") {
-                   if (match[2] < 600 || match[2] == 785 || match[2] == 895) {
+                    if (match[2] < 600 || match[2] == 785 || match[2] == 895) {
                         MakeShield(match,State);
                     } else {
                         CreateError(`Warning: Please verify that this road uses <b>SR Generic Main</b> and not <b>VA - State Main.</b>`,`Alert`);
@@ -576,7 +583,7 @@
         }
         turnData = W.model.turnGraph.getTurnThroughNode(node,fromSeg,toSeg).turnData
         if (turnData && turnData.turnGuidance) {
-            WazeWrap.Alerts.info(GM_info.script.name, ` TurnGuidance`);
+            //            WazeWrap.Alerts.info(GM_info.script.name, ` TurnGuidance`);
             console.log(turnData)
         }
         /* -- END Get Node Details --*/
@@ -752,7 +759,7 @@
                         if (_settings.TurnInstructionPreview) {
                             BuildBRTDiv()
                         }
-                     }
+                    }
                 }
             });
         });
@@ -861,46 +868,93 @@
             document.querySelector("#WMERSH-TIO-Autofill").onclick = function(){
                 //let exittext = document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span > span > input[type=text]").value
                 let exittext = document.querySelector("#tts").shadowRoot.querySelector("#id").placeholder
-                let regex = /(Exits?) (\d+(?:.*)?): (.*)/
+                let regex = /((Exits?) (\d+(?:.*)?): (.*)|(to) (.*))/ ///(Exits?) (\d+(?:.*)?): (.*)/
                 let regex2 = /(?:((?:[A-Z]+)(?=\-))-((?:[A-Z]+)|(?:\d+(?:[A-Z])?(?:-\d+)?)))?(?: (BUS|ALT|BYP|CONN|SPUR|TRUCK))?(?: (N|E|S|W))?/;
                 let match = exittext.match(regex);
                 let match2
+                let m4 = 4
+                let m5 = 5
+                //                let m6 = 6
 
                 /** Start Add Exit Arrow **/
-                if (match[1].includes("Exit")) {
-                    if ($('.exit-sign-item').length == 0) {
-                        document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(3) > div > wz-button").shadowRoot.querySelector("button").click()
-                    }
-                    if (document.querySelector("#turn-override-select").shadowRoot.querySelector("#select-wrapper > div > div > span").innerText == "Exit left") {
-                        document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(3) > div > div > div > span > span > wz-menu > wz-menu-item:nth-child(2) > img").click()
-                    } else {
-                        document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(3) > div > div > div > span > span > wz-menu > wz-menu-item:nth-child(1) > img").click()
-                    }
-                }
+                if (match[2]) {
+                    if (match[2].includes("Exit")) { //if (match[1].includes("Exit")) {
+                        if ($('.exit-sign-item').length == 0) {
+                            document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(3) > div > wz-button").shadowRoot.querySelector("button").click()
+                        }
+                        if (document.querySelector("#turn-override-select").shadowRoot.querySelector("#select-wrapper > div > div > span").innerText == "Exit left") {
+                            document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(3) > div > div > div > span > span > wz-menu > wz-menu-item:nth-child(2) > img").click()
+                        } else {
+                            document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(3) > div > div > div > span > span > wz-menu > wz-menu-item:nth-child(1) > img").click()
+                        }
+                    }}
                 /** End Add Exit Arrow **/
 
+                if (match[m5]) {
+                    m4 = m4 + 2;
+                    m5 = m5 + 2;
+                }
+
                 /** Start Visual Instructions **/
-                document.querySelector("#text").value = match[2] //Exit signs
-                let Strings = match[3].split(" / ");
                 if (match[3]) {
-                    match2 = match[3].match(regex2);
+                    document.querySelector("#text").value = match[3] // document.querySelector("#text").value = match[2] //Exit signs
+                }
+                let Strings = match[m4].split(/[\/»•]/); // let Strings = match[3].split(" / ");
+                if (match[m4]) { // if (match[3]) {
+                    match2 = match[m4].match(regex2); // match2 = match[3].match(regex2);
                     console.log(match2)
                 }
                 document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(1) > span > i").click()
+                    document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > wz-menu > wz-menu-item:nth-child(1)").click()
+                    let shck = 0;
+                    let shieldcheck = document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(1) > span > wz-menu`).children[0].innerText;
+                    if (shieldcheck != "No shields found on nearby streets - try zooming out") shck = 1;
+                    document.querySelector("#panel-container > div > div.turn-instructions-panel > div.panel-content > div:nth-child(1) > div > div > div > span > span > i").click();
+
                 Strings.forEach(function(item, index){
+                    item = item.trim();
                     let match2 = item.match(regex2);
                     if (match2[1] && match2[2]) {
+                        let x = 0;
                         console.log(match2)
                         document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > wz-menu > wz-menu-item:nth-child(1)").click()
-                        //document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).value = item;
-                        document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > wz-menu > wz-menu-item:nth-child(1)`).click()
-                        //document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span > span > wz-menu > wz-menu-item:nth-child(1)").click()
+                        if (Strings.length > 1){
+                            document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(2) > div > wz-menu > wz-menu-item:nth-child(1)").click()
+                        }
+                        if (shck == 1) {
+                        let shieldcount = document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > wz-menu`).childElementCount;
+
+                        for (var sc = 0; sc < shieldcount; sc++) {
+                            var dir1 = document.querySelector(`#panel-container > div > div.turn-instructions-panel > div.panel-content > div:nth-child(1) > div > div > div > span > span > wz-menu > wz-menu-item:nth-child(${sc + 1}) > span.street-name`).innerText;
+                            if (dir1 == match2[0]) {
+                                x = 1
+                                document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > wz-menu > wz-menu-item:nth-child(${sc + 1})`).click()
+                                if (Strings.length > 1){
+                                    document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(2) > div > div > div > span:nth-child(${index+1}) > span > wz-menu > wz-menu-item:nth-child(${sc + 1})`).click()
+                                }}}}
+                        if (x == 0) {
+                            document.querySelector(`#panel-container > div > div.turn-instructions-panel > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > i`).click()
+                            if (Strings.length > 1){
+                                document.querySelector(`#panel-container > div > div.turn-instructions-panel > div.panel-content > div:nth-child(2) > div > div > div > span:nth-child(${index+1}) > span > i`).click()
+                            }
+                            document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > wz-menu > wz-menu-item:nth-child(2)").click()
+                            document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).value = item;
+                            $(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).trigger('input');
+                            if (Strings.length > 1){
+                                document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(2) > div > wz-menu > wz-menu-item:nth-child(2)").click()
+                                document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(2) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).value = item;
+                                $(`#panel-container > div > div > div.panel-content > div:nth-child(2) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).trigger('input');
+                            }} // }
                         $("input#direction").trigger('input');
                     } else {
                         document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > wz-menu > wz-menu-item:nth-child(2)").click()
                         document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).value = item;
                         $(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).trigger('input');
-                    }
+                        if (Strings.length > 1){
+                            document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(2) > div > wz-menu > wz-menu-item:nth-child(2)").click()
+                            document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(2) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).value = item;
+                            $(`#panel-container > div > div > div.panel-content > div:nth-child(2) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).trigger('input');
+                        }}
                     console.log(index);
                     console.log(item);
 
