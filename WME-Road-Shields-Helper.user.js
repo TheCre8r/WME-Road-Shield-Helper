@@ -309,7 +309,6 @@
             }
             if (suffixoverride) {
                 Suffix = suffixoverride;
-                log (suffixoverride);
             } else if (match[3] !== undefined) {
                 Suffix = match[3];
             } else {
