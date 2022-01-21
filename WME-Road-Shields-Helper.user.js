@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2022.01.20.0101
+// @version      2022.01.20.0102
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -267,7 +267,7 @@
     function AutoFiller() {
 
         let streetname = document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-header > div.street-name").innerText
-        let regex = /(?:((?:(?:[A-Z]+)(?=\-))|(?:Beltway)|(?:Loop)|(?:Parish Rd)|(?:Park Rd)|(?:Recreation Rd)|(?:Spur))(?:-|\ )((?:[A-Z]+)|(?:\d+(?:[A-Z])?(?:-\d+)?)))?(?: (BUS|ALT|BYP|CONN|SPUR|TRUCK))?(?: (N|E|S|W))?(?: • (.*))?/;
+        let regex = /(?:((?:(?:[A-Z]+)(?=\-))|(?:Beltway)|(?:Loop)|(?:Parish Rd)|(?:Park Rd)|(?:Recreational Rd)|(?:Spur))(?:-|\ )((?:[A-Z]+)|(?:\d+(?:[A-Z])?(?:-\d+)?)))?(?: (BUS|ALT|BYP|CONN|SPUR|TRUCK))?(?: (N|E|S|W))?(?: • (.*))?/;
         let SHStates = ['Colorado', 'Minnesota', 'Oklahoma', 'Texas'];
         let SRStates = ['Alabama', 'Arizona', 'California', 'Connecticut', 'Florida', 'Georgia', 'Illinois', 'Massachusetts', 'Maine', 'New Hampshire', 'New Mexico', 'Ohio', 'Pennsylvania', 'Utah', 'Washington'];
         let CRStates = ['Alabama', 'Arkansas', 'Florida', 'Louisiana', 'New Jersey', 'New York', 'North Dakota', 'South Dakota'];
@@ -365,10 +365,13 @@
                 }
                 break;
             case "FM":
-            case "Recreation Rd":
             case "RM":
                 if (State == "Texas") {
-                    MakeShield(match,State,undefined,match[1]);
+                    if (match[3] == "BUS") {
+                        MakeShield(match,State,undefined, "(FM) BUS");
+                    } else {
+                        MakeShield(match,State,undefined,match[1]);
+                    }
                 } else {
                     CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`,`Error`);
                 }
@@ -433,9 +436,20 @@
                     CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`,`Error`);
                 }
                 break;
+            case "Recreational Rd":
+                if (State == "Texas") {
+                    MakeShield(match,State,undefined,"Recreational");
+                } else {
+                    CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`,`Error`);
+                }
+                break;
             case "SH":
                 if (SHStates.indexOf(State)>=0) {
-                    MakeShield(match,State);
+                    if (State == "Texas" && match[3] == "BUS") {
+                        MakeShield(match,State,undefined,"square BUS");
+                    } else {
+                        MakeShield(match,State);
+                    }
                 } else if (State == "Missouri") {
                     MakeShield(match,State,undefined,"Supplemental");
                 } else {
