@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2022.01.20.0102
+// @version      2022.01.21.0101
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -24,7 +24,7 @@
     const SCRIPT_NAME = GM_info.script.name;
     const SCRIPT_VERSION = GM_info.script.version.toString();
     //{"version": "2021.06.01.02","changes": ""},
-    const SCRIPT_HISTORY = `{"versions": [{"version": "2022.01.22.01","changes": "Added support for Texas shields"},{"2021.08.24.01","changes": "Fixed Popup not showing in some junction boxes"},"version": "2021.08.09.01","changes": "Added the preview on the turn instruction dialog box"},{"version": "2021.07.07.03","changes": "Fixed another small ꜱ in West and East."},{"version": "2021.07.07.02","changes": "Fixed small ꜱ in West and East."},{"version": "2021.07.07.01","changes": "Added Buttons to Turn Instructions and all states should be compatible. Please be sure to report an issue on GitHub if you find one that is not working."},{"version": "2021.06.12.01","changes": "Support for Illinois CH Road Shields, a few more SH- States, a few more SR- States, and Arkansas's Shield Name Suffixes"},{"version": "2021.06.05.01","changes": "Support for Missouri Supplemental Road Shields"},{"version": "2021.06.03.02","changes": "Support for Kansas K-xxx format"},{"version": "2021.06.03.01","changes": "Added CR support for states using hexagon type shields"},{"version": "2021.06.02.01","changes": "Added SR Shield for New Hampshire"},{"version": "2021.06.01.02","changes": "Added County Shields for Wisconsin<br>Updated Changelog Format"},{"version": "2021.06.01.01","changes": "Fixed GitHub URL"},{"version": "2021.05.31.01","changes": "Added Wisconsin and other miscellaneous fixes"},{"version": "2021.05.23.01","changes": "Initial Version"}]}`;
+    const SCRIPT_HISTORY = `{"versions": [{"version": "2022.01.22.01","changes": "Added support for more new shields"},{"2021.08.24.01","changes": "Fixed Popup not showing in some junction boxes"},"version": "2021.08.09.01","changes": "Added the preview on the turn instruction dialog box"},{"version": "2021.07.07.03","changes": "Fixed another small ꜱ in West and East."},{"version": "2021.07.07.02","changes": "Fixed small ꜱ in West and East."},{"version": "2021.07.07.01","changes": "Added Buttons to Turn Instructions and all states should be compatible. Please be sure to report an issue on GitHub if you find one that is not working."},{"version": "2021.06.12.01","changes": "Support for Illinois CH Road Shields, a few more SH- States, a few more SR- States, and Arkansas's Shield Name Suffixes"},{"version": "2021.06.05.01","changes": "Support for Missouri Supplemental Road Shields"},{"version": "2021.06.03.02","changes": "Support for Kansas K-xxx format"},{"version": "2021.06.03.01","changes": "Added CR support for states using hexagon type shields"},{"version": "2021.06.02.01","changes": "Added SR Shield for New Hampshire"},{"version": "2021.06.01.02","changes": "Added County Shields for Wisconsin<br>Updated Changelog Format"},{"version": "2021.06.01.01","changes": "Fixed GitHub URL"},{"version": "2021.05.31.01","changes": "Added Wisconsin and other miscellaneous fixes"},{"version": "2021.05.23.01","changes": "Initial Version"}]}`;
     const GH = {link: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/', issue: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/issues/new', wiki: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/wiki'};
     const UPDATE_ALERT = true;
     
@@ -267,7 +267,7 @@
     function AutoFiller() {
 
         let streetname = document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-header > div.street-name").innerText
-        let regex = /(?:((?:(?:[A-Z]+)(?=\-))|(?:Beltway)|(?:Loop)|(?:Parish Rd)|(?:Park Rd)|(?:Recreational Rd)|(?:Spur))(?:-|\ )((?:[A-Z]+)|(?:\d+(?:[A-Z])?(?:-\d+)?)))?(?: (BUS|ALT|BYP|CONN|SPUR|TRUCK))?(?: (N|E|S|W))?(?: • (.*))?/;
+        let regex = /(?:((?:(?:[A-Z]+)(?=\-))|(?:Beltway)|(?:Loop)|(?:TOLL)|(?:Parish Rd)|(?:Park Rd)|(?:Recreational Rd)|(?:Spur))(?:-|\ )((?:[A-Z]+)|(?:\d+(?:[A-Z])?(?:-\d+)?)))?(?: (ALT-TRUCK|BUS|ALT|BYP|CONN|SPUR|TRUCK|TOLL|Toll|LOOP|NASA|Park|LINK))?(?: (N|E|S|W))?(?: • (.*))?/;
         let SHStates = ['Colorado', 'Minnesota', 'Oklahoma', 'Texas'];
         let SRStates = ['Alabama', 'Arizona', 'California', 'Connecticut', 'Florida', 'Georgia', 'Illinois', 'Massachusetts', 'Maine', 'New Hampshire', 'New Mexico', 'Ohio', 'Pennsylvania', 'Utah', 'Washington'];
         let CRStates = ['Alabama', 'Arkansas', 'Florida', 'Louisiana', 'New Jersey', 'New York', 'North Dakota', 'South Dakota'];
@@ -309,6 +309,14 @@
             }
             if (suffixoverride) {
                 Suffix = suffixoverride;
+            } else if (State == "Texas" && (match[3].toUpperCase() == "TOLL")) {
+                Suffix = "Main Toll";
+            } else if (State == "Texas" && (match[3] == "BUS" || match[3] == "LOOP" || match[3] == "NASA" || match[3] == "SPUR" || match[3] == "Park")) {
+                Suffix = "square " + match[3];
+            } else if (State == "Florida" && (match[3] == "TOLL")) {
+                Suffix = "Toll";
+            } else if (State == "Alaska" && (match[3] == "BUS")) {
+                Suffix = "Main " + match[3];
             } else if (match[3] !== undefined) {
                 Suffix = match[3];
             } else {
@@ -336,8 +344,26 @@
         let State = getState()
         switch (match[1]) {
             case "Beltway":
+                if (State == "Texas") {
+                    MakeShield(match,State,undefined,'square ' + match[1].toUpperCase());
+                } else {
+                    CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`,`Error`);
+                }
+                break;
             case "Loop":
+                if (State == "Texas") {
+                    MakeShield(match,State,undefined,'square ' + match[1].toUpperCase());
+                } else {
+                    CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`,`Error`);
+                }
+                break;
             case "NASA":
+                if (State == "Texas") {
+                    MakeShield(match,State,undefined,'square ' + match[1].toUpperCase());
+                } else {
+                    CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`,`Error`);
+                }
+                break;
             case "Spur":
                 if (State == "Texas") {
                     MakeShield(match,State,undefined,'square ' + match[1].toUpperCase());
@@ -365,13 +391,22 @@
                 }
                 break;
             case "FM":
-            case "RM":
+                if (State == "Texas" && match[3] == "BUS"){
+                    MakeShield(match,State,undefined,"(FM) BUS");
+                } else if (State == "Texas") {
+                    MakeShield(match,State,undefined,match[1]);
+                }
+                break;
+            case "Recreational Rd":
                 if (State == "Texas") {
-                    if (match[3] == "BUS") {
-                        MakeShield(match,State,undefined, "(FM) BUS");
-                    } else {
-                        MakeShield(match,State,undefined,match[1]);
-                    }
+                    MakeShield(match,State,undefined,'Recreational');
+                }
+                break;
+            case "RM":
+                if (State == "Texas" && match[3] == "BUS"){
+                    MakeShield(match,State,undefined,"(RM) BUS");
+                } else if (State == "Texas") {
+                    MakeShield(match,State,undefined,match[1]);
                 } else {
                     CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`,`Error`);
                 }
@@ -436,20 +471,12 @@
                     CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`,`Error`);
                 }
                 break;
-            case "Recreational Rd":
-                if (State == "Texas") {
-                    MakeShield(match,State,undefined,"Recreational");
-                } else {
-                    CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`,`Error`);
-                }
+            case "PR":
+                MakeShield("Puerto Rico - Primary Roads");
                 break;
             case "SH":
                 if (SHStates.indexOf(State)>=0) {
-                    if (State == "Texas" && match[3] == "BUS") {
-                        MakeShield(match,State,undefined,"square BUS");
-                    } else {
-                        MakeShield(match,State);
-                    }
+                    MakeShield(match,State);
                 } else if (State == "Missouri") {
                     MakeShield(match,State,undefined,"Supplemental");
                 } else {
@@ -478,6 +505,11 @@
                 } else {
                     CreateError(`Error: SR ${match[3]} Road Shield is not available`,`Error`);
                     return;
+                }
+                break;
+            case "TOLL":
+                if (State == "Texas") {
+                    MakeShield(match,State,undefined,'Main Toll');
                 }
                 break;
             case "US":
@@ -577,7 +609,7 @@
 
     function filterShields(state) {
         let country = W.model.getTopCountry().name
-        if (country == "Canada" || country == "United States") {
+        if (country == "Canada" || country == "United States" || country == "Puerto Rico") {
             log("Filtered " + state)
             for(var j = 1; j <= document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu").childElementCount; j++){
                 let lineitem = document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > wz-menu-item:nth-child(`+j+`)`)
