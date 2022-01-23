@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper Nightly
 // @namespace    https://github.com/thecre8r/
-// @version      2022.01.22.0101
+// @version      2022.01.23.0101
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -309,7 +309,7 @@
             }
             if (suffixoverride) {
                 Suffix = suffixoverride;
-            } else if (State == "Texas" && (match[3].toUpperCase() == "TOLL")) {
+            } else if (State == "Texas" && match[3] == "TOLL") {
                 Suffix = "Main Toll";
             } else if (State == "Texas" && (match[3] == "BUS" || match[3] == "LOOP" || match[3] == "NASA" || match[3] == "SPUR" || match[3] == "Park")) {
                 Suffix = "square " + match[3];
@@ -811,11 +811,13 @@
                                   </div>
                               </div>`
             let AdDIV = `<div id="wmersh-pc" style="margin: -10px -15px 5px;background:lightgray;" data-original-title="...and users like you." ><span style="font-size:10px; margin:auto; text-align: center;display: block;">Preview Courtesy of Road Shield Helper</span></div>`
+            let AdDIV2 = `<div id="wmersh-pc" style="margin: -10px -15px 5px;background:lightgray;" data-original-title="HELLO" ><span style="font-size:10px; margin:auto; text-align: center;display: block;">Preview Courtesy of Road Shield Helper</span></div>`
             let emptydiv = `<div style="background:red"></div>`
             document.querySelector("#big-tooltip-region > div").insertAdjacentHTML('afterbegin',AdDIV)
             document.querySelector("#big-tooltip-region > div").insertAdjacentHTML('afterbegin',htmlstring)
             document.querySelector("#big-tooltip-region > div").insertAdjacentHTML('afterbegin',emptydiv)
             document.querySelector("#big-tooltip-region > div > div.turn-arrow-tooltip > div.turn-header").remove()
+            document.querySelector("#big-tooltip-region > div").insertAdjacentHTML('afterbegin',AdDIV2)
             $('#wmersh-pc').tooltip({placement: "bottom",container: "body"})
 
             /* Start TTS Override */
@@ -954,7 +956,8 @@
                 //let exittext = document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span > span > input[type=text]").value
                 let exittext = document.querySelector("#tts").shadowRoot.querySelector("#id").placeholder
                 let regex = /((Exits?) (\d+(?:.*)?): (.*)|(to) (.*))/ ///(Exits?) (\d+(?:.*)?): (.*)/
-                let regex2 = /(?:((?:[A-Z]+)(?=\-))-((?:[A-Z]+)|(?:\d+(?:[A-Z])?(?:-\d+)?)))?(?: (BUS|ALT|BYP|CONN|SPUR|TRUCK|TOLL))?(?: (N|E|S|W))?/;
+//                let regex2 = /(?:((?:[A-Z]+)(?=\-))-((?:[A-Z]+)|(?:\d+(?:[A-Z])?(?:-\d+)?)))?(?: (BUS|ALT|BYP|CONN|SPUR|TRUCK|TOLL|Loop))?(?: (N|E|S|W))?/;
+                let regex2 = /(?:((?:(?:[A-Z]+)(?=\-))|(?:Beltway)|(?:Loop)|(?:TOLL)|(?:Parish Rd)|(?:Park Rd)|(?:Recreational Rd)|(?:Spur))(?:-|\ )((?:[A-Z]+)|(?:\d+(?:[A-Z])?(?:-\d+)?)))?(?: (ALT-TRUCK|BUS|ALT|BYP|CONN|SPUR|TRUCK|TOLL|Toll|LOOP|NASA|Park|LINK))?(?: (N|E|S|W))?(?: • (.*))?/;
                 let match = exittext.match(regex);
                 let match2
                 let m4 = 4
