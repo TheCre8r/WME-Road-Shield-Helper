@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper
 // @namespace    https://github.com/thecre8r/
-// @version      2022.01.23.0101
+// @version      2022.02.08.0101
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -763,8 +763,11 @@
                     break;
             }
             /* START Exit Sign */
-            if (turnData.turnGuidance.exitSigns.length > 0) {
-                SignPreviewHTML = `<img class="inline-exit-sign" src="https://renderer-am.waze.com/renderer/v1/signs/${turnData.turnGuidance.exitSigns[0].type}?text=${turnData.turnGuidance.exitSigns[0].text}">`
+            let exitSigns = turnData.turnGuidance.exitSigns;
+            if (exitSigns.length > 0) {
+                for (let i = 0; i < exitSigns.length; i++) {
+                    SignPreviewHTML += `<img class="inline-exit-sign" src="https://renderer-am.waze.com/renderer/v1/signs/${exitSigns[i].type}?text=${exitSigns[i].text}">`
+                }
             }
 
             /* START Visual Instuctions */
