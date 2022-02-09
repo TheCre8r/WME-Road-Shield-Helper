@@ -755,8 +755,11 @@
                     break;
             }
             /* START Exit Sign */
-            if (turnData.turnGuidance.exitSigns.length > 0) {
-                SignPreviewHTML = `<img class="inline-exit-sign" src="https://renderer-am.waze.com/renderer/v1/signs/${turnData.turnGuidance.exitSigns[0].type}?text=${turnData.turnGuidance.exitSigns[0].text}">`
+            let exitSigns = turnData.turnGuidance.exitSigns;
+            if (exitSigns.length > 0) {
+                for (let i = 0; i < exitSigns.length; i++) {
+                    SignPreviewHTML += `<img class="inline-exit-sign" src="https://renderer-am.waze.com/renderer/v1/signs/${exitSigns[i].type}?text=${exitSigns[i].text}">`
+                }
             }
 
             /* START Visual Instuctions */
