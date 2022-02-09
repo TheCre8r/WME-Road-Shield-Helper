@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper
 // @namespace    https://github.com/thecre8r/
-// @version      2022.02.08.0101
+// @version      2022.02.08.0102
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -828,7 +828,6 @@
             document.querySelector("#big-tooltip-region > div").insertAdjacentHTML('afterbegin',htmlstring)
             document.querySelector("#big-tooltip-region > div").insertAdjacentHTML('afterbegin',emptydiv)
             document.querySelector("#big-tooltip-region > div > div.turn-arrow-tooltip > div.turn-header").remove()
-            document.querySelector("#big-tooltip-region > div").insertAdjacentHTML('afterbegin',AdDIV2)
             $('#wmersh-pc').tooltip({placement: "bottom",container: "body"})
 
             /* Start TTS Override */
