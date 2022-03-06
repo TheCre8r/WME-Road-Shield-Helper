@@ -935,23 +935,50 @@
             $(".WMERSH-button.insertChar").click(function(){AddTxt(this.value,LastInputElement)});
 
         }
+
+        let countryName = W.selectionManager.getSegmentSelection().segments[0].model.topCountry.name
+        let stateName = W.selectionManager.getSegmentSelection().segments[0].model.topState.name
+        let buttonHTML = ``
+        function addButton(id, value) {
+            buttonHTML += `<button class="WMERSH-button insertChar" type="button" id="rsh-txt-${id}" value="${value}"><span>${value}</span></button>`
+        }
+        if (countryName == 'United States' || countryName == 'Canada') {
+            addButton('concurrent', '•')
+            addButton('towards', '»')
+        }
+        if (countryName == 'United States') {
+            addButton('north', 'Nᴏʀᴛʜ')
+            addButton('south', 'Sᴏᴜᴛʜ')
+            addButton('east', 'Eᴀꜱᴛ')
+            addButton('west', 'Wᴇꜱᴛ')
+            addButton('to', 'ᴛᴏ')
+            addButton('via', 'ᴠɪᴀ')
+            addButton('jct', 'ᴊᴄᴛ')
+            addButton('parking', '🅿')
+            addButton('airport', '✈︎')
+        } else if (countryName == 'Canada') {
+            if (stateName == 'Quebec') {
+                addButton('nord', 'ɴᴏʀᴅ')
+                addButton('sud', 'ꜱᴜᴅ')
+                addButton('est', 'ᴇꜱᴛ')
+                addButton('ouest', 'ᴏᴜᴇꜱᴛ')
+            } else {
+                addButton('north', 'ɴᴏʀᴛʜ')
+                addButton('south', 'ꜱᴏᴜᴛʜ')
+                addButton('east', 'ᴇᴀꜱᴛ')
+                addButton('west', 'ᴡᴇꜱᴛ')
+                addButton('to', 'ᴛᴏ')
+                addButton('via', 'ᴠɪᴀ')
+                addButton('jct', 'ᴊᴄᴛ')
+            }
+        }
         let buttonstring = `<div id="WMERSH-panel" class="wmersh-panel">
                                 <div id="WMERSH-panel-header" class="panel-header">
                                     <span style="-webkit-box-flex: 1;-ms-flex-positive: 1;flex-grow: 1;">Buttons</span>
                                 </div>
                                 <div>
                                     <div id="WMERSH-panel-buttons">
-                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-concurrent" value="•"><span>•</span></button>
-                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-towards" value="»"><span>»</span></button>
-                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-north" value="Nᴏʀᴛʜ"><span>Nᴏʀᴛʜ</span></button>
-                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-south" value="Sᴏᴜᴛʜ"><span>Sᴏᴜᴛʜ</span></button>
-                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-east" value="Eᴀꜱᴛ"><span>Eᴀꜱᴛ</span></button>
-                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-west" value="Wᴇꜱᴛ"><span>Wᴇꜱᴛ</span></button>
-                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-to" value="ᴛᴏ"><span>ᴛᴏ</span></button>
-                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-via" value="ᴠɪᴀ"><span>ᴠɪᴀ</span></button>
-                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-jct" value="ᴊᴄᴛ"><span>ᴊᴄᴛ</span></button>
-                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-parking" value="🅿"><span>🅿</span></button>
-                                        <button class="WMERSH-button insertChar" type="button" id="rsh-txt-airport" value="✈︎"><span>✈︎</span></button>
+                                        ${buttonHTML}
                                     </div>
                                 </div>
                             </div>`
@@ -965,7 +992,10 @@
                 for (let i = 0; i < mutation.addedNodes.length; i++) {
                     if (document.querySelector("#panel-container > div > div") && document.querySelector("#panel-container > div > div").classList.contains("turn-instructions-panel")) {
                         log("TIO Panel Detected")
-                        TIOButtons()
+                        let countryName = W.selectionManager.getSegmentSelection().segments[0].model.topCountry.name
+                        if (countryName == 'United States' || countryName == 'Canada') {
+                            TIOButtons()
+                        }
 //                        RegexMatch2()
                     }
                 }
