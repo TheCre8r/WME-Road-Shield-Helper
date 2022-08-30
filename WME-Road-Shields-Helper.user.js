@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper
 // @namespace    https://github.com/thecre8r/
-// @version      2022.03.05.01
+// @version      2022.08.30.01
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -24,7 +24,7 @@
     const SCRIPT_NAME = GM_info.script.name;
     const SCRIPT_VERSION = GM_info.script.version.toString();
     //{"version": "2021.06.01.02","changes": ""},
-    const SCRIPT_HISTORY = `{"versions": [{"version": "2022.03.05.01","changes": "Fixed region-specific button logic"},{"version": "2022.01.22.01","changes": "More added support for additional new shields"},{"version": "2022.01.21.01","changes": "Added support for new shields"},{"version": "2021.08.09.01","changes": "Added the preview on the turn instruction dialog box"},{"version": "2021.07.07.03","changes": "Fixed another small ꜱ in West and East."},{"version": "2021.07.07.02","changes": "Fixed small ꜱ in West and East."},{"version": "2021.07.07.01","changes": "Added Buttons to Turn Instructions and all states should be compatible. Please be sure to report an issue on GitHub if you find one that is not working."},{"version": "2021.06.12.01","changes": "Support for Illinois CH Road Shields, a few more SH- States, a few more SR- States, and Arkansas's Shield Name Suffixes"},{"version": "2021.06.05.01","changes": "Support for Missouri Supplemental Road Shields"},{"version": "2021.06.03.02","changes": "Support for Kansas K-xxx format"},{"version": "2021.06.03.01","changes": "Added CR support for states using hexagon type shields"},{"version": "2021.06.02.01","changes": "Added SR Shield for New Hampshire"},{"version": "2021.06.01.02","changes": "Added County Shields for Wisconsin<br>Updated Changelog Format"},{"version": "2021.06.01.01","changes": "Fixed GitHub URL"},{"version": "2021.05.31.01","changes": "Added Wisconsin and other miscellaneous fixes"},{"version": "2021.05.23.01","changes": "Initial Version"}]}`;
+    const SCRIPT_HISTORY = `{"versions": [{"version": "2022.08.30.01","changes": "Added button panel to segment name edit panel."},{"version": "2022.03.05.01","changes": "Fixed region-specific button logic"},{"version": "2022.01.22.01","changes": "More added support for additional new shields"},{"version": "2022.01.21.01","changes": "Added support for new shields"},{"version": "2021.08.09.01","changes": "Added the preview on the turn instruction dialog box"},{"version": "2021.07.07.03","changes": "Fixed another small ꜱ in West and East."},{"version": "2021.07.07.02","changes": "Fixed small ꜱ in West and East."},{"version": "2021.07.07.01","changes": "Added Buttons to Turn Instructions and all states should be compatible. Please be sure to report an issue on GitHub if you find one that is not working."},{"version": "2021.06.12.01","changes": "Support for Illinois CH Road Shields, a few more SH- States, a few more SR- States, and Arkansas's Shield Name Suffixes"},{"version": "2021.06.05.01","changes": "Support for Missouri Supplemental Road Shields"},{"version": "2021.06.03.02","changes": "Support for Kansas K-xxx format"},{"version": "2021.06.03.01","changes": "Added CR support for states using hexagon type shields"},{"version": "2021.06.02.01","changes": "Added SR Shield for New Hampshire"},{"version": "2021.06.01.02","changes": "Added County Shields for Wisconsin<br>Updated Changelog Format"},{"version": "2021.06.01.01","changes": "Fixed GitHub URL"},{"version": "2021.05.31.01","changes": "Added Wisconsin and other miscellaneous fixes"},{"version": "2021.05.23.01","changes": "Initial Version"}]}`;
     const GH = {link: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/', issue: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/issues/new', wiki: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/wiki'};
     const UPDATE_ALERT = true;
 
@@ -892,55 +892,64 @@
     /*-- END Road Shields --*/
 
     /*-- START Turn Instruction Overrides --*/
-
-    function TIOButtons() {
-        function AddTxt(character,element) {
-            log(element)
-            let v,textBefore,textAfter
-            if (element.shadowRoot){
-                let cursorStart = element.shadowRoot.querySelector("#id").selectionStart;
-                let cursorEnd = element.shadowRoot.querySelector("#id").selectionEnd;
-                v = element.shadowRoot.querySelector("#id").value;
-                textBefore = v.substring(0, cursorStart);
-                textAfter = v.substring(cursorEnd, v.length);
-                element.value = textBefore + character + textAfter;
-                $(element).trigger('input');
-                element = element.shadowRoot.querySelector("#id")
-            }
-            let cursorStart = element.selectionStart;
-            let cursorEnd = element.selectionEnd;
-            v = element.value;
+    /*-- Broke out AddTxt(), ButtonFunctions() from ButtonPanel() to allow them to be used for segment names as well. --*/
+    function AddTxt(character,element) {
+        log(element)
+        let v,textBefore,textAfter
+        if (element.shadowRoot){
+            /*-- START Segment names are nested one shadowRoot element deeper. --*/
+            if (element.shadowRoot.querySelector("#text-input"))
+                element = element.shadowRoot.querySelector("#text-input");
+            /*-- END segment names shadowRoot element --*/
+            let cursorStart = element.shadowRoot.querySelector("#id").selectionStart;
+            let cursorEnd = element.shadowRoot.querySelector("#id").selectionEnd;
+            v = element.shadowRoot.querySelector("#id").value;
             textBefore = v.substring(0, cursorStart);
             textAfter = v.substring(cursorEnd, v.length);
             element.value = textBefore + character + textAfter;
-            element.focus();
             $(element).trigger('input');
-            element.setSelectionRange(cursorStart+character.length,cursorStart+character.length);
+            element = element.shadowRoot.querySelector("#id")
         }
-        let TTSResetButtonhtml = `
-        <button class="WMERSH-button" style="display: inline-block; position: absolute; left: 44px; font-size: 12px; font-weight: 500;cursor: pointer;" type="button" id="WMERSH-TTS-reset" value="Reset"><span>Reset</span></button>`
-        document.querySelector("#panel-container > div > div.turn-instructions-panel > div.panel-content > div:nth-child(5) > wz-label").insertAdjacentHTML('afterend',TTSResetButtonhtml)
-        $("#WMERSH-TTS-reset").click(function(){document.querySelector("#tts").value = null});
+        let cursorStart = element.selectionStart;
+        let cursorEnd = element.selectionEnd;
+        v = element.value;
+        textBefore = v.substring(0, cursorStart);
+        textAfter = v.substring(cursorEnd, v.length);
+        element.value = textBefore + character + textAfter;
+        element.focus();
+        $(element).trigger('input');
+        element.setSelectionRange(cursorStart+character.length,cursorStart+character.length);
+    }
 
-        function ButtonFunctions() {
-            log("GetLastElement Ran")
-            let LastInputElement;
-            $(".panel-content").click(function(){
-                if (document.activeElement.tagName == "INPUT" || document.activeElement.tagName == "TEXTAREA" || document.activeElement.tagName == "WZ-TEXTAREA") {
-                    LastInputElement = document.activeElement
-                    console.log(LastInputElement)
-                }
-            });
+    /*-- Added function call element "displayFor" to both ButtonFunctions() and ButtonPanel() so jQuery can target the correct button panel for selection.
+      -- "TIOButtons" (for TIOs) and "segmentNameButtons" (for Segment Names) --
+      -- ".panel-content" (for TIOS), ".address-edit" (for Segment Names) --
+      -- Otherwise the .click() on the WMERSH-button would get added to both panels if they are both open. So a click --
+      -- would add the text to both boxes in both panels. --
+      -- Further, the displayFor is used when closing the Segment Name panel only when both are open. --*/
+    function ButtonFunctions(displayFor) {
+        log("GetLastElement Ran")
+        const rootContainer = (displayFor === "segmentNameButtons") ? ".address-edit" : (displayFor === "TIOButtons") ? ".panel-content" : false;
+        if (!rootContainer)
+            return;
+        let LastInputElement;
+        $(rootContainer).click(function(){
+            if (document.activeElement.tagName == "INPUT" || document.activeElement.tagName == "TEXTAREA" || document.activeElement.tagName == "WZ-TEXTAREA" || document.activeElement.tagName == "WZ-AUTOCOMPLETE") {
+                LastInputElement = document.activeElement
+                console.log(LastInputElement)
+            }
+        });
 
-            $(".WMERSH-button.insertChar").click(function(){AddTxt(this.value,LastInputElement)});
+        $(`.WMERSH-button.insertChar[displayFor="${displayFor}"`).click(function(){AddTxt(this.value,LastInputElement)});
 
-        }
+    }
 
+    function ButtonPanel(displayFor) {
         let countryName = W.selectionManager.getSegmentSelection().segments[0].model.topCountry.name
         let stateName = W.selectionManager.getSegmentSelection().segments[0].model.topState.name
         let buttonHTML = ``
         function addButton(id, value) {
-            buttonHTML += `<button class="WMERSH-button insertChar" type="button" id="rsh-txt-${id}" value="${value}"><span>${value}</span></button>`
+            buttonHTML += `<button displayFor="${displayFor}" class="WMERSH-button insertChar" type="button" id="rsh-txt-${id}" value="${value}"><span>${value}</span></button>`
         }
         if (countryName == 'United States' || countryName == 'Canada') {
             addButton('concurrent', '•')
@@ -972,7 +981,7 @@
                 addButton('jct', 'ᴊᴄᴛ')
             }
         }
-        let buttonstring = `<div id="WMERSH-panel" class="wmersh-panel">
+        return `<div id="WMERSH-panel" displayFor="${displayFor}" class="wmersh-panel">
                                 <div id="WMERSH-panel-header" class="panel-header">
                                     <span style="-webkit-box-flex: 1;-ms-flex-positive: 1;flex-grow: 1;">Buttons</span>
                                 </div>
@@ -982,8 +991,16 @@
                                     </div>
                                 </div>
                             </div>`
-        $("#panel-container > div > div.turn-instructions-panel").before(buttonstring)
-        ButtonFunctions()
+    }
+
+    function TIOButtons() {
+        let TTSResetButtonhtml = `
+        <button class="WMERSH-button" style="display: inline-block; position: absolute; left: 44px; font-size: 12px; font-weight: 500;cursor: pointer;" type="button" id="WMERSH-TTS-reset" value="Reset"><span>Reset</span></button>`
+        document.querySelector("#panel-container > div > div.turn-instructions-panel > div.panel-content > div:nth-child(5) > wz-label").insertAdjacentHTML('afterend',TTSResetButtonhtml)
+        $("#WMERSH-TTS-reset").click(function(){document.querySelector("#tts").value = null});
+
+        $("#panel-container > div > div.turn-instructions-panel").before(ButtonPanel("TIOButtons"))
+        ButtonFunctions("TIOButtons")
     }
 
     function PanelObserver() {
@@ -1005,6 +1022,45 @@
     }
     /*-- END Turn Instruction Overrides --*/
 
+    /*-- START Segment Name Buttons --*/
+    function segmentNameButtons(destroy = false) {
+        if (!destroy && ($('#WMERSH-panel[displayFor="segmentNameButtons"]').length === 0)) {
+            let buttonsHTML = ButtonPanel('segmentNameButtons');
+            $('#segment-edit-general').prepend(buttonsHTML);
+            $('#WMERSH-panel').css({ 'margin-top': '0px', left: $('#sidebar').width() + 10 });
+            ButtonFunctions('segmentNameButtons');
+        }
+        else if (destroy && ($('wz-autocomplete.street-name, wz-autocomplete.alt-street-name').length === 0)) {
+            $('#WMERSH-panel[displayFor="segmentNameButtons"]').remove();
+        }
+    }
+    function editPanelObserver() {
+        let observer = new MutationObserver(mutations => {
+            debugger;
+            mutations.forEach(mutation => {
+                for (let i = 0; i < mutation.addedNodes.length; i++) {
+                    const addedNode = mutation.addedNodes[i];
+                    if (addedNode.nodeType === Node.ELEMENT_NODE) {
+                        if (addedNode.querySelector('wz-autocomplete.street-name, wz-autocomplete.alt-street-name'))
+                            segmentNameButtons();
+                    }
+                }
+                for (let i = 0; i < mutation.removedNodes.length; i++) {
+                    const removedNode = mutation.removedNodes[i];
+                    if (removedNode.nodeType === Node.ELEMENT_NODE) {
+                        if (removedNode.querySelector('wz-autocomplete.street-name, wz-autocomplete.alt-street-name')) {
+                            segmentNameButtons(true);
+                        }
+                    }
+                }
+            });
+        });
+        observer.observe(document.querySelector('#edit-panel div.contents'), {
+            childList: true, attributes: false, attributeOldValue: false, characterData: false, characterDataOldValue: false, subtree: true
+        });
+    }
+    /*-- END Segment Name Buttons --*/
+
     let bootsequence = ["DOM","I18n","Waze","WazeWrap"];
     function bootstrap(tries = 1) {
         if (bootsequence.length > 0) {
@@ -1024,6 +1080,7 @@
                 bootsequence = bootsequence.filter(bs => bs !== "WazeWrap")
                 initTab();
                 initializeSettings();
+                editPanelObserver();
             }
             setTimeout(() => bootstrap(tries++), 200);
         }
