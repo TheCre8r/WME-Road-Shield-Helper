@@ -166,7 +166,7 @@
             '</form>',
             '</div>'
         ].join(' '));
-        new WazeWrap.Interface.Tab('WMERSH', $section.html(), function(){});
+        WazeWrap.Interface.Tab('WMERSH', $section.html(), function(){});
         $('a[href$="#sidepanel-wmersh"]').html(`<span>`+svglogo+`</span>`)
         $('a[href$="#sidepanel-wmersh"]').prop('title', 'WME RSH');
         log("Tab Initialized",1);
@@ -627,7 +627,7 @@
     }
 
     function filterShields(state) {
-        let country = W.model.getTopCountry().name
+        let country = W.model.getTopCountry().attributes.name
         if (country == "Canada" || country == "United States") {
             log("Filtered " + state)
             for(var j = 1; j <= document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu").childElementCount; j++){
@@ -802,7 +802,7 @@
             }
 
             /* START HTML */
-            let htmlstring = `<div class="turn-preview-wrapper" style="margin: -15px -15px 5px;border-radius: 4px;"><div class="turn-preview" style="border-radius: 4px;">
+            let htmlstring = `<div class="turn-preview-wrapper" style="margin: -16px -8px 5px -16px;border-radius: 4px;"><div class="turn-preview" style="border-radius: 4px;">
                                   <div>
                                       <div class="turn-preview-inner">
                                           <span class="turn-preview-arrow-wrapper">
@@ -821,10 +821,10 @@
                                       </div>
                                   </div>
                               </div>`
-            let AdDIV = `<div id="wmersh-pc" style="margin: -10px -15px 5px;background:lightgray;" data-original-title="...and users like you." ><span style="font-size:10px; margin:auto; text-align: center;display: block;">Preview Courtesy of Road Shield Helper</span></div>`
-            let AdDIV2 = `<div id="wmersh-pc" style="margin: -10px -15px 5px;background:lightgray;" data-original-title="HELLO" ><span style="font-size:10px; margin:auto; text-align: center;display: block;">Preview Courtesy of Road Shield Helper</span></div>`
+            let AdDIV = `<div id="wmersh-pc" style="margin: -10px -8px 5px -16px;background:lightgray;" data-original-title="...and users like you." ><span style="font-size:10px; margin:auto; text-align: center;display: block;">Preview Courtesy of Road Shield Helper</span></div>`
+            let AdDIV2 = `<div id="wmersh-pc" style="margin: -10px -8px 5px -16px;background:lightgray;" data-original-title="HELLO" ><span style="font-size:10px; margin:auto; text-align: center;display: block;">Preview Courtesy of Road Shield Helper</span></div>`
             let emptydiv = `<div style="background:red"></div>`
-            let adjacentDiv = document.querySelector("#big-tooltip-region > div > div > div")
+            let adjacentDiv = document.querySelector(".tippy-box > div > div > div")
             // old = document.querySelector("#big-tooltip-region > div")
             adjacentDiv.insertAdjacentHTML('afterbegin',AdDIV)
             adjacentDiv.insertAdjacentHTML('afterbegin',htmlstring)
@@ -843,7 +843,7 @@
                                <i class="fa fa-volume-up" aria-hidden="true" style="color: #72767d;font-size: 18px;margin-left: 7px;vertical-align: middle;"></i>
                            </div>`
             }
-            document.querySelector("#big-tooltip-region > div > div > div.turn-arrow-tooltip > div:nth-child(2) > span > wz-button").insertAdjacentHTML('afterend',TTShtml)
+            document.querySelector(".tippy-box > div > div.turn-arrow-tooltip > div:nth-child(3) > span > wz-button").insertAdjacentHTML('afterend',TTShtml)
             $('#wmersh-tts').tooltip()
         }
     }
@@ -852,7 +852,7 @@
         let observer = new MutationObserver(mutations => {
             mutations.forEach(mutation => {
                 for (let i = 0; i < mutation.addedNodes.length; i++) {
-                    if (document.querySelector("#big-tooltip-region > div")) {
+                    if (mutation.addedNodes[i].id.match("tippy*")) {
                         if (_settings.TurnInstructionPreview) {
                             BuildBRTDiv()
                         }
@@ -860,7 +860,7 @@
                 }
             });
         });
-        observer.observe(document.querySelector("#big-tooltip-region"), { childList: true });
+        observer.observe(document.body, { childList: true });
 
     }
     function RSObserver() {
@@ -945,8 +945,8 @@
     }
 
     function ButtonPanel(displayFor) {
-        let countryName = W.selectionManager.getSegmentSelection().segments[0].model.topCountry.name
-        let stateName = W.selectionManager.getSegmentSelection().segments[0].model.topState.name
+        let countryName = W.selectionManager.getSegmentSelection().segments[0].model.topCountry.attributes.name
+        let stateName = W.selectionManager.getSegmentSelection().segments[0].model.topState.attributes.name
         let buttonHTML = ``
         function addButton(id, value) {
             buttonHTML += `<button displayFor="${displayFor}" class="WMERSH-button insertChar" type="button" id="rsh-txt-${id}" value="${value}"><span>${value}</span></button>`
@@ -1009,7 +1009,7 @@
                 for (let i = 0; i < mutation.addedNodes.length; i++) {
                     if (document.querySelector("#panel-container > div > div") && document.querySelector("#panel-container > div > div").classList.contains("turn-instructions-panel")) {
                         log("TIO Panel Detected")
-                        let countryName = W.selectionManager.getSegmentSelection().segments[0].model.topCountry.name
+                        let countryName = W.selectionManager.getSegmentSelection().segments[0].model.topCountry.attributes.name
                         if (countryName == 'United States' || countryName == 'Canada') {
                             TIOButtons()
                         }
