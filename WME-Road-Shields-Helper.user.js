@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper
 // @namespace    https://github.com/thecre8r/
-// @version      2023.02.11.01
+// @version      2023.08.23.01
 // @description  Road Shield Helper
 // @match        https://www.waze.com/editor*
 // @match        https://www.waze.com/*/editor*
@@ -24,7 +24,7 @@
     const SCRIPT_NAME = GM_info.script.name;
     const SCRIPT_VERSION = GM_info.script.version.toString();
                                         //{"version": "2023.01.01.01","changes": ""},
-    const SCRIPT_HISTORY = `{"versions": [{"version": "2023.02.11.01","changes": "Compatibility update. Added Minnesota CH shield logic."},{"version": "2021.12.30.001","changes": "jm6087 additions"},{"version": "2022.11.29.01","changes": "Code Cleanup"},{"version": "2022.08.30.01","changes": "Added button panel to segment name edit panel."},{"version": "2022.03.05.01","changes": "Fixed region-specific button logic"},{"version": "2022.01.22.01","changes": "More added support for additional new shields"},{"version": "2022.01.21.01","changes": "Added support for new shields"},{"version": "2021.08.09.01","changes": "Added the preview on the turn instruction dialog box"},{"version": "2021.07.07.03","changes": "Fixed another small ꜱ in West and East."},{"version": "2021.07.07.02","changes": "Fixed small ꜱ in West and East."},{"version": "2021.07.07.01","changes": "Added Buttons to Turn Instructions and all states should be compatible. Please be sure to report an issue on GitHub if you find one that is not working."},{"version": "2021.06.12.01","changes": "Support for Illinois CH Road Shields, a few more SH- States, a few more SR- States, and Arkansas's Shield Name Suffixes"},{"version": "2021.06.05.01","changes": "Support for Missouri Supplemental Road Shields"},{"version": "2021.06.03.02","changes": "Support for Kansas K-xxx format"},{"version": "2021.06.03.01","changes": "Added CR support for states using hexagon type shields"},{"version": "2021.06.02.01","changes": "Added SR Shield for New Hampshire"},{"version": "2021.06.01.02","changes": "Added County Shields for Wisconsin<br>Updated Changelog Format"},{"version": "2021.06.01.01","changes": "Fixed GitHub URL"},{"version": "2021.05.31.01","changes": "Added Wisconsin and other miscellaneous fixes"},{"version": "2021.05.23.01","changes": "Initial Version"}]}`;
+    const SCRIPT_HISTORY = `{"versions": [{"version": "2023.08.23.01","changes": "Compatibility update with WME V2.180."},{"version": "2023.02.11.01","changes": "Compatibility update. Added Minnesota CH shield logic."},{"version": "2021.12.30.001","changes": "jm6087 additions"},{"version": "2022.11.29.01","changes": "Code Cleanup"},{"version": "2022.08.30.01","changes": "Added button panel to segment name edit panel."},{"version": "2022.03.05.01","changes": "Fixed region-specific button logic"},{"version": "2022.01.22.01","changes": "More added support for additional new shields"},{"version": "2022.01.21.01","changes": "Added support for new shields"},{"version": "2021.08.09.01","changes": "Added the preview on the turn instruction dialog box"},{"version": "2021.07.07.03","changes": "Fixed another small ꜱ in West and East."},{"version": "2021.07.07.02","changes": "Fixed small ꜱ in West and East."},{"version": "2021.07.07.01","changes": "Added Buttons to Turn Instructions and all states should be compatible. Please be sure to report an issue on GitHub if you find one that is not working."},{"version": "2021.06.12.01","changes": "Support for Illinois CH Road Shields, a few more SH- States, a few more SR- States, and Arkansas's Shield Name Suffixes"},{"version": "2021.06.05.01","changes": "Support for Missouri Supplemental Road Shields"},{"version": "2021.06.03.02","changes": "Support for Kansas K-xxx format"},{"version": "2021.06.03.01","changes": "Added CR support for states using hexagon type shields"},{"version": "2021.06.02.01","changes": "Added SR Shield for New Hampshire"},{"version": "2021.06.01.02","changes": "Added County Shields for Wisconsin<br>Updated Changelog Format"},{"version": "2021.06.01.01","changes": "Fixed GitHub URL"},{"version": "2021.05.31.01","changes": "Added Wisconsin and other miscellaneous fixes"},{"version": "2021.05.23.01","changes": "Initial Version"}]}`;
     const GH = {link: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/', issue: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/issues/new', wiki: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/wiki'};
     const UPDATE_ALERT = true;
 
@@ -166,7 +166,7 @@
             '</form>',
             '</div>'
         ].join(' '));
-        new WazeWrap.Interface.Tab('WMERSH', $section.html(), function(){});
+        WazeWrap.Interface.Tab('WMERSH', $section.html(), function(){});
         $('a[href$="#sidepanel-wmersh"]').html(`<span>`+svglogo+`</span>`)
         $('a[href$="#sidepanel-wmersh"]').prop('title', 'WME RSH');
         log("Tab Initialized",1);
@@ -627,7 +627,7 @@
     }
 
     function filterShields(state) {
-        let country = W.model.getTopCountry().name
+        let country = W.model.getTopCountry().attributes.name
         if (country == "Canada" || country == "United States") {
             log("Filtered " + state)
             for(var j = 1; j <= document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu").childElementCount; j++){
@@ -802,7 +802,7 @@
             }
 
             /* START HTML */
-            let htmlstring = `<div class="turn-preview-wrapper" style="margin: -15px -15px 5px;border-radius: 4px;"><div class="turn-preview" style="border-radius: 4px;">
+            let htmlstring = `<div class="turn-preview-wrapper" style="margin: -16px -8px 5px -16px;border-radius: 4px;"><div class="turn-preview" style="border-radius: 4px;">
                                   <div>
                                       <div class="turn-preview-inner">
                                           <span class="turn-preview-arrow-wrapper">
@@ -821,10 +821,10 @@
                                       </div>
                                   </div>
                               </div>`
-            let AdDIV = `<div id="wmersh-pc" style="margin: -10px -15px 5px;background:lightgray;" data-original-title="...and users like you." ><span style="font-size:10px; margin:auto; text-align: center;display: block;">Preview Courtesy of Road Shield Helper</span></div>`
-            let AdDIV2 = `<div id="wmersh-pc" style="margin: -10px -15px 5px;background:lightgray;" data-original-title="HELLO" ><span style="font-size:10px; margin:auto; text-align: center;display: block;">Preview Courtesy of Road Shield Helper</span></div>`
+            let AdDIV = `<div id="wmersh-pc" style="margin: -10px -8px 5px -16px;background:lightgray;" data-original-title="...and users like you." ><span style="font-size:10px; margin:auto; text-align: center;display: block;">Preview Courtesy of Road Shield Helper</span></div>`
+            let AdDIV2 = `<div id="wmersh-pc" style="margin: -10px -8px 5px -16px;background:lightgray;" data-original-title="HELLO" ><span style="font-size:10px; margin:auto; text-align: center;display: block;">Preview Courtesy of Road Shield Helper</span></div>`
             let emptydiv = `<div style="background:red"></div>`
-            let adjacentDiv = document.querySelector("#big-tooltip-region > div > div > div")
+            let adjacentDiv = document.querySelector(".tippy-box > div > div > div")
             // old = document.querySelector("#big-tooltip-region > div")
             adjacentDiv.insertAdjacentHTML('afterbegin',AdDIV)
             adjacentDiv.insertAdjacentHTML('afterbegin',htmlstring)
@@ -843,7 +843,7 @@
                                <i class="fa fa-volume-up" aria-hidden="true" style="color: #72767d;font-size: 18px;margin-left: 7px;vertical-align: middle;"></i>
                            </div>`
             }
-            document.querySelector("#big-tooltip-region > div > div > div.turn-arrow-tooltip > div:nth-child(2) > span > wz-button").insertAdjacentHTML('afterend',TTShtml)
+            document.querySelector(".tippy-box > div > div.turn-arrow-tooltip > div:nth-child(3) > span > wz-button").insertAdjacentHTML('afterend',TTShtml)
             $('#wmersh-tts').tooltip()
         }
     }
@@ -852,7 +852,7 @@
         let observer = new MutationObserver(mutations => {
             mutations.forEach(mutation => {
                 for (let i = 0; i < mutation.addedNodes.length; i++) {
-                    if (document.querySelector("#big-tooltip-region > div")) {
+                    if (mutation.addedNodes[i].id.match("tippy*")) {
                         if (_settings.TurnInstructionPreview) {
                             BuildBRTDiv()
                         }
@@ -860,7 +860,7 @@
                 }
             });
         });
-        observer.observe(document.querySelector("#big-tooltip-region"), { childList: true });
+        observer.observe(document.body, { childList: true });
 
     }
     function RSObserver() {
@@ -945,8 +945,8 @@
     }
 
     function ButtonPanel(displayFor) {
-        let countryName = W.selectionManager.getSegmentSelection().segments[0].model.topCountry.name
-        let stateName = W.selectionManager.getSegmentSelection().segments[0].model.topState.name
+        let countryName = W.selectionManager.getSegmentSelection().segments[0].model.topCountry.attributes.name
+        let stateName = W.selectionManager.getSegmentSelection().segments[0].model.topState.attributes.name
         let buttonHTML = ``
         function addButton(id, value) {
             buttonHTML += `<button displayFor="${displayFor}" class="WMERSH-button insertChar" type="button" id="rsh-txt-${id}" value="${value}"><span>${value}</span></button>`
@@ -1009,7 +1009,7 @@
                 for (let i = 0; i < mutation.addedNodes.length; i++) {
                     if (document.querySelector("#panel-container > div > div") && document.querySelector("#panel-container > div > div").classList.contains("turn-instructions-panel")) {
                         log("TIO Panel Detected")
-                        let countryName = W.selectionManager.getSegmentSelection().segments[0].model.topCountry.name
+                        let countryName = W.selectionManager.getSegmentSelection().segments[0].model.topCountry.attributes.name
                         if (countryName == 'United States' || countryName == 'Canada') {
                             TIOButtons()
                         }
