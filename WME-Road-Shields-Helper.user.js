@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper
 // @namespace    https://github.com/thecre8r/
-// @version      2023.09.15.01
+// @version      2024.01.20.01
 // @description  Road Shield Helper
 // @match        https://www.waze.com/editor*
 // @match        https://www.waze.com/*/editor*
@@ -334,6 +334,8 @@
             log("Make State Shield for "+State);
             if ((Suffix == "ALT" | Suffix == "BUS" | Suffix == "SPUR" | Suffix == "TRUCK") && State == "Arkansas") {
                 document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="${State} - ${Shield} Main"]`).click()
+            } else if ((Suffix == "Ranch to Market") && State == "Texas") {
+                document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="${State}-${Suffix}"]`).click()
             } else if (document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="${State} - ${Shield} ${Suffix}"]`)) {
                 document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="${State} - ${Shield} ${Suffix}"]`).click()
             } else if (!document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="${State} - ${Shield} ${Suffix}"]`) && match[3] !== undefined) {
@@ -412,7 +414,7 @@
                 if (State == "Texas" && match[3] == "BUS"){
                     MakeShield(match,State,undefined,"(RM) BUS");
                 } else if (State == "Texas") {
-                    MakeShield(match,State,undefined,match[1]);
+                    MakeShield(match,State,undefined,'Ranch to Market'); //match[1]);
                 } else {
                     CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`,`Error`);
                 }
@@ -634,7 +636,7 @@
                 lineitem.hidden = true;
                 while(length--) {
                     if (iTxt.indexOf(SearchStrings[length])!=-1) {
-                        if (state == "Virginia" && iTxt.includes("West Virginia")) {
+                        if ((state == "Virginia" && iTxt.includes("West Virginia")) || (state != "Florida" && iTxt.includes("FloridaI"))) {
                             //Virginia has to be weird
                         }
                         else {
@@ -998,14 +1000,128 @@
     }
 
     function TIOButtons() {
-        let TTSResetButtonhtml = `
-        <button class="WMERSH-button" style="display: inline-block; position: absolute; left: 44px; font-size: 12px; font-weight: 500;cursor: pointer;" type="button" id="WMERSH-TTS-reset" value="Reset"><span>Reset</span></button>`
-        document.querySelector("#panel-container > div > div.turn-instructions-panel > div.panel-content > div:nth-child(5) > wz-label").insertAdjacentHTML('afterend',TTSResetButtonhtml)
-        $("#WMERSH-TTS-reset").click(function(){document.querySelector("#tts").value = null});
-
+//        let TTSResetButtonhtml = `
+//        <button class="WMERSH-button" style="display: inline-block; position: absolute; left: 44px; font-size: 12px; font-weight: 500;cursor: pointer;" type="button" id="WMERSH-TTS-reset" value="Reset"><span>Reset</span></button>`
+//         document.querySelector("#panel-container > div > div.turn-instructions-panel > div.panel-content > div:nth-child(5) > wz-label").insertAdjacentHTML('afterend',TTSResetButtonhtml)
+//         $("#WMERSH-TTS-reset").click(function(){document.querySelector("#tts").value = null});
         $("#panel-container > div > div.turn-instructions-panel").before(ButtonPanel("TIOButtons"))
         ButtonFunctions("TIOButtons")
     }
+
+    function RegexMatch2() {
+//        if (TESTERS.indexOf(W.loginManager.user.getUsername()) > -1) {
+            let state = W.model.topState.attributes.name;
+            let slash = " / ";
+            let htmlstring = `<div id="WMERSH-TIO-Autofill"><wz-button class="hydrated">Autofill</wz-button></div>`
+            document.querySelector("#panel-container > div > div.turn-instructions-panel").insertAdjacentHTML('afterbegin',htmlstring)
+            document.querySelector("#WMERSH-TIO-Autofill").onclick = function(){
+                //let exittext = document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span > span > input[type=text]").value
+                let exittext = document.querySelector("#tts").shadowRoot.querySelector("#id").placeholder
+                let regex = /((Exits?) (\d+(?:.*)?): (.*)|(to) (.*))/ ///(Exits?) (\d+(?:.*)?): (.*)/
+//                let regex2 = /(?:((?:[A-Z]+)(?=\-))-((?:[A-Z]+)|(?:\d+(?:[A-Z])?(?:-\d+)?)))?(?: (BUS|ALT|BYP|CONN|SPUR|TRUCK|TOLL|Loop))?(?: (N|E|S|W))?/;
+                let regex2 = /(?:((?:(?:[A-Z]+)(?=\-))|(?:Beltway)|(?:Loop)|(?:TOLL)|(?:Parish Rd)|(?:Park Rd)|(?:Recreational Rd)|(?:Spur))(?:-|\ )((?:[A-Z]+)|(?:\d+(?:[A-Z])?(?:-\d+)?)))?(?: (ALT-TRUCK|BUS|ALT|BYP|CONN|SPUR|TRUCK|TOLL|Toll|LOOP|NASA|Park|LINK))?(?: (N|E|S|W))?(?: • (.*))?/;
+                let match = exittext.match(regex);
+                let match2
+                let m4 = 4
+                let m5 = 5
+                //                let m6 = 6
+
+                /** Start Add Exit Arrow **/
+                if (match[2]) {
+                    if (match[2].includes("Exit")) { //if (match[1].includes("Exit")) {
+                        if ($('.exit-sign-item').length == 0) {
+                            document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(3) > div > wz-button").shadowRoot.querySelector("button").click()
+                        }
+                        if (document.querySelector("#turn-override-select").shadowRoot.querySelector("#select-wrapper > div > div > span").innerText == "Exit left") {
+                            document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(3) > div > div > div > span > span > wz-menu > wz-menu-item:nth-child(2) > img").click()
+                        } else {
+                            document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(3) > div > div > div > span > span > wz-menu > wz-menu-item:nth-child(1) > img").click()
+                        }
+                    }}
+                /** End Add Exit Arrow **/
+
+                if (match[m5]) {
+                    m4 = m4 + 2;
+                    m5 = m5 + 2;
+                }
+
+                /** Start Visual Instructions **/
+                if (match[3]) {
+                    document.querySelector("#text").value = match[3] // document.querySelector("#text").value = match[2] //Exit signs
+                }
+                let Strings = match[m4].split(/[\/»•]/); // let Strings = match[3].split(" / ");
+                if (match[m4]) { // if (match[3]) {
+                    match2 = match[m4].match(regex2); // match2 = match[3].match(regex2);
+                    console.log(match2)
+                }
+                document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(1) > span > i").click()
+                document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > wz-menu > wz-menu-item:nth-child(1)").click()
+                let shck = 0;
+                let shieldcheck = document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(1) > span > wz-menu`).children[0].innerText;
+                if (shieldcheck != "No shields found on nearby streets - try zooming out") shck = 1;
+                document.querySelector("#panel-container > div > div.turn-instructions-panel > div.panel-content > div:nth-child(1) > div > div > div > span > span > i").click();
+
+                Strings.forEach(function(item, index){
+                    item = item.trim();
+                    let match2 = item.match(regex2);
+                    if (match2[1] && match2[2]) {
+                        if (match2[1] == "CR" && state == "Texas") {item = "Co Rd " + match2[2]};
+                        let x = 0;
+                        console.log(match2)
+                        document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > wz-menu > wz-menu-item:nth-child(1)").click()
+                        if (Strings.length > 1){
+                            document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(2) > div > wz-menu > wz-menu-item:nth-child(1)").click()
+                        }
+                        if (shck == 1) {
+                            let shieldcount = document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > wz-menu`).childElementCount;
+
+                            for (var sc = 0; sc < shieldcount; sc++) {
+                                var dir1 = document.querySelector(`#panel-container > div > div.turn-instructions-panel > div.panel-content > div:nth-child(1) > div > div > div > span > span > wz-menu > wz-menu-item:nth-child(${sc + 1}) > span.street-name`).innerText;
+                                if (dir1 == match2[0]) {
+                                    x = 1
+                                    document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > wz-menu > wz-menu-item:nth-child(${sc + 1})`).click()
+                                    if (Strings.length > 1){
+                                        document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(2) > div > div > div > span:nth-child(${index+1}) > span > wz-menu > wz-menu-item:nth-child(${sc + 1})`).click()
+                                    }}}}
+                        if (x == 0) {
+                            document.querySelector(`#panel-container > div > div.turn-instructions-panel > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > i`).click()
+                            if (Strings.length > 1){
+                                document.querySelector(`#panel-container > div > div.turn-instructions-panel > div.panel-content > div:nth-child(2) > div > div > div > span:nth-child(${index+1}) > span > i`).click()
+                            }
+                            document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > wz-menu > wz-menu-item:nth-child(2)").click()
+                            document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).value = item;
+                            $(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).trigger('input');
+                            if (Strings.length > 1){
+                                document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(2) > div > wz-menu > wz-menu-item:nth-child(2)").click()
+                                document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(2) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).value = item;
+                                $(`#panel-container > div > div > div.panel-content > div:nth-child(2) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).trigger('input');
+                            }} // }
+                        $("input#direction").trigger('input');
+                    } else {
+                        document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > wz-menu > wz-menu-item:nth-child(2)").click()
+                        document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).value = item;
+                        $(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).trigger('input');
+
+//                         document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > wz-menu > wz-menu-item:nth-child(2)").click()
+//                         document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+2}) > span > input[type=text]`).value = slash;
+//                         $(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+2}) > span > input[type=text]`).trigger('input');
+
+                        if (Strings.length > 1){
+                            document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(2) > div > wz-menu > wz-menu-item:nth-child(2)").click()
+                            document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(2) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).value = item;
+                            $(`#panel-container > div > div > div.panel-content > div:nth-child(2) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).trigger('input');
+                        }}
+                    console.log(index);
+                    console.log(item);
+
+                });
+                $('input#text').trigger('input');
+                /** End Visual Instructions **/
+
+            };
+        }
+//    }
+
 
     function PanelObserver() {
         let observer = new MutationObserver(mutations => {
@@ -1017,7 +1133,7 @@
                         if (countryName == 'United States' || countryName == 'Canada') {
                             TIOButtons()
                         }
-//                        RegexMatch2()
+                        RegexMatch2()
                     }
                 }
             });
