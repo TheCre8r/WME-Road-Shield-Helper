@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper
 // @namespace    https://github.com/thecre8r/
-// @version      2024.01.20.25
+// @version      2024.01.21.01
 // @description  Road Shield Helper
 // @match        https://www.waze.com/editor*
 // @match        https://www.waze.com/*/editor*
