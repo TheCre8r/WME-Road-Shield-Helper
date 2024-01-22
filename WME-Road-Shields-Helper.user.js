@@ -1,13 +1,15 @@
 // ==UserScript==
 // @name         WME Road Shield Helper
 // @namespace    https://github.com/thecre8r/
-// @version      2024.01.20.01
+// @version      2024.01.20.25
 // @description  Road Shield Helper
 // @match        https://www.waze.com/editor*
 // @match        https://www.waze.com/*/editor*
 // @match        https://beta.waze.com/editor*
 // @match        https://beta.waze.com/*/editor*
 // @exclude      https://www.waze.com/user/editor*
+// @grant        GM_xmlhttpRequest
+// @connect      raw.githubusercontent.com
 // @author       The_Cre8r
 // @require      https://greasyfork.org/scripts/24851-wazewrap/code/WazeWrap.js
 // @license      GPLv3
@@ -19,6 +21,7 @@
 /* global I18n */
 
 
+
 (function() {
     const STORE_NAME = "WMERSH_Settings";
     const SCRIPT_NAME = GM_info.script.name;
@@ -27,6 +30,7 @@
     const SCRIPT_HISTORY = `{"versions": [{"version": "2023.08.27.01","changes": "Fix to turn instruuction preview for turns to unnamed segments."},{"version": "2023.08.23.01","changes": "Compatibility update with WME V2.180."},{"version": "2023.02.11.01","changes": "Compatibility update. Added Minnesota CH shield logic."},{"version": "2021.12.30.001","changes": "jm6087 additions"},{"version": "2022.11.29.01","changes": "Code Cleanup"},{"version": "2022.08.30.01","changes": "Added button panel to segment name edit panel."},{"version": "2022.03.05.01","changes": "Fixed region-specific button logic"},{"version": "2022.01.22.01","changes": "More added support for additional new shields"},{"version": "2022.01.21.01","changes": "Added support for new shields"},{"version": "2021.08.09.01","changes": "Added the preview on the turn instruction dialog box"},{"version": "2021.07.07.03","changes": "Fixed another small ꜱ in West and East."},{"version": "2021.07.07.02","changes": "Fixed small ꜱ in West and East."},{"version": "2021.07.07.01","changes": "Added Buttons to Turn Instructions and all states should be compatible. Please be sure to report an issue on GitHub if you find one that is not working."},{"version": "2021.06.12.01","changes": "Support for Illinois CH Road Shields, a few more SH- States, a few more SR- States, and Arkansas's Shield Name Suffixes"},{"version": "2021.06.05.01","changes": "Support for Missouri Supplemental Road Shields"},{"version": "2021.06.03.02","changes": "Support for Kansas K-xxx format"},{"version": "2021.06.03.01","changes": "Added CR support for states using hexagon type shields"},{"version": "2021.06.02.01","changes": "Added SR Shield for New Hampshire"},{"version": "2021.06.01.02","changes": "Added County Shields for Wisconsin<br>Updated Changelog Format"},{"version": "2021.06.01.01","changes": "Fixed GitHub URL"},{"version": "2021.05.31.01","changes": "Added Wisconsin and other miscellaneous fixes"},{"version": "2021.05.23.01","changes": "Initial Version"}]}`;
     const GH = {link: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/', issue: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/issues/new', wiki: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/wiki'};
     const UPDATE_ALERT = true;
+    const DOWNLOAD_URL = 'https://raw.githubusercontent.com/TheCre8r/WME-Road-Shield-Helper/master/WME-Road-Shields-Helper.user.js';
 
     // Version 2023.09.09.01 ~ pushed by jm6087
     // Fixes the preview page to show the TTS override when applicable.
@@ -201,6 +205,7 @@
     }
 
     function initializeSettings() {
+        startScriptUpdateMonitor();
         loadSettings();
         let SCRIPT_CHANGES = ``;
         let JSON = $.parseJSON(SCRIPT_HISTORY);
@@ -238,6 +243,17 @@
         log("Settings Initialized",1);
     }
     /*-- End Settings --*/
+
+function startScriptUpdateMonitor() {
+    let updateMonitor;
+    try {
+        updateMonitor = new WazeWrap.Alerts.ScriptUpdateMonitor(GM_info.script.name, GM_info.script.version, DOWNLOAD_URL, GM_xmlhttpRequest, DOWNLOAD_URL);
+        updateMonitor.start();
+    } catch (ex) {
+        // Report, but don't stop if ScriptUpdateMonitor fails.
+        console.error('WME Road Shield Helper:', ex);
+    }
+}
 
     /*-- Start Libraries --*/
     function getState() {
@@ -940,8 +956,10 @@
             return;
         let LastInputElement;
         $(rootContainer).click(function(){
-            if (document.activeElement.tagName == "INPUT" || document.activeElement.tagName == "TEXTAREA" || document.activeElement.tagName == "WZ-TEXTAREA" || document.activeElement.tagName == "WZ-AUTOCOMPLETE") {
+            if (document.activeElement.tagName == "INPUT" || document.activeElement.tagName == "TEXTAREA" || document.activeElement.tagName == "WZ-AUTOCOMPLETE") {  // document.activeElement.tagName == "WZ-TEXTAREA" ||
                 LastInputElement = document.activeElement
+            }else if (document.activeElement.tagName == "WZ-TEXTAREA") {
+                LastInputElement = document.querySelector("#tts").shadowRoot.querySelector('textarea')
                 console.log(LastInputElement)
             }
         });
@@ -1016,7 +1034,7 @@
             document.querySelector("#panel-container > div > div.turn-instructions-panel").insertAdjacentHTML('afterbegin',htmlstring)
             document.querySelector("#WMERSH-TIO-Autofill").onclick = function(){
                 //let exittext = document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span > span > input[type=text]").value
-                let exittext = document.querySelector("#tts").shadowRoot.querySelector("#id").placeholder
+                let exittext = document.querySelector("#tts").shadowRoot.querySelector("textarea").placeholder // document.querySelector("#tts").shadowRoot.querySelector("#id").placeholder
                 let regex = /((Exits?) (\d+(?:.*)?): (.*)|(to) (.*))/ ///(Exits?) (\d+(?:.*)?): (.*)/
 //                let regex2 = /(?:((?:[A-Z]+)(?=\-))-((?:[A-Z]+)|(?:\d+(?:[A-Z])?(?:-\d+)?)))?(?: (BUS|ALT|BYP|CONN|SPUR|TRUCK|TOLL|Loop))?(?: (N|E|S|W))?/;
                 let regex2 = /(?:((?:(?:[A-Z]+)(?=\-))|(?:Beltway)|(?:Loop)|(?:TOLL)|(?:Parish Rd)|(?:Park Rd)|(?:Recreational Rd)|(?:Spur))(?:-|\ )((?:[A-Z]+)|(?:\d+(?:[A-Z])?(?:-\d+)?)))?(?: (ALT-TRUCK|BUS|ALT|BYP|CONN|SPUR|TRUCK|TOLL|Toll|LOOP|NASA|Park|LINK))?(?: (N|E|S|W))?(?: • (.*))?/;
