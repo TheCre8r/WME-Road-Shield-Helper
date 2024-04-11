@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper
 // @namespace    https://github.com/thecre8r/
-// @version      2024.03.24.02
+// @version      2024.04.11.01
 // @description  Road Shield Helper
 // @match        https://www.waze.com/editor*
 // @match        https://www.waze.com/*/editor*
@@ -289,7 +289,7 @@ function startScriptUpdateMonitor() {
     /*-- Start Road Shields --*/
     function AutoFiller() {
 
-        let streetname = document.querySelector("#wz-dialog-container > wz-dialog > wz-dialog-header > div.street-name").innerText
+        let streetname = document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-header > div.street-name").innerText
         let regex = /(?:((?:(?:[A-Z]+)(?=\-))|(?:Beltway)|(?:Loop)|(?:TOLL)|(?:Parish Rd)|(?:Park Rd)|(?:Recreational Rd)|(?:Spur))(?:-|\ )((?:[A-Z]+)|(?:\d+(?:[A-Z])?(?:-\d+)?)))?(?: (ALT-TRUCK|BUS|ALT|BYP|CONN|SPUR|TRUCK|TOLL|Toll|LOOP|NASA|Park|LINK))?(?: (N|E|S|W))?(?: • (.*))?/;
         let SHStates = ['Colorado', 'Minnesota', 'Oklahoma', 'Texas'];
         let SRStates = ['Alabama', 'Arizona', 'California', 'Connecticut', 'Florida', 'Georgia', 'Illinois', 'Massachusetts', 'Maine', 'New Hampshire', 'New Mexico', 'Ohio', 'Pennsylvania', 'Utah', 'Washington'];
@@ -310,7 +310,7 @@ function startScriptUpdateMonitor() {
         }
 
         if (!match[0]) {
-            document.querySelector("#wz-dialog-container > wz-dialog > wz-dialog-controls > wz-button.remove-road-shield.hydrated").click()
+            document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-controls > wz-button.remove-road-shield.hydrated").click()
             CreateError("Error: Road does not need a shield.",`Error`);
             return;
         } else if (streetname != match[0]) {
@@ -352,12 +352,12 @@ function startScriptUpdateMonitor() {
             }
             log("Make State Shield for "+State);
             if ((Suffix == "ALT" | Suffix == "BUS" | Suffix == "SPUR" | Suffix == "TRUCK") && State == "Arkansas") {
-                document.querySelector(`#wz-dialog-container > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="${State} - ${Shield} Main"]`).click()
+                document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="${State} - ${Shield} Main"]`).click()
             } else if ((Suffix == "Ranch to Market") && State == "Texas") {
-                document.querySelector(`#wz-dialog-container > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="${State}-${Suffix}"]`).click()
-            } else if (document.querySelector(`#wz-dialog-container > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="${State} - ${Shield} ${Suffix}"]`)) {
-                document.querySelector(`#wz-dialog-container > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="${State} - ${Shield} ${Suffix}"]`).click()
-            } else if (!document.querySelector(`#wz-dialog-container > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="${State} - ${Shield} ${Suffix}"]`) && match[3] !== undefined) {
+                document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="${State}-${Suffix}"]`).click()
+            } else if (document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="${State} - ${Shield} ${Suffix}"]`)) {
+                document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="${State} - ${Shield} ${Suffix}"]`).click()
+            } else if (!document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="${State} - ${Shield} ${Suffix}"]`) && match[3] !== undefined) {
                 CreateError(`Error: ${State} - ${Shield} ${Suffix} Road Shield is not available.`,`Error`);
                 return;
             } else {
@@ -400,7 +400,7 @@ function startScriptUpdateMonitor() {
                 if (State == "Wisconsin") {
                     MakeShield(match,State,"County");
                 } else if (State == "Illinois" || State == "Minnesota") {
-                    document.querySelector(`#wz-dialog-container > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="CR generic Main"]`).click()
+                    document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="CR generic Main"]`).click()
                 } else {
                     CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`,`Error`);
                 }
@@ -408,7 +408,7 @@ function startScriptUpdateMonitor() {
             case "CR":
                 if (CRStates.indexOf(State)>=0) {
                     console.log(match[1]);
-                    document.querySelector(`#wz-dialog-container > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="CR generic Main"]`).click()
+                    document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="CR generic Main"]`).click()
                 } else if (State == "Illinois") {
                     CreateError(`Warning: Illinois does not use CR shields for CRs.`,`Error`);
                 } else if (State == "West Virginia" & !streetname.includes("/")) {
@@ -442,23 +442,23 @@ function startScriptUpdateMonitor() {
             case "I":
                 switch (match[3] ) {
                     case "BUS":
-                        document.querySelector(`#wz-dialog-container > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="I-# BUS"]`).click()
+                        document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="I-# BUS"]`).click()
                         break;
                     case "TOLL":
                         if (State == "Texas"){
-                            document.querySelector(`#wz-dialog-container > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="Texas - State Main Toll"]`).click()
+                            document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="Texas - State Main Toll"]`).click()
                         } else {
                             CreateError(`Error: ${match[1]}-xx ${match[3]} Road Shield is not available for ${State}`,`Error`);
                         }
                         break;
                     default:
-                        document.querySelector(`#wz-dialog-container > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="Interstate Main"]`).click()
+                        document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="Interstate Main"]`).click()
                         break;
                 }
                 break;
             case "IA":
                 if (State == "Iowa") {
-                    document.querySelector(`#wz-dialog-container > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="SR generic Main"]`).click()
+                    document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="SR generic Main"]`).click()
                 } else {
                     CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`,`Error`);
                 }
@@ -472,7 +472,7 @@ function startScriptUpdateMonitor() {
                 break;
             case "KY":
                 if (State == "Kentucky") {
-                    document.querySelector(`#wz-dialog-container > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="SR generic Main"]`).click()
+                    document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="SR generic Main"]`).click()
                 } else {
                     CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`,`Error`);
                 }
@@ -486,7 +486,7 @@ function startScriptUpdateMonitor() {
                 break;
             case "MS":
                 if (State == "Mississippi") {
-                    document.querySelector(`#wz-dialog-container > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="SR generic Main"]`).click()
+                    document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="SR generic Main"]`).click()
                 } else {
                     CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`,`Error`);
                 }
@@ -532,7 +532,7 @@ function startScriptUpdateMonitor() {
                         CreateError(`Warning: Please verify that this road uses <b>SR Generic Main</b> and not <b>VA - State Main.</b>`,`Alert`);
                     }
                 } else if (match[3] == undefined) {
-                    document.querySelector(`#wz-dialog-container > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="SR generic Main"]`).click()
+                    document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="SR generic Main"]`).click()
                 } else if (match[3] !== undefined) {
                     CreateError(`Error: SR ${match[3]} Road Shield is not available`,`Error`);
                     return;
@@ -548,13 +548,13 @@ function startScriptUpdateMonitor() {
                 break;
             case "US":
                 if (match[3] == undefined) {
-                    document.querySelector(`#wz-dialog-container > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="US Hwy Main"]`).click()
+                    document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="US Hwy Main"]`).click()
                 } else if ((match[3] == "ALT" | match[3] == "BUS" | match[3] == "SPUR" | match[3] == "TRUCK") && State == "Arkansas"){
-                    document.querySelector(`#wz-dialog-container > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="US Hwy Main"]`).click()
+                    document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="US Hwy Main"]`).click()
                 } else if (match[3] == "TOLL" && State == "Texas"){
-                    document.querySelector(`#wz-dialog-container > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="Texas - State Main Toll"]`).click()
-                } else if (document.querySelector(`#wz-dialog-container > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="US-# ` + match[3] + `"]`)) {
-                    document.querySelector(`#wz-dialog-container > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="US-# ` + match[3] + `"]`).click()
+                    document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="Texas - State Main Toll"]`).click()
+                } else if (document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="US-# ` + match[3] + `"]`)) {
+                    document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="US-# ` + match[3] + `"]`).click()
                 } else {
                     CreateError(`Error: US-# ${match[3]} Road Shield is not available or does not parse`,`Error`);
                     return;
@@ -569,7 +569,7 @@ function startScriptUpdateMonitor() {
                 break;
             case "Parish Rd":
                 if (State == "Louisiana") {
-                    document.querySelector(`#wz-dialog-container > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="CR generic Main"]`).click()
+                    document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="CR generic Main"]`).click()
                 } else {
                     CreateError(`Error: ${match[1]} Road Shield is not available for ${State}`,`Error`);
                 }
@@ -577,7 +577,7 @@ function startScriptUpdateMonitor() {
             case "VA":
                 if (State == "Virginia" ) {
                     if (match[2] >= 600) {
-                        document.querySelector(`#wz-dialog-container > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="SR generic Main"]`).click()
+                        document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="SR generic Main"]`).click()
                     } else {
                         CreateError(`Warning: Please verify that this road uses <b>VA - State Main.</b> and not <b>SR Generic Main</b>`,`Alert`);
                     }
@@ -591,9 +591,9 @@ function startScriptUpdateMonitor() {
                 break;
         }
         if (!document.querySelector(`#WMERSH-Message`) || (document.querySelector(`#WMERSH-Message`) && !document.querySelector("#WMERSH-Message").classList.contains("Warning"))){
-            let shieldTextInput = document.querySelector("#wz-dialog-container > wz-dialog > wz-dialog-content > div:nth-child(2) > wz-text-input");
-            let shieldDirectionInput = document.querySelector("#wz-dialog-container > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input");
-            let ApplyButton = document.querySelector("#wz-dialog-container > wz-dialog > wz-dialog-controls > wz-button.apply-button.hydrated");
+            let shieldTextInput = document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(2) > wz-text-input");
+            let shieldDirectionInput = document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input");
+            let ApplyButton = document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-controls > wz-button.apply-button.hydrated");
             if (match[2]) {
                 if (match[1] == "H") {
                     shieldTextInput.value = match[1]+'-'+match[2]
@@ -639,7 +639,7 @@ function startScriptUpdateMonitor() {
 
     function RegexMatch() {
         let htmlstring = `<div id="WMERSH-Autofill"><wz-button class="hydrated">Autofill</wz-button></div>`
-        document.querySelector("#wz-dialog-container > wz-dialog > wz-dialog-content").insertAdjacentHTML('afterend',htmlstring)
+        document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content").insertAdjacentHTML('afterend',htmlstring)
         document.querySelector("#WMERSH-Autofill").onclick = function(){AutoFiller()};
     }
 
@@ -647,8 +647,8 @@ function startScriptUpdateMonitor() {
         let country = W.model.getTopCountry().attributes.name
         if (country == "Canada" || country == "United States") {
             log("Filtered " + state)
-            for(var j = 1; j <= document.querySelector("#wz-dialog-container > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu").childElementCount; j++){
-                let lineitem = document.querySelector(`#wz-dialog-container > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > wz-menu-item:nth-child(`+j+`)`)
+            for(var j = 1; j <= document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu").childElementCount; j++){
+                let lineitem = document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > wz-menu-item:nth-child(`+j+`)`)
                 let iTxt = lineitem.innerText
                 let SearchStrings = ['Interstate Main','US Hwy','SR generic','CR generic','I-','US-','BIA','FSR','National',state]
                 let length = SearchStrings.length;
@@ -892,14 +892,14 @@ function startScriptUpdateMonitor() {
         let observer = new MutationObserver(mutations => {
             mutations.forEach(mutation => {
                 for (let i = 0; i < mutation.addedNodes.length; i++) {
-                    if (document.querySelector("#wz-dialog-container > wz-dialog") && document.querySelector("#wz-dialog-container > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu")) {
+                    if (document.querySelector("#wz-dialog-container > div > wz-dialog") && document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu")) {
                         log("Filter Ran")
                         RegexMatch()
                         if (_settings.FilterByState) {
                             filterShields(getState())
                         }
                         if (_settings.Debug) {
-                            document.querySelector("#wz-dialog-container > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-label").insertAdjacentHTML("beforeend", ` <i id="RSH_Flask" class="fas fa-flask"></i>`)
+                            document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-label").insertAdjacentHTML("beforeend", ` <i id="RSH_Flask" class="fas fa-flask"></i>`)
                             document.querySelector("#RSH_Flask").onclick = function(){
                                 var state = prompt("Please enter state name", "");
                                 log(state)
