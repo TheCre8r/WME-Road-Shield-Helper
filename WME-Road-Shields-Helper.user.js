@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper
 // @namespace    https://github.com/thecre8r/
-// @version      2024.10.18.00
+// @version      2024.11.01.01
 // @description  Road Shield Helper
 // @match        https://www.waze.com/editor*
 // @match        https://www.waze.com/*/editor*
@@ -12,7 +12,6 @@
 // @connect      raw.githubusercontent.com
 // @author       The_Cre8r
 // @require      https://greasyfork.org/scripts/24851-wazewrap/code/WazeWrap.js
-// @license      GPLv3
 // ==/UserScript==
 
 /* global $ */
@@ -27,7 +26,7 @@
     const SCRIPT_NAME = GM_info.script.name;
     const SCRIPT_VERSION = GM_info.script.version.toString();
                                         //{"version": "2023.01.01.01","changes": ""},
-    const SCRIPT_HISTORY = `{"versions": [{"version": "2024.10.18.00","changes": "The turn instruction preview was playing hide-and-seek. Found it!"},{"version": "2023.08.27.01","changes": "Fix to turn instruuction preview for turns to unnamed segments."},{"version": "2023.08.23.01","changes": "Compatibility update with WME V2.180."},{"version": "2023.02.11.01","changes": "Compatibility update. Added Minnesota CH shield logic."},{"version": "2021.12.30.001","changes": "jm6087 additions"},{"version": "2022.11.29.01","changes": "Code Cleanup"},{"version": "2022.08.30.01","changes": "Added button panel to segment name edit panel."},{"version": "2022.03.05.01","changes": "Fixed region-specific button logic"},{"version": "2022.01.22.01","changes": "More added support for additional new shields"},{"version": "2022.01.21.01","changes": "Added support for new shields"},{"version": "2021.08.09.01","changes": "Added the preview on the turn instruction dialog box"},{"version": "2021.07.07.03","changes": "Fixed another small ꜱ in West and East."},{"version": "2021.07.07.02","changes": "Fixed small ꜱ in West and East."},{"version": "2021.07.07.01","changes": "Added Buttons to Turn Instructions and all states should be compatible. Please be sure to report an issue on GitHub if you find one that is not working."},{"version": "2021.06.12.01","changes": "Support for Illinois CH Road Shields, a few more SH- States, a few more SR- States, and Arkansas's Shield Name Suffixes"},{"version": "2021.06.05.01","changes": "Support for Missouri Supplemental Road Shields"},{"version": "2021.06.03.02","changes": "Support for Kansas K-xxx format"},{"version": "2021.06.03.01","changes": "Added CR support for states using hexagon type shields"},{"version": "2021.06.02.01","changes": "Added SR Shield for New Hampshire"},{"version": "2021.06.01.02","changes": "Added County Shields for Wisconsin<br>Updated Changelog Format"},{"version": "2021.06.01.01","changes": "Fixed GitHub URL"},{"version": "2021.05.31.01","changes": "Added Wisconsin and other miscellaneous fixes"},{"version": "2021.05.23.01","changes": "Initial Version"}]}`;
+    const SCRIPT_HISTORY = `{"versions": [{"version": "2024.11.01.01","changes": "Fixed styling and TTS Override"},{"version": "2024.10.18.00","changes": "The turn instruction preview was playing hide-and-seek. Found it!"},{"version": "2023.08.27.01","changes": "Fix to turn instruuction preview for turns to unnamed segments."},{"version": "2023.08.23.01","changes": "Compatibility update with WME V2.180."},{"version": "2023.02.11.01","changes": "Compatibility update. Added Minnesota CH shield logic."},{"version": "2021.12.30.001","changes": "jm6087 additions"},{"version": "2022.11.29.01","changes": "Code Cleanup"},{"version": "2022.08.30.01","changes": "Added button panel to segment name edit panel."},{"version": "2022.03.05.01","changes": "Fixed region-specific button logic"},{"version": "2022.01.22.01","changes": "More added support for additional new shields"},{"version": "2022.01.21.01","changes": "Added support for new shields"},{"version": "2021.08.09.01","changes": "Added the preview on the turn instruction dialog box"},{"version": "2021.07.07.03","changes": "Fixed another small ꜱ in West and East."},{"version": "2021.07.07.02","changes": "Fixed small ꜱ in West and East."},{"version": "2021.07.07.01","changes": "Added Buttons to Turn Instructions and all states should be compatible. Please be sure to report an issue on GitHub if you find one that is not working."},{"version": "2021.06.12.01","changes": "Support for Illinois CH Road Shields, a few more SH- States, a few more SR- States, and Arkansas's Shield Name Suffixes"},{"version": "2021.06.05.01","changes": "Support for Missouri Supplemental Road Shields"},{"version": "2021.06.03.02","changes": "Support for Kansas K-xxx format"},{"version": "2021.06.03.01","changes": "Added CR support for states using hexagon type shields"},{"version": "2021.06.02.01","changes": "Added SR Shield for New Hampshire"},{"version": "2021.06.01.02","changes": "Added County Shields for Wisconsin<br>Updated Changelog Format"},{"version": "2021.06.01.01","changes": "Fixed GitHub URL"},{"version": "2021.05.31.01","changes": "Added Wisconsin and other miscellaneous fixes"},{"version": "2021.05.23.01","changes": "Initial Version"}]}`;
     const GH = {link: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/', issue: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/issues/new', wiki: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/wiki'};
     const UPDATE_ALERT = true;
     const DOWNLOAD_URL = 'https://raw.githubusercontent.com/TheCre8r/WME-Road-Shield-Helper/master/WME-Road-Shields-Helper.user.js';
@@ -43,6 +42,14 @@
         else if (level == 1) {css += ' color: green;'}
         else {css += ' color: orange;'}
         console.log("%c"+GM_info.script.name+": %s", css, msg);
+    }
+
+    function get4326CenterPoint() {
+        let center = W.map.getCenter();
+        let center4326 = WazeWrap.Geometry.ConvertTo4326(center.lon, center.lat);
+        let lat = Math.round(center4326.lat * 1000000) / 1000000;
+        let lon = Math.round(center4326.lon * 1000000) / 1000000;
+        return new OpenLayers.LonLat(lon, lat);
     }
 
     function initializei18n() {
@@ -815,27 +822,29 @@ function startScriptUpdateMonitor() {
             }
 
             /* START HTML */
-            let htmlstring = `<div class="turn-preview-wrapper" style="margin: -8px -8px 5px -8px;border-radius: 4px;"><div class="turn-preview" style="border-radius: 4px;">
-                                  <div>
+            let htmlstring = `<div class="turn-instructions-panel">
+                                <div class="turn-preview-wrapper" ">
+                                  <div class="turn-preview" style="border-radius: 4px;">
+                                    <div>
                                       <div class="turn-preview-inner">
-                                          <span class="turn-preview-arrow-wrapper">
-                                              ${TurnHTML}
+                                        <span class="turn-preview-arrow-wrapper">
+                                          ${TurnHTML}
+                                        </span>
+                                        <span class="turn-preview-content">
+                                          <div>XXX feet</div>
+                                          <span class="exit-signs-preview">
+                                            ${SignPreviewHTML}
                                           </span>
-                                          <span class="turn-preview-content">
-                                              <div>XXX feet</div>
-                                              <span class="exit-signs-preview">
-                                                  ${SignPreviewHTML}
-                                              </span>
-                                              <div class="primary-markup">
-                                                  ${visualInstructionHTML}
-                                              </div>
-                                              ${towardsHTML}
-                                          </span>
+                                          <div class="primary-markup">
+                                             ${visualInstructionHTML}
+                                          </div>
+                                          ${towardsHTML}
+                                        </span>
                                       </div>
+                                    </div>
                                   </div>
-                              </div>`
+                                </div>`
             let AdDIV = `<div id="wmersh-pc" style="margin: -8px -8px 5px -8px;background:lightgray;" data-original-title="...and users like you." ><span style="font-size:10px; margin:auto; text-align: center;display: block;">Preview Courtesy of Road Shield Helper</span></div>`
-            let AdDIV2 = `<div id="wmersh-pc" style="margin: -8px -8px 5px -8px;background:lightgray;" data-original-title="HELLO" ><span style="font-size:10px; margin:auto; text-align: center;display: block;">Preview Courtesy of Road Shield Helper</span></div>`
             let emptydiv = `<div style="background:red"></div>`
             // If the next segment has no name, the first child is blank text. Swap it out for the turn-header div that's normally present.
             let toolTipDiv = document.querySelector(".tippy-box > div");
@@ -846,26 +855,37 @@ function startScriptUpdateMonitor() {
             //}
             let adjacentDiv = document.querySelector(".tippy-box > div > div")
             // old = document.querySelector("#big-tooltip-region > div")
-            if (turnGuidance.tts) {document.querySelector("div.tippy-content > div").textContent = "Turn to " + turnGuidance.tts}
+            if (turnGuidance.tts) {
+                document.querySelector("div.tippy-content > div").insertAdjacentHTML('afterend',`<div id="wmersh-tts-link"style="text-align:center">TTS Override: ${turnGuidance.tts}</div`)
+                document.getElementById('wmersh-tts-link').addEventListener('click', function() {
+                    // Create a new Audio object
+                    var audio = new Audio(`https://ttsgw.world.waze.com/TTSGateway/Text2SpeechServlet?content_type=audio%2Fmpeg&lat=${get4326CenterPoint().lat}&lon=${get4326CenterPoint().lon}&protocol=2&sessionid=12345654321&skipCache=true&type=street&validate_data=positive&version=6&lang=en-US&text=%20${turnGuidance.tts}%20`);
+
+                    // Play the audio
+                    audio.play();
+                });
+            }
+
             adjacentDiv.insertAdjacentHTML('afterbegin',AdDIV)
             adjacentDiv.insertAdjacentHTML('afterbegin',htmlstring)
             adjacentDiv.insertAdjacentHTML('afterbegin',emptydiv)
+            document.querySelector(".tippy-box .tippy-content").style.overflow = 'hidden'
             //document.querySelector("#big-tooltip-region > div.turn-header").remove()
             $('#wmersh-pc').tooltip({placement: "bottom",container: "body"})
 
             /* Start TTS Override */
             let TTShtml
             if (turnGuidance.tts) {
-                TTShtml = `<div id="wmersh-tts" data-original-title="TTS Override Active" style="display: inline-block;">
+                TTShtml = `<div id="wmersh-tts" data-original-title="TTS Override Active" style="display: inline-block; float:left;">
                                <i class="fa fa-volume-up" aria-hidden="true" style="color: orange;font-size: 18px;margin-left: 7px;vertical-align: middle;"></i>
                            </div>`
+                document.querySelector("#wmersh-tts-link").insertAdjacentHTML('beforebegin',TTShtml)
+                $('#wmersh-tts').tooltip()
             } else {
-                TTShtml = `<div id="wmersh-tts" data-original-title="Default TTS" style="display: inline-block;">
+                TTShtml = `<div id="wmersh-tts" data-original-title="Default TTS" style="display: inline-block; float:left;">
                                <i class="fa fa-volume-up" aria-hidden="true" style="color: #72767d;font-size: 18px;margin-left: 7px;vertical-align: middle;"></i>
                            </div>`
             }
-            document.querySelector(".tippy-box > div > div > div > div:nth-child(2) > wz-button").insertAdjacentHTML('beforebegin',TTShtml)
-            $('#wmersh-tts').tooltip()
         }
     }
 
