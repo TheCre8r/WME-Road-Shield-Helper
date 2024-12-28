@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper
 // @namespace    https://github.com/thecre8r/
-// @version      2024.11.01.01
+// @version      2024.12.28.01
 // @description  Road Shield Helper
 // @match        https://www.waze.com/editor*
 // @match        https://www.waze.com/*/editor*
@@ -26,7 +26,7 @@
     const SCRIPT_NAME = GM_info.script.name;
     const SCRIPT_VERSION = GM_info.script.version.toString();
                                         //{"version": "2023.01.01.01","changes": ""},
-    const SCRIPT_HISTORY = `{"versions": [{"version": "2024.11.01.01","changes": "Fixed styling and TTS Override"},{"version": "2024.10.18.00","changes": "The turn instruction preview was playing hide-and-seek. Found it!"},{"version": "2023.08.27.01","changes": "Fix to turn instruuction preview for turns to unnamed segments."},{"version": "2023.08.23.01","changes": "Compatibility update with WME V2.180."},{"version": "2023.02.11.01","changes": "Compatibility update. Added Minnesota CH shield logic."},{"version": "2021.12.30.001","changes": "jm6087 additions"},{"version": "2022.11.29.01","changes": "Code Cleanup"},{"version": "2022.08.30.01","changes": "Added button panel to segment name edit panel."},{"version": "2022.03.05.01","changes": "Fixed region-specific button logic"},{"version": "2022.01.22.01","changes": "More added support for additional new shields"},{"version": "2022.01.21.01","changes": "Added support for new shields"},{"version": "2021.08.09.01","changes": "Added the preview on the turn instruction dialog box"},{"version": "2021.07.07.03","changes": "Fixed another small ꜱ in West and East."},{"version": "2021.07.07.02","changes": "Fixed small ꜱ in West and East."},{"version": "2021.07.07.01","changes": "Added Buttons to Turn Instructions and all states should be compatible. Please be sure to report an issue on GitHub if you find one that is not working."},{"version": "2021.06.12.01","changes": "Support for Illinois CH Road Shields, a few more SH- States, a few more SR- States, and Arkansas's Shield Name Suffixes"},{"version": "2021.06.05.01","changes": "Support for Missouri Supplemental Road Shields"},{"version": "2021.06.03.02","changes": "Support for Kansas K-xxx format"},{"version": "2021.06.03.01","changes": "Added CR support for states using hexagon type shields"},{"version": "2021.06.02.01","changes": "Added SR Shield for New Hampshire"},{"version": "2021.06.01.02","changes": "Added County Shields for Wisconsin<br>Updated Changelog Format"},{"version": "2021.06.01.01","changes": "Fixed GitHub URL"},{"version": "2021.05.31.01","changes": "Added Wisconsin and other miscellaneous fixes"},{"version": "2021.05.23.01","changes": "Initial Version"}]}`;
+    const SCRIPT_HISTORY = `{"versions": [{"version": "2024.11.01.01","changes": "Fixed styling and TTS Override"},{"version": "2024.10.18.00","changes": "The turn instruction preview was playing hide-and-seek. Found it!"},{"version": "2023.08.27.01","changes": "Fix to turn instruction preview for turns to unnamed segments."},{"version": "2023.08.23.01","changes": "Compatibility update with WME V2.180."},{"version": "2023.02.11.01","changes": "Compatibility update. Added Minnesota CH shield logic."},{"version": "2021.12.30.001","changes": "jm6087 additions"},{"version": "2022.11.29.01","changes": "Code Cleanup"},{"version": "2022.08.30.01","changes": "Added button panel to segment name edit panel."},{"version": "2022.03.05.01","changes": "Fixed region-specific button logic"},{"version": "2022.01.22.01","changes": "More added support for additional new shields"},{"version": "2022.01.21.01","changes": "Added support for new shields"},{"version": "2021.08.09.01","changes": "Added the preview on the turn instruction dialog box"},{"version": "2021.07.07.03","changes": "Fixed another small ꜱ in West and East."},{"version": "2021.07.07.02","changes": "Fixed small ꜱ in West and East."},{"version": "2021.07.07.01","changes": "Added Buttons to Turn Instructions and all states should be compatible. Please be sure to report an issue on GitHub if you find one that is not working."},{"version": "2021.06.12.01","changes": "Support for Illinois CH Road Shields, a few more SH- States, a few more SR- States, and Arkansas's Shield Name Suffixes"},{"version": "2021.06.05.01","changes": "Support for Missouri Supplemental Road Shields"},{"version": "2021.06.03.02","changes": "Support for Kansas K-xxx format"},{"version": "2021.06.03.01","changes": "Added CR support for states using hexagon type shields"},{"version": "2021.06.02.01","changes": "Added SR Shield for New Hampshire"},{"version": "2021.06.01.02","changes": "Added County Shields for Wisconsin<br>Updated Changelog Format"},{"version": "2021.06.01.01","changes": "Fixed GitHub URL"},{"version": "2021.05.31.01","changes": "Added Wisconsin and other miscellaneous fixes"},{"version": "2021.05.23.01","changes": "Initial Version"}]}`;
     const GH = {link: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/', issue: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/issues/new', wiki: 'https://github.com/TheCre8r/WME-Road-Shield-Helper/wiki'};
     const UPDATE_ALERT = true;
     const DOWNLOAD_URL = 'https://raw.githubusercontent.com/TheCre8r/WME-Road-Shield-Helper/master/WME-Road-Shields-Helper.user.js';
@@ -983,7 +983,9 @@ function startScriptUpdateMonitor() {
             }
         });
 
-        $(`.WMERSH-button.insertChar[displayFor="${displayFor}"`).click(function(){AddTxt(this.value,LastInputElement)});
+        $(`.WMERSH-button.insertChar[displayFor="${displayFor}"`).click(function(){
+            AddTxt(this.value,LastInputElement)
+        });
 
     }
 
@@ -1039,10 +1041,34 @@ function startScriptUpdateMonitor() {
     function TIOButtons() {
 //        let TTSResetButtonhtml = `
 //        <button class="WMERSH-button" style="display: inline-block; position: absolute; left: 44px; font-size: 12px; font-weight: 500;cursor: pointer;" type="button" id="WMERSH-TTS-reset" value="Reset"><span>Reset</span></button>`
-//         document.querySelector("#panel-container > div > div.turn-instructions-panel > div.panel-content > div:nth-child(5) > wz-label").insertAdjacentHTML('afterend',TTSResetButtonhtml)
+//         document.querySelector("#panel-container > div > wz-card.turn-instructions-panel > div.panel-content > div:nth-child(5) > wz-label").insertAdjacentHTML('afterend',TTSResetButtonhtml)
 //         $("#WMERSH-TTS-reset").click(function(){document.querySelector("#tts").value = null});
-        $("#panel-container > div > div.turn-instructions-panel").before(ButtonPanel("TIOButtons"))
+        $(".turn-instructions-panel").before(ButtonPanel("TIOButtons"))
         ButtonFunctions("TIOButtons")
+    }
+
+    // set react input value.  https://stackoverflow.com/questions/30683628/react-js-setting-value-of-input
+    function setNativeValue(element, value) {
+        let lastValue = element.value;
+        element.value = value;
+        let event = new Event("input", { target: element, bubbles: true });
+        // React 15
+        event.simulated = true;
+        // React 16
+        let tracker = element._valueTracker;
+        if (tracker) {
+            tracker.setValue(lastValue);
+        }
+        element.dispatchEvent(event);
+    }
+
+    function setTextForSelector(selector, val) {
+        const item = document.querySelector(selector);
+        if (!item) {
+            console.error("RSH: setText selector failed: " + selector);
+        } else {
+            setNativeValue(item, val);
+        }
     }
 
     function RegexMatch2() {
@@ -1050,7 +1076,7 @@ function startScriptUpdateMonitor() {
             let state = W.model.topState.attributes.name;
             let slash = " / ";
             let htmlstring = `<div id="WMERSH-TIO-Autofill"><wz-button class="hydrated">Autofill</wz-button></div>`
-            document.querySelector("#panel-container > div > div.turn-instructions-panel").insertAdjacentHTML('afterbegin',htmlstring)
+            document.querySelector(".turn-instructions-panel > div > div.panel-header").insertAdjacentHTML('afterbegin',htmlstring)
             document.querySelector("#WMERSH-TIO-Autofill").onclick = function(){
                 //let exittext = document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span > span > input[type=text]").value
                 let exittext = document.querySelector("#tts").shadowRoot.querySelector("textarea").placeholder // document.querySelector("#tts").shadowRoot.querySelector("#id").placeholder
@@ -1063,16 +1089,21 @@ function startScriptUpdateMonitor() {
                 let m5 = 5
                 //                let m6 = 6
 
+                /* 2024-12-28 - DaveAcincy - I changed most of the selectors in this function, that werent working any more. I have added a comment on those with a click() call
+                   to add what I think it is doing.
+                   */
+
                 /** Start Add Exit Arrow **/
                 if (match[2]) {
                     if (match[2].includes("Exit")) { //if (match[1].includes("Exit")) {
                         if ($('.exit-sign-item').length == 0) {
-                            document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(3) > div > wz-button").shadowRoot.querySelector("button").click()
+                            document.querySelector(".exit-signs > wz-button").click();
                         }
+                        const items = document.querySelector(".exit-signs-menu").querySelectorAll('wz-menu-item');
                         if (document.querySelector("#turn-override-select").shadowRoot.querySelector("#select-wrapper > div > div > span").innerText == "Exit left") {
-                            document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(3) > div > div > div > span > span > wz-menu > wz-menu-item:nth-child(2) > img").click()
+                            if (items) { items[1].click(); } // left arrow
                         } else {
-                            document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(3) > div > div > div > span > span > wz-menu > wz-menu-item:nth-child(1) > img").click()
+                            if (items) { items[0].click(); } // right arrow
                         }
                     }}
                 /** End Add Exit Arrow **/
@@ -1084,19 +1115,19 @@ function startScriptUpdateMonitor() {
 
                 /** Start Visual Instructions **/
                 if (match[3]) {
-                    document.querySelector("#text").value = match[3] // document.querySelector("#text").value = match[2] //Exit signs
+                    setTextForSelector(".turnInstructionExitSigns > span > #text", match[3]); // text for exit number
                 }
                 let Strings = match[m4].split(/[\/»•]/); // let Strings = match[3].split(" / ");
                 if (match[m4]) { // if (match[3]) {
                     match2 = match[m4].match(regex2); // match2 = match[3].match(regex2);
                     console.log(match2)
                 }
-                document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(1) > span > i").click()
-                document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > wz-menu > wz-menu-item:nth-child(1)").click()
+                document.querySelector(".turn-instructions > div > span > i").click(); // remove default text item
+                document.querySelector(".turn-instructions > wz-menu > wz-menu-item").click(); // add roadshield item
                 let shck = 0;
-                let shieldcheck = document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(1) > span > wz-menu`).children[0].innerText;
+                let shieldcheck = document.querySelector(".turn-instructions .road-shields-menu wz-menu-item .street-name").innerText;
                 if (shieldcheck != "No shields found on nearby streets - try zooming out") shck = 1;
-                document.querySelector("#panel-container > div > div.turn-instructions-panel > div.panel-content > div:nth-child(1) > div > div > div > span > span > i").click();
+                document.querySelector(".turn-instructions > div > span > i").click(); // del roadshield item
 
                 Strings.forEach(function(item, index){
                     item = item.trim();
@@ -1105,48 +1136,44 @@ function startScriptUpdateMonitor() {
                         if (match2[1] == "CR" && state == "Texas") {item = "Co Rd " + match2[2]};
                         let x = 0;
                         console.log(match2)
-                        document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > wz-menu > wz-menu-item:nth-child(1)").click()
+                        document.querySelector(".turn-instructions > wz-menu > wz-menu-item").click(); // add turn roadshield item
                         if (Strings.length > 1){
-                            document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(2) > div > wz-menu > wz-menu-item:nth-child(1)").click()
+                            document.querySelector(".towards-instructions > wz-menu > wz-menu-item:nth-child(1)").click(); // add towards shield item
                         }
                         if (shck == 1) {
-                            let shieldcount = document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > wz-menu`).childElementCount;
+                            let shieldcount = document.querySelector(`.turnInstructionRoadShields > span:nth-child(${index+1}) > wz-menu`).childElementCount;
 
                             for (var sc = 0; sc < shieldcount; sc++) {
-                                var dir1 = document.querySelector(`#panel-container > div > div.turn-instructions-panel > div.panel-content > div:nth-child(1) > div > div > div > span > span > wz-menu > wz-menu-item:nth-child(${sc + 1}) > span.street-name`).innerText;
+                                var dir1 = document.querySelector(`.turnInstructionRoadShields > span:nth-child(${index+1}) > wz-menu  > wz-menu-item:nth-child(${sc + 1}) > span.street-name`).innerText;
                                 if (dir1 == match2[0]) {
                                     x = 1
-                                    document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > wz-menu > wz-menu-item:nth-child(${sc + 1})`).click()
+                                    document.querySelector(`.turn-instructions > div > span:nth-child(${index+1}) > wz-menu > wz-menu-item:nth-child(${sc + 1})`).click()
                                     if (Strings.length > 1){
-                                        document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(2) > div > div > div > span:nth-child(${index+1}) > span > wz-menu > wz-menu-item:nth-child(${sc + 1})`).click()
+                                        document.querySelector(`.towards-instructions > div > span:nth-child(${index+1}) > wz-menu > wz-menu-item:nth-child(${sc + 1})`).click()
                                     }}}}
                         if (x == 0) {
-                            document.querySelector(`#panel-container > div > div.turn-instructions-panel > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > i`).click()
+                            document.querySelector(`.turn-instructions > div > span:nth-child(${index+1}) > i`).click() // remove turn instruction item
                             if (Strings.length > 1){
-                                document.querySelector(`#panel-container > div > div.turn-instructions-panel > div.panel-content > div:nth-child(2) > div > div > div > span:nth-child(${index+1}) > span > i`).click()
+                                document.querySelector(`.towards-instructions > div > span:nth-child(${index+1}) > i`).click() // remove towards
                             }
-                            document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > wz-menu > wz-menu-item:nth-child(2)").click()
-                            document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).value = item;
-                            $(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).trigger('input');
+                            document.querySelector(".turn-instructions > wz-menu > wz-menu-item:nth-child(2)").click() // add TI freetext
+                            setTextForSelector(`.turn-instructions > div > span:nth-child(${index+1}) > input[type=text]`, item); // set text
                             if (Strings.length > 1){
-                                document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(2) > div > wz-menu > wz-menu-item:nth-child(2)").click()
-                                document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(2) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).value = item;
-                                $(`#panel-container > div > div > div.panel-content > div:nth-child(2) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).trigger('input');
+                                document.querySelector(".towards-instructions > wz-menu > wz-menu-item:nth-child(2)").click() // toward free text
+                                setTextForSelector(`.towards-instructions > div > span:nth-child(${index+1}) > input[type=text]`, item);
                             }} // }
                         $("input#direction").trigger('input');
                     } else {
-                        document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > wz-menu > wz-menu-item:nth-child(2)").click()
-                        document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).value = item;
-                        $(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).trigger('input');
+                        document.querySelectorAll(".turn-instructions > wz-menu > wz-menu-item")[1].click(); // freeText
+                        setTextForSelector(".turn-instructions > div > .turn-instruction-item",item);
 
-//                         document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > wz-menu > wz-menu-item:nth-child(2)").click()
-//                         document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+2}) > span > input[type=text]`).value = slash;
-//                         $(`#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+2}) > span > input[type=text]`).trigger('input');
+//                         document.querySelector("#panel-container > div > wz-card > div.panel-content > div:nth-child(1) > div > wz-menu > wz-menu-item:nth-child(2)").click()
+//                         document.querySelector(`#panel-container > div > wz-card > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+2}) > span > input[type=text]`).value = slash;
+//                         $(`#panel-container > div > wz-card > div.panel-content > div:nth-child(1) > div > div > div > span:nth-child(${index+2}) > span > input[type=text]`).trigger('input');
 
                         if (Strings.length > 1){
-                            document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(2) > div > wz-menu > wz-menu-item:nth-child(2)").click()
-                            document.querySelector(`#panel-container > div > div > div.panel-content > div:nth-child(2) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).value = item;
-                            $(`#panel-container > div > div > div.panel-content > div:nth-child(2) > div > div > div > span:nth-child(${index+1}) > span > input[type=text]`).trigger('input');
+                            document.querySelector(".towards-instructions > wz-menu > wz-menu-item:nth-child(2)").click() // toward free text
+                            setTextForSelector(`.towards-instructions > div > span:nth-child(${index+1}) > input[type=text]`, item);
                         }}
                     console.log(index);
                     console.log(item);
@@ -1164,7 +1191,7 @@ function startScriptUpdateMonitor() {
         let observer = new MutationObserver(mutations => {
             mutations.forEach(mutation => {
                 for (let i = 0; i < mutation.addedNodes.length; i++) {
-                    if (document.querySelector("#panel-container > div > div") && document.querySelector("#panel-container > div > div").classList.contains("turn-instructions-panel")) {
+                    if (document.querySelector("#panel-container > div > wz-card") && document.querySelector("#panel-container > div > wz-card").classList.contains("turn-instructions-panel")) {
                         log("TIO Panel Detected")
                         let countryName = W.selectionManager.getSegmentSelection().segments[0].model.topCountry.attributes.name
                         if (countryName == 'United States' || countryName == 'Canada') {
