@@ -296,8 +296,8 @@ function startScriptUpdateMonitor() {
         let regex = /(?:((?:(?:[A-Z]+)(?=\-))|(?:Beltway)|(?:Loop)|(?:TOLL)|(?:Parish Rd)|(?:Park Rd)|(?:Recreational Rd)|(?:Spur))(?:-|\ )((?:[A-Z]+)|(?:\d+(?:[A-Z])?(?:-\d+)?)))?(?: (ALT-TRUCK|BUS|ALT|BYP|CONN|SPUR|TRUCK|TOLL|Toll|LOOP|NASA|Park|LINK))?(?: (N|E|S|W))?(?: • (.*))?/;
         let SHStates = ['Colorado', 'Minnesota', 'Oklahoma', 'Texas'];
         let SRStates = ['Alabama', 'Arizona', 'California', 'Connecticut', 'Florida', 'Georgia', 'Illinois', 'Massachusetts', 'Maine', 'New Hampshire', 'New Mexico', 'Ohio', 'Pennsylvania', 'Utah', 'Washington'];
-        let CRStates = ['Alabama', 'Arkansas', 'Florida', 'Louisiana', 'New Jersey', 'New York', 'North Dakota', 'South Dakota', 'Tennessee'];
-        let DoneStates = ['Delaware', 'North Carolina', 'New Jersey', 'Virginia'].concat(SRStates);
+        let CRStates = ['Alabama', 'Arkansas', 'Florida', 'Louisiana', 'Iowa', 'Kansas', 'New Jersey', 'New York', 'North Dakota', 'South Dakota', 'Tennessee'];
+        let DoneStates = ['Delaware', 'North Carolina', 'New Jersey', 'Tennessee', 'Virginia'].concat(SRStates);
         let match = streetname.match(regex);
 
         if (document.querySelector("#WMERSH-Message")) {
@@ -414,6 +414,8 @@ function startScriptUpdateMonitor() {
                     document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="CR generic Main"]`).click()
                 } else if (State == "Illinois") {
                     CreateError(`Warning: Illinois does not use CR shields for CRs.`,`Error`);
+                } else if (State == "Minnesota") {
+                    document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="Minnesota -County Road"]`).click()                    
                 } else if (State == "West Virginia" & !streetname.includes("/")) {
                     MakeShield(match,State, "County" ,"Main");
                 } else {
@@ -528,6 +530,8 @@ function startScriptUpdateMonitor() {
                     MakeShield(match,State);
                 } else if (State == "North Carolina") {
                     CreateError(`Error: ${State} does not use road shields for Secondary Routes`,`Error`);
+                } else if (State == "Tennessee") {
+                    MakeShield(match,State,undefined,"Secondary");
                 } else if (State == "Virginia") {
                     if (match[2] < 600 || match[2] == 785 || match[2] == 895) {
                         MakeShield(match,State);
