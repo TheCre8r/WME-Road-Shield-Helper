@@ -296,7 +296,7 @@ function startScriptUpdateMonitor() {
         let regex = /(?:((?:(?:[A-Z]+)(?=\-))|(?:Beltway)|(?:Loop)|(?:TOLL)|(?:Parish Rd)|(?:Park Rd)|(?:Recreational Rd)|(?:Spur))(?:-|\ )((?:[A-Z]+)|(?:\d+(?:[A-Z])?(?:-\d+)?)))?(?: (ALT-TRUCK|BUS|ALT|BYP|CONN|SPUR|TRUCK|TOLL|Toll|LOOP|NASA|Park|LINK))?(?: (N|E|S|W))?(?: • (.*))?/;
         let SHStates = ['Colorado', 'Minnesota', 'Oklahoma', 'Texas'];
         let SRStates = ['Alabama', 'Arizona', 'California', 'Connecticut', 'Florida', 'Georgia', 'Illinois', 'Massachusetts', 'Maine', 'New Hampshire', 'New Mexico', 'Ohio', 'Pennsylvania', 'Utah', 'Washington'];
-        let CRStates = ['Alabama', 'Arkansas', 'Florida', 'Louisiana', 'Kansas', 'New Jersey', 'New York', 'North Dakota', 'South Dakota', 'Tennessee'];
+        let CRStates = ['Alabama', 'Arkansas', 'Florida', 'Louisiana', 'Iowa', 'Kansas', 'New Jersey', 'New York', 'North Dakota', 'South Dakota', 'Tennessee'];
         let DoneStates = ['Delaware', 'North Carolina', 'New Jersey', 'Tennessee', 'Virginia'].concat(SRStates);
         let match = streetname.match(regex);
 
