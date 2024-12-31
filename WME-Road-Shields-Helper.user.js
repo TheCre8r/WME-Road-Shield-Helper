@@ -297,7 +297,7 @@ function startScriptUpdateMonitor() {
         let SHStates = ['Colorado', 'Minnesota', 'Oklahoma', 'Texas'];
         let SRStates = ['Alabama', 'Arizona', 'California', 'Connecticut', 'Florida', 'Georgia', 'Illinois', 'Massachusetts', 'Maine', 'New Hampshire', 'New Mexico', 'Ohio', 'Pennsylvania', 'Utah', 'Washington'];
         let CRStates = ['Alabama', 'Arkansas', 'Florida', 'Louisiana', 'Kansas', 'New Jersey', 'New York', 'North Dakota', 'South Dakota', 'Tennessee'];
-        let DoneStates = ['Delaware', 'North Carolina', 'New Jersey', 'Virginia'].concat(SRStates);
+        let DoneStates = ['Delaware', 'North Carolina', 'New Jersey', 'Tennessee', 'Virginia'].concat(SRStates);
         let match = streetname.match(regex);
 
         if (document.querySelector("#WMERSH-Message")) {
@@ -530,6 +530,8 @@ function startScriptUpdateMonitor() {
                     MakeShield(match,State);
                 } else if (State == "North Carolina") {
                     CreateError(`Error: ${State} does not use road shields for Secondary Routes`,`Error`);
+                } else if (State == "Tennessee") {
+                    MakeShield(match,State,undefined,"Secondary");
                 } else if (State == "Virginia") {
                     if (match[2] < 600 || match[2] == 785 || match[2] == 895) {
                         MakeShield(match,State);
