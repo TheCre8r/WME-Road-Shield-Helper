@@ -414,6 +414,8 @@ function startScriptUpdateMonitor() {
                     document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="CR generic Main"]`).click()
                 } else if (State == "Illinois") {
                     CreateError(`Warning: Illinois does not use CR shields for CRs.`,`Error`);
+                } else if (State == "Minnesota") {
+                    document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="Minnesota -County Road"]`).click()                    
                 } else if (State == "West Virginia" & !streetname.includes("/")) {
                     MakeShield(match,State, "County" ,"Main");
                 } else {
