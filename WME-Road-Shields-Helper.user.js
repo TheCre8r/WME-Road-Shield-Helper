@@ -960,9 +960,10 @@ function startScriptUpdateMonitor() {
         v = element.value;
         textBefore = v.substring(0, cursorStart);
         textAfter = v.substring(cursorEnd, v.length);
-        element.value = textBefore + character + textAfter;
-        element.focus();
-        $(element).trigger('input');
+        setNativeValue(element, textBefore + character + textAfter);
+        //element.value = textBefore + character + textAfter;
+        //element.focus();
+        //$(element).trigger('input');
         element.setSelectionRange(cursorStart+character.length,cursorStart+character.length);
     }
 
