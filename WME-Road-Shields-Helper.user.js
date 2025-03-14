@@ -970,7 +970,7 @@ function startScriptUpdateMonitor() {
         // use setNativeValue since it is managed by React
         setNativeValue(element, textBefore + character + textAfter);
         element.focus();
-        element.setSelectionRange(cursorStart+character.length,cursorStart+character.length); // this might not be working
+        element.setSelectionRange(cursorStart+character.length,cursorStart+character.length);
     }
 
     /*-- Added function call element "displayFor" to both ButtonFunctions() and ButtonPanel() so jQuery can target the correct button panel for selection.
