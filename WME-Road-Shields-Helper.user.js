@@ -969,6 +969,7 @@ function startScriptUpdateMonitor() {
         textAfter = v.substring(cursorEnd, v.length);
         // use setNativeValue since it is managed by React
         setNativeValue(element, textBefore + character + textAfter);
+        element.focus();
         element.setSelectionRange(cursorStart+character.length,cursorStart+character.length); // this might not be working
     }
 
