@@ -1109,7 +1109,7 @@ function startScriptUpdateMonitor() {
             let state = W.model.topState.attributes.name;
             let slash = " / ";
                 //let exittext = document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span > span > input[type=text]").value
-                let exittext = document.querySelector("#tts").shadowRoot.querySelector("textarea").placeholder // document.querySelector("#tts").shadowRoot.querySelector("#id").placeholder
+                let exittext = document.querySelector("#tts").shadowRoot.querySelector("[id*='wz-textarea']").placeholder // document.querySelector("#tts").shadowRoot.querySelector("#id").placeholder
                 let regex = /((Exits?) (\d+(?:.*)?): (.*)|(to) (.*))/ ///(Exits?) (\d+(?:.*)?): (.*)/
 //                let regex2 = /(?:((?:[A-Z]+)(?=\-))-((?:[A-Z]+)|(?:\d+(?:[A-Z])?(?:-\d+)?)))?(?: (BUS|ALT|BYP|CONN|SPUR|TRUCK|TOLL|Loop))?(?: (N|E|S|W))?/;
                 let regex2 = /(?:((?:(?:[A-Z]+)(?=\-))|(?:Beltway)|(?:Loop)|(?:TOLL)|(?:Parish Rd)|(?:Park Rd)|(?:Recreational Rd)|(?:Spur))(?:-|\ )((?:[A-Z]+)|(?:\d+(?:[A-Z])?(?:-\d+)?)))?(?: (ALT-TRUCK|BUS|ALT|BYP|CONN|SPUR|TRUCK|TOLL|Toll|LOOP|NASA|Park|LINK))?(?: (N|E|S|W))?(?: • (.*))?/;
@@ -1122,6 +1122,9 @@ function startScriptUpdateMonitor() {
                 /* 2024-12-28 - DaveAcincy - I changed most of the selectors in this function, that werent working any more. I have added a comment on those with a click() call
                    to add what I think it is doing.
                    */
+                if(match === null) {
+                    return
+                }
 
                 /** Start Add Exit Arrow **/
                 if (match[2]) {
