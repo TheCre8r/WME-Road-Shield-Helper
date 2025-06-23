@@ -1015,13 +1015,13 @@ function startScriptUpdateMonitor() {
             addButton('towards', '»')
         }
         if (countryName == 'United States') {
-            addButton('north', 'Nᴏʀᴛʜ')
-            addButton('south', 'Sᴏᴜᴛʜ')
-            addButton('east', 'Eᴀꜱᴛ')
-            addButton('west', 'Wᴇꜱᴛ')
-            addButton('to', 'ᴛᴏ')
-            addButton('via', 'ᴠɪᴀ')
-            addButton('jct', 'ᴊᴄᴛ')
+            addButton('north', 'North')
+            addButton('south', 'South')
+            addButton('east', 'East')
+            addButton('west', 'West')
+            addButton('to', 'to')
+            addButton('via', 'via')
+            addButton('jct', 'jct')
             addButton('parking', '🅿')
             addButton('airport', '✈︎')
         } else if (countryName == 'Canada') {
