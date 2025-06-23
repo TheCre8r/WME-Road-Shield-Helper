@@ -947,7 +947,7 @@ function startScriptUpdateMonitor() {
     function AddTxt(character,element) {
         log(element)
         let v,textBefore,textAfter
-        if (element === null) {
+        if (element === null || element === undefined) {
             return;
         }
         if (element.shadowRoot){
