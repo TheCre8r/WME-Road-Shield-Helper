@@ -947,6 +947,9 @@ function startScriptUpdateMonitor() {
     function AddTxt(character,element) {
         log(element)
         let v,textBefore,textAfter
+        if (element === null) {
+            return;
+        }
         if (element.shadowRoot){
             /*-- START Segment names are nested one shadowRoot element deeper. --*/
             if (element.shadowRoot.querySelector("#text-input"))
