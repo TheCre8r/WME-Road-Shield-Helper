@@ -1032,8 +1032,6 @@ function startScriptUpdateMonitor() {
                 addButton('sud', 'ꜱᴜᴅ')
                 addButton('est', 'ᴇꜱᴛ')
                 addButton('ouest', 'ᴏᴜᴇꜱᴛ')
-                addButton('centre-ville', 'ᴄᴇɴᴛʀᴇ-ᴠɪʟʟᴇ')
-                addButton('city center', 'ᴄɪᴛʏ ᴄᴇɴᴛʀᴇ')
             } else {
                 addButton('north', 'ɴᴏʀᴛʜ')
                 addButton('south', 'ꜱᴏᴜᴛʜ')
@@ -1042,9 +1040,9 @@ function startScriptUpdateMonitor() {
                 addButton('to', 'ᴛᴏ')
                 addButton('via', 'ᴠɪᴀ')
                 addButton('jct', 'ᴊᴄᴛ')
-                addButton('centre-ville', 'ᴄᴇɴᴛʀᴇ-ᴠɪʟʟᴇ')
-                addButton('city center', 'ᴄɪᴛʏ ᴄᴇɴᴛʀᴇ')
             }
+            addButton('centre-ville', 'ᴄᴇɴᴛʀᴇ-ᴠɪʟʟᴇ')
+            addButton('city center', 'ᴄɪᴛʏ ᴄᴇɴᴛʀᴇ')
         }
         return `<div id="WMERSH-panel" displayFor="${displayFor}" class="wmersh-panel">
                                 <div id="WMERSH-panel-header" class="panel-header">
