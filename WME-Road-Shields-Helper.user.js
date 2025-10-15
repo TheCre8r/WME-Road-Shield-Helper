@@ -1019,8 +1019,10 @@ function startScriptUpdateMonitor() {
             addButton('south', 'Sᴏᴜᴛʜ')
             addButton('east', 'Eᴀꜱᴛ')
             addButton('west', 'Wᴇꜱᴛ')
-            addButton('inner', 'Iɴɴᴇʀ')
-            addButton('outer', 'Oᴜᴛᴇʀ')
+            if (stateName == 'North Carolina') {
+                addButton('inner', 'Iɴɴᴇʀ')
+                addButton('outer', 'Oᴜᴛᴇʀ')           
+            }
             addButton('to', 'ᴛᴏ')
             addButton('via', 'ᴠɪᴀ')
             addButton('jct', 'ᴊᴄᴛ')
