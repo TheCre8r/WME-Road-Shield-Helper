@@ -1,0 +1,18 @@
+{
+  "name": "wme-road-shield-helper-ts",
+  "version": "2026.02.01.00",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "esbuild": "^0.21.5",
+    "typescript": "^5.9.3",
+    "wme-sdk-typings": "https://web-assets.waze.com/wme_sdk_docs/production/latest/wme-sdk-typings.tgz"
+  }
+}
