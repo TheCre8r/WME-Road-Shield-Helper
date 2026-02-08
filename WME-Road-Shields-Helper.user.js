@@ -1031,6 +1031,10 @@ function startScriptUpdateMonitor() {
             addButton('south', 'Sᴏᴜᴛʜ')
             addButton('east', 'Eᴀꜱᴛ')
             addButton('west', 'Wᴇꜱᴛ')
+            if (stateName == 'North Carolina') {
+                addButton('inner', 'Iɴɴᴇʀ')
+                addButton('outer', 'Oᴜᴛᴇʀ')           
+            }
             addButton('to', 'ᴛᴏ')
             addButton('via', 'ᴠɪᴀ')
             addButton('jct', 'ᴊᴄᴛ')
@@ -1051,6 +1055,8 @@ function startScriptUpdateMonitor() {
                 addButton('via', 'ᴠɪᴀ')
                 addButton('jct', 'ᴊᴄᴛ')
             }
+            addButton('centre-ville', 'ᴄᴇɴᴛʀᴇ-ᴠɪʟʟᴇ')
+            addButton('city center', 'ᴄɪᴛʏ ᴄᴇɴᴛʀᴇ')
         }
         return `<div id="WMERSH-panel" displayFor="${displayFor}" class="wmersh-panel">
                                 <div id="WMERSH-panel-header" class="panel-header">
