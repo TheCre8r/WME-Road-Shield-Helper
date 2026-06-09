@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Helper
 // @namespace    https://github.com/thecre8r/
-// @version      2026.06.08.00
+// @version      2026.06.09.00
 // @description  Road Shield Helper
 // @match        https://www.waze.com/editor*
 // @match        https://www.waze.com/*/editor*
@@ -210,6 +210,7 @@
   // src/data/script-history.json
   var script_history_default = {
     versions: [
+      { version: "2026.06.09.01", changes: "Fix: Junction box detection errors" },
       { version: "2026.02.21.01", changes: "Major Refactor and migration to Waze Map Editor SDK" },
       { version: "2026.01.15.01", changes: "Fix VI preview" },
       { version: "2025.06.23.01", changes: "Added checks to avoid errors caused by empty TTS textbox" },
@@ -1483,15 +1484,26 @@
     if (turnData?.turnGuidance) {
       console.log(turnData);
     }
-    if (node.isConnectedToBigJunction() && !(turnData && turnData.turnGuidance)) {
+    if (sdk2.DataModel.Segments.connectsToBigJunction({ segmentId: segmentDetails.fromSegment.id }) && !(turnData && turnData.turnGuidance)) {
       log("Node is Connected to Junction Box");
-      let JBpaths;
-      if (segmentDetails.fromSegment.direction === "f") {
-        JBpaths = W.model.bigJunctions.getObjectById(W.selectionManager._getSelectedSegments()[0].attributes.toCrossroads[0]).getAllPossibleTurns();
-      } else if (segmentDetails.fromSegment.direction === "r") {
-        JBpaths = W.model.bigJunctions.getObjectById(W.selectionManager._getSelectedSegments()[0].attributes.fromCrossroads[0]).getAllPossibleTurns();
-      } else {
-        alert("Let The_Cre8r know about this PL. [Error 2]");
+      let JBpaths = null;
+
+      // Use SDK selection API instead of private W.selectionManager
+      const selection = sdk2.Editing.getSelection();
+      if (selection?.objectType === 'segment' && selection.ids.length > 0) {
+        const selectedSeg = sdk2.DataModel.Segments.getById({ segmentId: selection.ids[0] });
+        let bigJunctionId = null;
+
+        if (segmentDetails.fromSegment.direction === "f" && selectedSeg?.toCrossroads?.[0]) {
+          bigJunctionId = selectedSeg.toCrossroads[0];
+        } else if (segmentDetails.fromSegment.direction === "r" && selectedSeg?.fromCrossroads?.[0]) {
+          bigJunctionId = selectedSeg.fromCrossroads[0];
+        }
+        // If neither direction matches or no crossroads exist, bigJunctionId stays null
+
+        if (bigJunctionId !== null) {
+          JBpaths = sdk2.DataModel.BigJunctions.getAllPossibleTurns({ bigJunctionId });
+        }
       }
       if (JBpaths) {
         for (let path = 0; path < JBpaths.length; path += 1) {
