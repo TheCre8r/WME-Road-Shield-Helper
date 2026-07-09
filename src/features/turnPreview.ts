@@ -18,6 +18,7 @@ export async function buildTurnPreview(): Promise<void> {
   let turnData: any;
   let segmentArray: string[];
   const sdk = getSdk();
+  await new Promise((r) => setTimeout(r, 20));
 
   const arrow = document.querySelector("div.arrow.turn-arrow-state-open.hover") as HTMLElement | null;
   if (arrow == null) {
@@ -55,8 +56,12 @@ export async function buildTurnPreview(): Promise<void> {
   if (turnData && turnData.turnGuidance) {
     console.log(turnData);
   }
+  let isConnJB = false;
+  if (!turnData ||  !turnData.turnGuidance) {
+    isConnJB = sdk.DataModel.Segments.connectsToBigJunction({ segmentId: segmentDetails.fromSegment.id });
+  }
 
-  if (node.isConnectedToBigJunction() && !(turnData && turnData.turnGuidance)) {
+  if (isConnJB && !(turnData && turnData.turnGuidance)) {
     log("Node is Connected to Junction Box");
     let JBpaths: any;
     if (segmentDetails.fromSegment.direction === "f") {

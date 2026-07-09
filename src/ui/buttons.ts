@@ -15,8 +15,12 @@ export function addText(character: string, element: HTMLInputElement | HTMLTextA
     const textInput = shadow.querySelector("#text-input") as HTMLElement | null;
     if (textInput) {
       element = textInput as HTMLInputElement;
+      if (element.inputElement?.selectionStart !== 'undefined')
+        element = element.inputElement;
     }
-    element = shadow.querySelector("input") as HTMLInputElement;
+    else {
+      element = shadow.querySelector("input") as HTMLInputElement;
+    }
   }
   const cursorStart = (element as HTMLInputElement).selectionStart ?? 0;
   const cursorEnd = (element as HTMLInputElement).selectionEnd ?? 0;
